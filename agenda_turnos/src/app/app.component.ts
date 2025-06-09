@@ -28,7 +28,7 @@ export class AppComponent {
   
   async eliminarfuncionario(){
     await this.menuCtrl.close();
-    this.router.navigate(['/eliminar']);
+    this.router.navigate(['/eliminacion']);
   }
   
   async registrofuncionario(){
