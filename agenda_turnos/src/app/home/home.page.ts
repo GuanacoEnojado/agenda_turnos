@@ -1,4 +1,6 @@
+import { MainPage } from './../pages/main/main.page';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
 
 @Component({
@@ -12,11 +14,12 @@ export class HomePage {
   emailregistro: string= "";
 
 
-  constructor(private toastController: ToastController) {}
+  constructor(private toastController: ToastController, private router: Router) {}
   
   iniciosesion(){
     if(this.contrasena == "cocodrilo" && this.emailregistro == "cocodrilo@gmail.com"){
-      return;
+      this.presentToast("bottom", "Ingreso con éxito.")
+      this.router.navigate(['/main']);
     }
     else{
       return;
@@ -25,9 +28,9 @@ export class HomePage {
   cancelar(){
     return;
   }
-async presentToast(position: 'bottom') {
+async presentToast(position: 'bottom', msj: string) {
     const toast = await this.toastController.create({
-      message: '',
+      message: msj,
       duration: 1500,
       position: position,
     });
@@ -36,4 +39,3 @@ async presentToast(position: 'bottom') {
   }
 }
 
-}
