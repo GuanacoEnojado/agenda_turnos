@@ -1,21 +1,33 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar color="primary">
-      <ion-title size="large">Login</ion-title>
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menu Content</ion-title>
     </ion-toolbar>
   </ion-header>
+  <ion-content class="ion-padding">
+    <ion-menu-toggle>
+      <ion-button>Click to close the menu</ion-button>
+    </ion-menu-toggle>
+  </ion-content>
+</ion-menu>
+<div class="ion-page" id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-menu-toggle>
+      <ion-button>Click to open the menu</ion-button>
+    </ion-menu-toggle>
+  </ion-content>
+</div>
+
+<ion-content>
   <ion-grid>
     <ion-row class="ion-justify-content-center">
       <ion-col size="8"  size-md="6">
-        <ion-card>
+        <ion-card style="position: relative; margin-top: 100px">
           <ion-card-header>Login</ion-card-header>
             <ion-item>
               <ion-input type="email" id="emailregistro" placeholder="correo@dominio.com" labelPlacement="floating" label="correo" [(ngModel)]="emailregistro">
@@ -28,6 +40,13 @@
             <ion-button color="success" (click)="iniciosesion()">Ingresar</ion-button>
             <ion-button color="danger" (click)="cancelar()">Cancelar</ion-button>
         </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="2">
+        <ion-button color="success" (click)="calendarioglobal()">Calendario Global</ion-button>
       </ion-col>
     </ion-row>
   </ion-grid>

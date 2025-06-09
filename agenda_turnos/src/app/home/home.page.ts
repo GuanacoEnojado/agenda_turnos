@@ -1,6 +1,7 @@
 import { Router, RouterModule } from '@angular/router';
 import { Component } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -21,10 +22,16 @@ export class HomePage {
       this.router.navigate(['/main']);
     }
     else{
+      this.presentAlert("Usuario o contraseña incorrecta")
+      this.contrasena = ''
+      this.emailregistro = ''
     }
   }
   cancelar(){
     return;
+  }
+  calendarioglobal(){
+    this.router.navigate(['/calendario-global'])
   }
 async presentToast(position: 'bottom', msj:string) {
     const toast = await this.toastController.create({

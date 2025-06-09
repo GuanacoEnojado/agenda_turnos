@@ -1,0 +1,21 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>calendario_turnos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">calendario_turnos</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-modal [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="datetime">
+
+      </ion-datetime>
+    </ng-template>
+  </ion-modal>
+  <ion-datetime></ion-datetime>
+</ion-content>
