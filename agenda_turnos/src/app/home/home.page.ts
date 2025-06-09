@@ -1,5 +1,6 @@
+import { Router, RouterModule } from '@angular/router';
 import { Component } from '@angular/core';
-import { ToastController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -12,28 +13,36 @@ export class HomePage {
   emailregistro: string= "";
 
 
-  constructor(private toastController: ToastController) {}
+  constructor(private toastController: ToastController, private alertcontroller: AlertController , private router: Router) {}
   
   iniciosesion(){
     if(this.contrasena == "cocodrilo" && this.emailregistro == "cocodrilo@gmail.com"){
-      return;
+      this.presentToast("bottom", "Ingreso Exitoso");
+      this.router.navigate(['/main']);
     }
     else{
-      return;
     }
   }
   cancelar(){
     return;
   }
-async presentToast(position: 'bottom') {
+async presentToast(position: 'bottom', msj:string) {
     const toast = await this.toastController.create({
-      message: '',
+      message: msj,
       duration: 1500,
       position: position,
     });
 
     await toast.present();
   }
+async presentAlert(msj:string){
+  const alert = await this.alertcontroller.create({
+    header: "Datos incorrectos",
+    message: msj,
+    buttons: ['OK'],
+  });
+  await alert.present();
+}
 }
 
-}
+
