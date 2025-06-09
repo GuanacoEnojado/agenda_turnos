@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-calendario-global',
@@ -9,26 +10,38 @@ import { Router } from '@angular/router';
 })
 export class CalendarioGlobalPage implements OnInit {
 
-  constructor(private router:Router) { }
-
+  constructor(private router: Router, private menuCtrl: MenuController) { }
+  
   ngOnInit() {
   }
-  calendarioglobal(){
-    this.router.navigate(['/calendario-global'])
+  
+  async calendarioglobal(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/calendario-global']);
   }
-  main(){
-    this.router.navigate(['/main'])
+  
+  async main(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/main']);
   }
-  preferencias(){
-    this.router.navigate(['/preferencias'])
+  
+  async preferencias(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/preferencias']);
   }
-  eliminarfuncionario(){
-    this.router.navigate(['/eliminar'])
+  
+  async eliminarfuncionario(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/eliminar']);
   }
-  registrofuncionario(){
-    this.router.navigate(['/registro'])
+  
+  async registrofuncionario(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/registro']);
   }
-  listafuncionario(){
-    this.router.navigate(['/lista-funcionario'])
+  
+  async listafuncionario(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/lista-funcionarios']);
   }
 }
