@@ -1,0 +1,34 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Blank
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar color="primary">
+      <ion-title size="large">Login</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size="8"  size-md="6">
+        <ion-card>
+          <ion-card-header>Login</ion-card-header>
+            <ion-item>
+              <ion-input type="email" id="emailregistro" placeholder="correo@dominio.com" labelPlacement="floating" label="correo" [(ngModel)]="emailregistro">
+              </ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-input type="password" id="contrasena"  labelPlacement="floating" label="contraseña" [(ngModel)]="contrasena">
+              </ion-input>
+            </ion-item>
+            <ion-button color="success" (click)="iniciosesion()">Ingresar</ion-button>
+            <ion-button color="danger" (click)="cancelar()">Cancelar</ion-button>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

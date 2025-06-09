@@ -1,0 +1,7 @@
+{
+  "name": "agenda_turnos",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
