@@ -38,3 +38,109 @@
   </ion-header>
   <ion-content class="ion-padding"></ion-content>
 </div>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Register</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="register-container">
+    <div class="logo-section">
+      <ion-icon name="person-add-outline" size="large"></ion-icon>
+      <h1>Create Account</h1>
+      <p>Fill in your details to get started</p>
+    </div>
+
+    <form [formGroup]="registroForm" (ngSubmit)="onRegister()">
+      <ion-item>
+        <ion-label position="stacked">Username</ion-label>
+        <ion-input
+          type="text"
+          formControlName="username"
+          placeholder="Choose a username">
+        </ion-input>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('username')?.touched && registroForm.get('username')?.errors?.['required']">
+        Username is required
+      </div>
+      <div class="error-message" *ngIf="registroForm.get('username')?.touched && registroForm.get('username')?.errors?.['minlength']">
+        Username must be at least 3 characters
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Email</ion-label>
+        <ion-input
+          type="email"
+          formControlName="email"
+          placeholder="Enter your email">
+        </ion-input>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('email')?.touched && registroForm.get('email')?.errors?.['required']">
+        Email is required
+      </div>
+      <div class="error-message" *ngIf="registroForm.get('email')?.touched && registroForm.get('email')?.errors?.['email']">
+        Please enter a valid email
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Password</ion-label>
+        <ion-input
+          [type]="showPassword ? 'text' : 'password'"
+          formControlName="password"
+          placeholder="Create a password">
+        </ion-input>
+        <ion-button
+          fill="clear"
+          slot="end"
+          (click)="togglePasswordVisibility()">
+          <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('password')?.touched && registroForm.get('password')?.errors?.['required']">
+        Password is required
+      </div>
+      <div class="error-message" *ngIf="registroForm.get('password')?.touched && registroForm.get('password')?.errors?.['minlength']">
+        Password must be at least 6 characters
+      </div>
+
+      <ion-item>
+        <ion-label position="stacked">Confirm Password</ion-label>
+        <ion-input
+          [type]="showConfirmPassword ? 'text' : 'password'"
+          formControlName="confirmPassword"
+          placeholder="Confirm your password">
+        </ion-input>
+        <ion-button
+          fill="clear"
+          slot="end"
+          (click)="toggleConfirmPasswordVisibility()">
+          <ion-icon [name]="showConfirmPassword ? 'eye-off' : 'eye'"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('confirmPassword')?.touched && registroForm.get('confirmPassword')?.errors?.['required']">
+        Please confirm your password
+      </div>
+      <div class="error-message" *ngIf="registroForm.get('confirmPassword')?.touched && registroForm.get('confirmPassword')?.errors?.['passwordMismatch']">
+        Passwords do not match
+      </div>
+
+      <ion-button
+        expand="block"
+        type="submit"
+        [disabled]="!registroForm.valid"
+        class="register-button">
+        Create Account
+      </ion-button>
+    </form>
+
+    <div class="login-link">
+      <p>Already have an account? 
+        <ion-button fill="clear" (click)="goToLogin()">Login here</ion-button>
+      </p>
+    </div>
+  </div>
+</ion-content>

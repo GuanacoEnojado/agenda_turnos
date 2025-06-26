@@ -1,12 +1,22 @@
+<meta name="color-scheme" content="light dark" />
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Turnos por fecha</ion-title>
   </ion-toolbar>
 </ion-header>
-
-<ion-content class="ion-padding">
-  <ion-datetime></ion-datetime>
+<ion-content>
+  <ion-grid>
+    <ion-row class="ion-justify-content-center">
+      <ion-col size-md="6" size-sm="8" size="12">
+        <ion-datetime color="primary" id="datetime" #datetime min="2025-01-01T00:00:00" max="2025-12-31T23:59:59">
+          <ion-buttons slot="buttons">
+            <ion-button color="primary" (click)="botonfecha()">Seleccionar</ion-button>
+          </ion-buttons>
+        </ion-datetime>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>

@@ -1,7 +1,9 @@
-import { Router, RouterModule } from '@angular/router';
-import { Component } from '@angular/core';
-import { AlertController, ToastController } from '@ionic/angular';
-import { FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { AlertController, ToastController, LoadingController } from '@ionic/angular';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
+
 
 @Component({
   selector: 'app-home',
@@ -9,47 +11,62 @@ import { FormControl } from '@angular/forms';
   styleUrls: ['home.page.scss'],
   standalone: false,
 })
-export class HomePage {
-  contrasena: string = "";
-  emailregistro: string= "";
+export class HomePage implements OnInit {
+  loginForm: FormGroup;
+  showPassword = false;
 
+  constructor(
+    private formBuilder: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private loadingController: LoadingController,
+    private alertController: AlertController
+  ) {
+    this.loginForm = this.formBuilder.group({
+      username: ['', [Validators.required, Validators.minLength(5)]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
 
-  constructor(private toastController: ToastController, private alertcontroller: AlertController , private router: Router) {}
-  
-  iniciosesion(){
-    if(this.contrasena == "cocodrilo" && this.emailregistro == "cocodrilo@gmail.com"){
-      this.presentToast("bottom", "Ingreso Exitoso");
+  ngOnInit() {
+    // Si ya está logueado redirige
+    if (this.authService.isAuthenticated()) {
       this.router.navigate(['/main']);
     }
-    else{
-      this.presentAlert("Usuario o contraseña incorrecta")
-      this.contrasena = ''
-      this.emailregistro = ''
+  }
+
+  async onLogin() {
+    if (this.loginForm.valid) {
+      const loading = await this.loadingController.create({
+        message: 'Ingrsando...'
+      });
+      await loading.present();
+
+      const { username, password } = this.loginForm.value;
+      const result = await this.authService.login(username, password);
+
+      await loading.dismiss();
+
+      if (result.success) {
+        this.router.navigate(['/main']);
+      } else {
+        const alert = await this.alertController.create({
+          header: 'Falla en el ingreso debug 3',
+          message: result.message,
+          buttons: ['OK']
+        });
+        await alert.present();
+      }
     }
   }
-  cancelar(){
-    return;
-  }
-  calendarioglobal(){
-    this.router.navigate(['/calendario-global'])
-  }
-async presentToast(position: 'bottom', msj:string) {
-    const toast = await this.toastController.create({
-      message: msj,
-      duration: 1500,
-      position: position,
-    });
 
-    await toast.present();
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
-async presentAlert(msj:string){
-  const alert = await this.alertcontroller.create({
-    header: "Datos incorrectos",
-    message: msj,
-    buttons: ['OK'],
-  });
-  await alert.present();
-}
+
+  goToRegister() {
+    this.router.navigate(['/registro']);
+  }
 }
 
 
