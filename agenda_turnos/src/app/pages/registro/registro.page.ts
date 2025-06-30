@@ -19,51 +19,76 @@ export class RegistroPage implements OnInit {
 
   constructor(private formBuilder: FormBuilder, private authService: AuthService, private loadingController:LoadingController, private alertController:AlertController, private router: Router, private menuCtrl: MenuController) { 
   this.registroForm = this.formBuilder.group({
-    username: ['', [Validators.required, Validators.minLength(5)]], 
+    name: ['', [Validators.required, Validators.minLength(5)]], 
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]], 
-    Confirmpassword: ['', [Validators.required, Validators.minLength(6)]], 
-  }, {Validators: this.passwordMatchValidator});
+    confirmPassword: ['', [Validators.required, Validators.minLength(6)]], 
+  }, {validators: this.passwordMatchValidator});
   }
   ngOnInit() {
   }
   
-passwordMatchValidator(form:FormGroup){
+passwordMatchValidator(form: FormGroup) {
   const password = form.get('password');
-  const confirmpassword = form.get('confirmPassword');
-  if (password && confirmpassword && password.value !== confirmpassword){
-    confirmpassword.setErrors({ passwordMismatch: true});
-    return{ passwordMismatch : true};
-  }
-  else {
+  const confirmPassword = form.get('confirmPassword');
+  if (password && confirmPassword && password.value !== confirmPassword.value) {
+    confirmPassword.setErrors({ passwordMismatch: true });
+    return { passwordMismatch: true };
+  } else {
+    if (confirmPassword?.hasError('passwordMismatch')) {
+      confirmPassword.setErrors(null);
+    }
     return null;
   }
-
 }
-async onRegister(){
-  if (this.registroForm.valid){
-    const loading = await this.loadingController.create({message: 'creando cuenta...'});
-    await loading.present();
+async onRegister() {
+  if (this.registroForm.valid) {    // Omitir controlador de carga para evitar error de chunk
+    // const loading = await this.loadingController.create({message: 'creando cuenta...'});
+    // await loading.present();
+
+    console.log('Starting registration...'); // Log de depuración
     
-    const  {username, email, password } = this.registroForm.value;
-    const result = await this.authService.register({username, email, password});
+    const { name, email, password } = this.registroForm.value;
+    console.log('Registration data:', { name, email, password }); // Log de depuración
+    
+    const result = await this.authService.register({name, email, password});
+    console.log('Registration result:', result); // Log de depuración
 
-    await loading.dismiss();
+    // await loading.dismiss();
 
-    if (result.success){
-      const alert = await this.alertController.create({ header:'success', message:'Cuenta de administrador creada exitosamente ', 
+    if (result.success) {
+      const alert = await this.alertController.create({ 
+        header: 'Éxito', 
+        message: 'Cuenta de administrador creada exitosamente', 
         buttons: [{
           text: 'Ok',
           handler: () => {
-            this.router.navigate(['/home']);}}]
-          });
-          await alert.present();}
-          else {
-            const alert = await this.alertController.create({ header:'Fallo el registro, cuek', message: result.message, buttons:['Ok']});
-            await alert.present();
+            this.router.navigate(['/home']);
           }
-        }
-      }
+        }]
+      });
+      await alert.present();
+    } else {
+      const alert = await this.alertController.create({ 
+        header: 'Error en el registro', 
+        message: result.message, 
+        buttons: ['Ok']
+      });
+      await alert.present();
+    }
+  } else {
+    console.log('Form is invalid:', this.registroForm.errors); // Debug log
+    console.log('Form values:', this.registroForm.value); // Debug log
+    console.log('Form status:', this.registroForm.status); // Debug log
+    
+    const alert = await this.alertController.create({ 
+      header: 'Formulario inválido', 
+      message: 'Por favor complete todos los campos correctamente', 
+      buttons: ['Ok']
+    });
+    await alert.present();
+  }
+}
     
   
 

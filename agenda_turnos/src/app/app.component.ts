@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
+import { AuthService } from './services/auth.service';
+import { User } from './services/datos';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -8,8 +11,23 @@ import { MenuController } from '@ionic/angular';
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent {
-  constructor(private router: Router, private menuCtrl: MenuController) {}
+export class AppComponent implements OnInit {
+  currentUser$: Observable<User | null>;
+  currentUser: User | null = null;
+
+  constructor(
+    private router: Router, 
+    private menuCtrl: MenuController,
+    private authService: AuthService
+  ) {
+    this.currentUser$ = this.authService.currentUser$;
+  }
+
+  ngOnInit() {
+    this.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
 
   async calendarioglobal(){
     await this.menuCtrl.close();
@@ -33,6 +51,11 @@ export class AppComponent {
   
   async registrofuncionario(){
     await this.menuCtrl.close();
+    this.router.navigate(['/registrofuncionario']);
+  }
+  
+  async registroUsuario(){
+    await this.menuCtrl.close();
     this.router.navigate(['/registro']);
   }
   
@@ -40,7 +63,9 @@ export class AppComponent {
     await this.menuCtrl.close();
     this.router.navigate(['/lista-funcionarios']);
   }
-    async login(){
+
+  async logout(){
+    this.authService.logout();
     await this.menuCtrl.close();
     this.router.navigate(['/home']);
   }

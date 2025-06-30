@@ -3,10 +3,38 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Bienvenido!</ion-title>
+    <ion-title>
+      <span *ngIf="currentUser">Bienvenido, {{ currentUser.name }}!</span>
+      <span *ngIf="!currentUser">Bienvenido!</span>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()" *ngIf="currentUser">
+        <ion-icon name="log-out-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-  
+  <div class="welcome-section" *ngIf="currentUser">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Panel de Administrador</ion-card-title>
+        <ion-card-subtitle>{{ currentUser.email }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Hola {{ currentUser.name }}, bienvenido al sistema de gestión de turnos.</p>
+        <p>Desde aquí puedes administrar funcionarios, consultar calendarios y gestionar turnos.</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+<!-- protección previa al routeguard, ahora solamente redirige al login -->
+  <div class="no-user-section" *ngIf="!currentUser">
+    <ion-card>
+      <ion-card-content>
+        <p>No hay usuario autenticado. Por favor, inicia sesión.</p>
+        <ion-button expand="block" (click)="goToLogin()">Ir a Login</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

@@ -1,0 +1,151 @@
+// Status-based styling for workers
+.status-active {
+  --background: var(--ion-color-success-tint);
+  --color: var(--ion-color-success-contrast);
+  
+  ion-label h2 {
+    color: var(--ion-color-success-shade);
+    font-weight: 600;
+  }
+}
+
+.status-inactive {
+  --background: var(--ion-color-medium-tint);
+  --color: var(--ion-color-medium-contrast);
+  opacity: 0.7;
+  
+  ion-label {
+    opacity: 0.8;
+  }
+  
+  ion-label h2 {
+    color: var(--ion-color-medium-shade);
+    text-decoration: line-through;
+  }
+}
+
+.status-medical {
+  --background: var(--ion-color-warning-tint);
+  --color: var(--ion-color-warning-contrast);
+  
+  ion-label h2 {
+    color: var(--ion-color-warning-shade);
+    font-weight: 500;
+  }
+}
+
+.status-vacation {
+  --background: var(--ion-color-primary-tint);
+  --color: var(--ion-color-primary-contrast);
+  
+  ion-label h2 {
+    color: var(--ion-color-primary-shade);
+    font-weight: 500;
+  }
+}
+
+.status-suspended {
+  --background: var(--ion-color-danger-tint);
+  --color: var(--ion-color-danger-contrast);
+  
+  ion-label h2 {
+    color: var(--ion-color-danger-shade);
+    font-weight: 600;
+  }
+}
+
+// Shift status styling
+.shift-status {
+  font-size: 0.85rem;
+  margin-top: 4px;
+  
+  .pending {
+    color: var(--ion-color-warning);
+    font-style: italic;
+    font-weight: 500;
+  }
+}
+
+// Empty state styling
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  
+  ion-icon {
+    color: var(--ion-color-medium);
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    color: var(--ion-color-medium-shade);
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+  }
+}
+
+// Modal styling
+ion-modal {
+  --height: 90%;
+}
+
+// Form styling
+.button-container {
+  margin-top: 2rem;
+  padding: 0 1rem;
+  
+  ion-button {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.error-message {
+  color: var(--ion-color-danger);
+  font-size: 0.8rem;
+  margin: 0.25rem 0 0.5rem 1rem;
+}
+
+// Search bar styling
+ion-searchbar {
+  --background: var(--ion-color-light);
+  --border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+// List item spacing
+ion-list {
+  ion-item {
+    --padding-start: 16px;
+    --padding-end: 16px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    
+    ion-avatar {
+      margin-right: 16px;
+    }
+    
+    ion-badge {
+      margin-left: 8px;
+    }
+  }
+}
+
+// Header styling
+ion-header {
+  ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+  }
+}
+
+// Card styling in modal
+ion-card {
+  margin-bottom: 1rem;
+  
+  ion-card-content {
+    padding: 1rem;
+  }
+}

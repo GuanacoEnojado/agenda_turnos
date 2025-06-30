@@ -3,12 +3,255 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Lista Funcionarios</ion-title>
+    <ion-title>Lista de Funcionarios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadTrabajadores()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
-    <ion-list>
+  <!-- Barra de busqueda. Debería ejecutar el metodo onSearchChange y acudir a la api en cada tecla pulsada -->
+  <ion-searchbar 
+    [(ngModel)]="searchTerm" 
+    (ionInput)="onSearchChange()"
+    placeholder="Buscar funcionarios..."
+    show-clear-button="focus">
+  </ion-searchbar>
 
-    </ion-list>
+  <!-- Lista -->
+  <ion-list>
+    <ion-item 
+      *ngFor="let trabajador of filteredTrabajadores" 
+      button
+      (click)="openEditModal(trabajador)"
+      [class]="getStatusClass(trabajador.estado)">
+      
+      <!-- Avatar -->
+      <ion-avatar slot="start">
+        <ion-icon 
+          *ngIf="!trabajador.avatarUrl" 
+          name="person-circle-outline" 
+          size="large">
+        </ion-icon>
+        <img 
+          *ngIf="trabajador.avatarUrl" 
+          [src]="trabajador.avatarUrl" 
+          [alt]="trabajador.Name1 + ' ' + trabajador.Name2">
+      </ion-avatar>
+
+      <!-- Info principal sin referencia de si está en turno o no -->
+      <ion-label>
+        <h2>{{ trabajador.Name1 }} {{ trabajador.Name2 }}</h2>
+        <p>{{ formatTurno(trabajador.turno) }}</p>
+        <p>{{ formatNivel(trabajador.nivel) }}</p>
+        <p class="shift-status">En turno: <span class="pending">Pendiente</span></p>
+      </ion-label>
+
+      <!-- Estado -->
+      <ion-badge 
+        [color]="getStatusColor(trabajador.estado)" 
+        slot="end">
+        <ion-icon 
+          [name]="getStatusIcon(trabajador.estado)" 
+          size="small">
+        </ion-icon>
+        {{ trabajador.estado | titlecase }}
+      </ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <!-- Sin funcionarios encontrados = 0 largo -->
+  <div *ngIf="filteredTrabajadores.length === 0" class="empty-state">
+    <ion-icon name="people-outline" size="large"></ion-icon>
+    <h3>No se encontraron funcionarios</h3>
+    <p>{{ searchTerm ? 'Intenta con diferentes términos de búsqueda' : 'No hay funcionarios registrados' }}</p>
+  </div>
 </ion-content>
+
+<!-- Modal de edición -->
+<ion-modal [isOpen]="isEditModalOpen" (willDismiss)="closeEditModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Editar Funcionario</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeEditModal()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <form [formGroup]="editForm" *ngIf="selectedTrabajador">
+        
+        <!-- card  -->
+        <ion-card>
+          <ion-card-content>
+            <ion-item lines="none">
+              <ion-avatar slot="start">
+                <ion-icon 
+                  *ngIf="!selectedTrabajador.avatarUrl" 
+                  name="person-circle-outline" 
+                  size="large">
+                </ion-icon>
+                <img 
+                  *ngIf="selectedTrabajador.avatarUrl" 
+                  [src]="selectedTrabajador.avatarUrl" 
+                  [alt]="selectedTrabajador.Name1 + ' ' + selectedTrabajador.Name2">
+              </ion-avatar>
+              <ion-label>
+                <h2>ID: {{ selectedTrabajador.id }}</h2>
+                <p>Funcionario desde: {{ selectedTrabajador.fecha_ingreso | date:'dd/MM/yyyy' }}</p>
+              </ion-label>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- INPUTS -->
+        <ion-item>
+          <ion-label position="stacked">Primer Nombre *</ion-label>
+          <ion-input
+            type="text"
+            formControlName="Name1"
+            placeholder="Ingrese el primer nombre">
+          </ion-input>
+        </ion-item>
+        <div class="error-message" *ngIf="editForm.get('Name1')?.touched && editForm.get('Name1')?.errors?.['required']">
+          El primer nombre es obligatorio
+        </div>
+
+        <ion-item>
+          <ion-label position="stacked">Segundo Nombre *</ion-label>
+          <ion-input
+            type="text"
+            formControlName="Name2"
+            placeholder="Ingrese el segundo nombre">
+          </ion-input>
+        </ion-item>
+        <div class="error-message" *ngIf="editForm.get('Name2')?.touched && editForm.get('Name2')?.errors?.['required']">
+          El segundo nombre es obligatorio
+        </div>
+
+        <ion-item>
+          <ion-label position="stacked">Email *</ion-label>
+          <ion-input
+            type="email"
+            formControlName="email"
+            placeholder="Ingrese el email">
+          </ion-input>
+        </ion-item>
+        <div class="error-message" *ngIf="editForm.get('email')?.touched && editForm.get('email')?.errors?.['required']">
+          El email es obligatorio
+        </div>
+        <div class="error-message" *ngIf="editForm.get('email')?.touched && editForm.get('email')?.errors?.['email']">
+          Ingrese un email válido
+        </div>
+
+        <ion-item>
+          <ion-label position="stacked">Fecha de Nacimiento *</ion-label>
+          <ion-datetime
+            formControlName="fecha_nacimiento"
+            presentation="date"
+            placeholder="Seleccione la fecha de nacimiento">
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Fecha de Ingreso *</ion-label>
+          <ion-datetime
+            formControlName="fecha_ingreso"
+            presentation="date"
+            placeholder="Seleccione la fecha de ingreso">
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Turno *</ion-label>
+          <ion-select formControlName="turno" placeholder="Seleccione el turno">
+            <ion-select-option value="4to_turno_modificado">4to Turno Modificado</ion-select-option>
+            <ion-select-option value="3er_turno">3er Turno</ion-select-option>
+            <ion-select-option value="4to_turno">4to Turno</ion-select-option>
+            <ion-select-option value="diurno_hospital">Diurno Hospital</ion-select-option>
+            <ion-select-option value="diurno_empresa">Diurno Empresa</ion-select-option>
+            <ion-select-option value="volante">Volante</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Fecha Inicio Turno *</ion-label>
+          <ion-datetime
+            formControlName="fechainicioturno"
+            presentation="date"
+            placeholder="Seleccione la fecha de inicio del turno">
+          </ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Tipo de Contrato *</ion-label>
+          <ion-select formControlName="contrato" placeholder="Seleccione el tipo de contrato">
+            <ion-select-option value="contrato_indefinido">Contrato Indefinido</ion-select-option>
+            <ion-select-option value="contrato_fijo">Contrato Fijo</ion-select-option>
+            <ion-select-option value="planta">Planta</ion-select-option>
+            <ion-select-option value="contrata">Contrata</ion-select-option>
+            <ion-select-option value="volante">Volante</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Estado *</ion-label>
+          <ion-select formControlName="estado" placeholder="Seleccione el estado">
+            <ion-select-option value="activo">Activo</ion-select-option>
+            <ion-select-option value="inactivo">Inactivo</ion-select-option>
+            <ion-select-option value="licencia">Licencia Médica</ion-select-option>
+            <ion-select-option value="vacaciones">Vacaciones</ion-select-option>
+            <ion-select-option value="suspendido">Suspendido</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Nivel *</ion-label>
+          <ion-select formControlName="nivel" placeholder="Seleccione el nivel">
+            <ion-select-option value="tecnico">Técnico</ion-select-option>
+            <ion-select-option value="manipulador">Manipulador</ion-select-option>
+            <ion-select-option value="auxiliar">Auxiliar</ion-select-option>
+            <ion-select-option value="profesional">Profesional</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">URL del Avatar (opcional)</ion-label>
+          <ion-input
+            type="url"
+            formControlName="avatarUrl"
+            placeholder="Ingrese URL de la imagen">
+          </ion-input>
+        </ion-item>
+
+        <!-- Botones -->
+        <div class="button-container">
+          <ion-button 
+            expand="block" 
+            (click)="saveChanges()" 
+            [disabled]="!editForm.valid"
+            color="primary">
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            Guardar Cambios
+          </ion-button>
+          
+          <ion-button 
+            expand="block" 
+            fill="outline" 
+            (click)="closeEditModal()"
+            color="medium">
+            <ion-icon name="close-outline" slot="start"></ion-icon>
+            Cancelar
+          </ion-button>
+        </div>
+      </form>
+    </ion-content>
+  </ng-template>
+</ion-modal>

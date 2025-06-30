@@ -1,0 +1,234 @@
+<ion-menu contentId="main-content" autoHide="false">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menu Content</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding">
+    <ion-list>
+      <ion-item (click)="listafuncionario()">
+        <ion-label>Busqueda por funcionario</ion-label>
+      </ion-item>
+      <ion-item (click)="calendarioglobal()">
+        <ion-label>Busqueda por día</ion-label>
+      </ion-item>
+      <ion-item (click)="registrofuncionario()">
+        <ion-label>Registrar funcionario</ion-label>
+      </ion-item>
+      <ion-item (click)="eliminarfuncionario()">
+        <ion-label>Inhabilitar funcionario</ion-label>
+      </ion-item>
+      <ion-item (click)="preferencias()">
+        <ion-label>Preferencias</ion-label>
+      </ion-item>
+      <ion-item (click)="main()">
+        <ion-label>Volver al inicio</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<div class="ion-page" id="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding"></ion-content>
+</div>
+
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/main"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Registrar Funcionario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="register-container">
+    <div class="logo-section">
+      <ion-icon name="person-add-outline" size="large"></ion-icon>
+      <h1>Nuevo Funcionario</h1>
+      <p>Complete la información del funcionario</p>
+    </div>
+
+    <form [formGroup]="registroForm" (ngSubmit)="onRegister()">
+      <!-- Primer Nombre -->
+      <ion-item>
+        <ion-label position="stacked">Primer Nombre *</ion-label>
+        <ion-input
+          type="text"
+          formControlName="Name1"
+          placeholder="Ingrese el primer nombre">
+        </ion-input>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('Name1')?.touched && registroForm.get('Name1')?.errors?.['required']">
+        El primer nombre es obligatorio
+      </div>
+      <div class="error-message" *ngIf="registroForm.get('Name1')?.touched && registroForm.get('Name1')?.errors?.['minlength']">
+        El primer nombre debe tener al menos 2 caracteres
+      </div>
+
+      <!-- Segundo Nombre -->
+      <ion-item>
+        <ion-label position="stacked">Segundo Nombre *</ion-label>
+        <ion-input
+          type="text"
+          formControlName="Name2"
+          placeholder="Ingrese el segundo nombre">
+        </ion-input>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('Name2')?.touched && registroForm.get('Name2')?.errors?.['required']">
+        El segundo nombre es obligatorio
+      </div>
+      <div class="error-message" *ngIf="registroForm.get('Name2')?.touched && registroForm.get('Name2')?.errors?.['minlength']">
+        El segundo nombre debe tener al menos 2 caracteres
+      </div>
+
+      <!-- Email -->
+      <ion-item>
+        <ion-label position="stacked">Email *</ion-label>
+        <ion-input
+          type="email"
+          formControlName="email"
+          placeholder="Ingrese el email">
+        </ion-input>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('email')?.touched && registroForm.get('email')?.errors?.['required']">
+        El email es obligatorio
+      </div>
+      <div class="error-message" *ngIf="registroForm.get('email')?.touched && registroForm.get('email')?.errors?.['email']">
+        Ingrese un email válido
+      </div>
+
+      <!-- Fecha de Nacimiento -->
+      <ion-item>
+        <ion-label position="stacked">Fecha de Nacimiento *</ion-label>
+        <ion-datetime
+          formControlName="fecha_nacimiento"
+          presentation="date"
+          placeholder="Seleccione la fecha de nacimiento">
+        </ion-datetime>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('fecha_nacimiento')?.touched && registroForm.get('fecha_nacimiento')?.errors?.['required']">
+        La fecha de nacimiento es obligatoria
+      </div>
+
+      <!-- Fecha de Ingreso -->
+      <ion-item>
+        <ion-label position="stacked">Fecha de Ingreso *</ion-label>
+        <ion-datetime
+          formControlName="fecha_ingreso"
+          presentation="date"
+          placeholder="Seleccione la fecha de ingreso">
+        </ion-datetime>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('fecha_ingreso')?.touched && registroForm.get('fecha_ingreso')?.errors?.['required']">
+        La fecha de ingreso es obligatoria
+      </div>
+
+      <!-- Turno -->
+      <ion-item>
+        <ion-label position="stacked">Turno *</ion-label>
+        <ion-select formControlName="turno" placeholder="Seleccione el turno">
+          <ion-select-option value="4to_turno_modificado">4to Turno Modificado</ion-select-option>
+          <ion-select-option value="3er_turno">3er Turno</ion-select-option>
+          <ion-select-option value="4to_turno">4to Turno</ion-select-option>
+          <ion-select-option value="diurno_hospital">Diurno Hospital</ion-select-option>
+          <ion-select-option value="diurno_empresa">Diurno Empresa</ion-select-option>
+          <ion-select-option value="volante">Volante</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('turno')?.touched && registroForm.get('turno')?.errors?.['required']">
+        El turno es obligatorio
+      </div>
+
+      <!-- Fecha Inicio Turno -->
+      <ion-item>
+        <ion-label position="stacked">Fecha Inicio Turno *</ion-label>
+        <ion-datetime
+          formControlName="fechainicioturno"
+          presentation="date"
+          placeholder="Seleccione la fecha de inicio del turno">
+        </ion-datetime>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('fechainicioturno')?.touched && registroForm.get('fechainicioturno')?.errors?.['required']">
+        La fecha de inicio del turno es obligatoria
+      </div>
+
+      <!-- Contrato -->
+      <ion-item>
+        <ion-label position="stacked">Tipo de Contrato *</ion-label>
+        <ion-select formControlName="contrato" placeholder="Seleccione el tipo de contrato">
+          <ion-select-option value="contrato_indefinido">Contrato Indefinido</ion-select-option>
+          <ion-select-option value="contrato_fijo">Contrato Fijo</ion-select-option>
+          <ion-select-option value="planta">Planta</ion-select-option>
+          <ion-select-option value="contrata">Contrata</ion-select-option>
+          <ion-select-option value="volante">Volante</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('contrato')?.touched && registroForm.get('contrato')?.errors?.['required']">
+        El tipo de contrato es obligatorio
+      </div>
+
+      <!-- Estado -->
+      <ion-item>
+        <ion-label position="stacked">Estado *</ion-label>
+        <ion-select formControlName="estado" placeholder="Seleccione el estado">
+          <ion-select-option value="activo">Activo</ion-select-option>
+          <ion-select-option value="inactivo">Inactivo</ion-select-option>
+          <ion-select-option value="licencia">Licencia</ion-select-option>
+          <ion-select-option value="vacaciones">Vacaciones</ion-select-option>
+          <ion-select-option value="suspendido">Suspendido</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('estado')?.touched && registroForm.get('estado')?.errors?.['required']">
+        El estado es obligatorio
+      </div>
+
+      <!-- Nivel -->
+      <ion-item>
+        <ion-label position="stacked">Nivel *</ion-label>
+        <ion-select formControlName="nivel" placeholder="Seleccione el nivel">
+          <ion-select-option value="tecnico">Técnico</ion-select-option>
+          <ion-select-option value="manipulador">Manipulador</ion-select-option>
+          <ion-select-option value="auxiliar">Auxiliar</ion-select-option>
+          <ion-select-option value="profesional">Profesional</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <div class="error-message" *ngIf="registroForm.get('nivel')?.touched && registroForm.get('nivel')?.errors?.['required']">
+        El nivel es obligatorio
+      </div>
+
+      <!-- Avatar URL (opcional) -->
+      <ion-item>
+        <ion-label position="stacked">URL del Avatar (opcional)</ion-label>
+        <ion-input
+          type="url"
+          formControlName="avatarUrl"
+          placeholder="Ingrese URL de la imagen">
+        </ion-input>
+      </ion-item>
+
+      <!-- Botón de Envío -->
+      <ion-button
+        expand="block"
+        type="submit"
+        [disabled]="!registroForm.valid"
+        class="register-button">
+        Registrar Funcionario
+      </ion-button>
+    </form>
+
+    <div class="back-link">
+      <p>
+        <ion-button fill="clear" (click)="goToMain()">Volver al menú principal</ion-button>
+      </p>
+    </div>
+  </div>
+</ion-content>

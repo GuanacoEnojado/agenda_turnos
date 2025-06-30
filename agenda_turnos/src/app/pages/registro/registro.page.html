@@ -57,18 +57,18 @@
 
     <form [formGroup]="registroForm" (ngSubmit)="onRegister()">
       <ion-item>
-        <ion-label position="stacked">Username</ion-label>
+        <ion-label position="stacked">Name</ion-label>
         <ion-input
           type="text"
-          formControlName="username"
-          placeholder="Choose a username">
+          formControlName="name"
+          placeholder="Choose a name">
         </ion-input>
       </ion-item>
-      <div class="error-message" *ngIf="registroForm.get('username')?.touched && registroForm.get('username')?.errors?.['required']">
-        Username is required
+      <div class="error-message" *ngIf="registroForm.get('name')?.touched && registroForm.get('name')?.errors?.['required']">
+        Name is required
       </div>
-      <div class="error-message" *ngIf="registroForm.get('username')?.touched && registroForm.get('username')?.errors?.['minlength']">
-        Username must be at least 3 characters
+      <div class="error-message" *ngIf="registroForm.get('name')?.touched && registroForm.get('name')?.errors?.['minlength']">
+        Name must be at least 5 characters
       </div>
 
       <ion-item>

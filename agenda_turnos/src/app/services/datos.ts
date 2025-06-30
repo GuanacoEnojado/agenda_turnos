@@ -1,4 +1,3 @@
-
 export interface trabajador {
   id: number;
   Name1: string;
@@ -10,15 +9,17 @@ export interface trabajador {
   fechainicioturno: Date;
   contrato: string;
   estado: string;
+  nivel: string;
   avatarUrl?: string;
 }
 
 export interface User {
   id?: number;
-  username: string;
+  name: string;        // Esto coincide con el backend PostgreSQL
   email: string;
   password: string;
-  created_at?: string;
+  createdAt?: string;  // Timestamp estándar de PostgreSQL, siempre puede ser útil.
+  updatedAt?: string;  
 }
 
 export type turno = 
@@ -39,6 +40,11 @@ export type estado =
     | 'inactivo'
     | 'licencia'
     | 'vacaciones'
-    | 'suspendido'
+    | 'suspendido';
+export type nivel =
+    | 'tecnico'
+    | 'manipulador'
+    | 'auxiliar'
+    | 'profesional';
 
 

@@ -4,9 +4,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { ListaFuncionariosPageRoutingModule } from './lista-funcionarios-routing.module';
+import { RegistrofuncionarioPageRoutingModule } from './registrofuncionario-routing.module';
 
-import { ListaFuncionariosPage } from './lista-funcionarios.page';
+import { RegistroFuncionarioPage } from './registrofuncionario.page';
 
 @NgModule({
   imports: [
@@ -14,8 +14,8 @@ import { ListaFuncionariosPage } from './lista-funcionarios.page';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    ListaFuncionariosPageRoutingModule
+    RegistrofuncionarioPageRoutingModule
   ],
-  declarations: [ListaFuncionariosPage]
+  declarations: [RegistroFuncionarioPage]
 })
-export class ListaFuncionariosPageModule {}
+export class RegistrofuncionarioPageModule {}
