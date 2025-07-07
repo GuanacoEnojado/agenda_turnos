@@ -33,21 +33,21 @@ export class ShiftCalculatorService {
     ['4to_turno_modificado', {
       turno: '4to_turno_modificado',
       cycleLength: 4,
-      pattern: [ShiftType.DAY_IN, ShiftType.DAY_IN, ShiftType.DAY_OUT, ShiftType.DAY_OUT]
+      pattern: [ShiftType.DAY_IN, ShiftType.DAY_IN, ShiftType.OFF, ShiftType.OFF]
     }],
     
     // 3er_turno: día trabaja, día trabaja, noche trabaja (día siguiente), noche trabaja, día libre, día libre (ciclo de 6 días)
     ['3er_turno', {
       turno: '3er_turno', 
       cycleLength: 6,
-      pattern: [ShiftType.DAY_IN, ShiftType.DAY_IN, ShiftType.NIGHT_IN, ShiftType.NIGHT_IN, ShiftType.DAY_OUT, ShiftType.DAY_OUT]
+      pattern: [ShiftType.DAY_IN, ShiftType.DAY_IN, ShiftType.NIGHT_IN, ShiftType.NIGHT_IN, ShiftType.OFF, ShiftType.OFF]
     }],
     
     // 4to_turno: día trabaja, noche trabaja (día siguiente), día libre, día libre (ciclo de 4 días)
     ['4to_turno', {
       turno: '4to_turno',
       cycleLength: 4, 
-      pattern: [ShiftType.DAY_IN, ShiftType.NIGHT_IN, ShiftType.DAY_OUT, ShiftType.DAY_OUT]
+      pattern: [ShiftType.DAY_IN, ShiftType.NIGHT_IN, ShiftType.OFF, ShiftType.OFF]
     }],
     
     // diurno_hospital: Lunes a Viernes, 8 AM a 5 PM
@@ -234,6 +234,7 @@ export class ShiftCalculatorService {
     }
   }
 
+  
   /**
    * Obtener el color del tipo de turno para la UI
    */

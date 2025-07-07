@@ -62,14 +62,14 @@
                 [alt]="workerInfo.trabajador.Name1 + ' ' + workerInfo.trabajador.Name2">
             </ion-avatar>
 
-            <!-- Worker Info -->
+            <!-- Info de trabajador -->
             <ion-label>
               <h2>{{ workerInfo.trabajador.Name1 }} {{ workerInfo.trabajador.Name2 }}</h2>
               <p>{{ formatTurno(workerInfo.trabajador.turno) }}</p>
               <p>{{ workerInfo.trabajador.nivel | titlecase }}</p>
             </ion-label>
 
-            <!-- Shift Status Badge -->
+            <!-- Badge de turno -->
             <ion-badge 
               [color]="getShiftColor(workerInfo.shiftStatus)" 
               slot="end">
@@ -121,7 +121,7 @@
               <p><strong>Debería estar en:</strong> {{ getShiftDisplayName(workerInfo.shiftStatus) }}</p>
             </ion-label>
 
-            <!-- Absence Reason Badge -->
+            <!-- Marcador de ausente -->
             <ion-badge 
               color="danger" 
               slot="end">
