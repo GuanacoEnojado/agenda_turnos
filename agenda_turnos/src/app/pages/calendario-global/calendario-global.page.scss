@@ -1,0 +1,124 @@
+ion-datetime {
+  --background: #fff1f2;
+  --background-rgb: 255, 241, 242;
+  border-radius: 16px;
+  box-shadow: rgba(var(--ion-color-rose-rgb), 0.3) 0px 10px 15px -3px;
+}
+
+// Empty state styling
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  
+  ion-icon {
+    color: var(--ion-color-medium);
+    margin-bottom: 1rem;
+  }
+  
+  h3 {
+    color: var(--ion-color-medium-shade);
+    margin-bottom: 0.5rem;
+  }
+  
+  p {
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+  }
+}
+
+// Summary statistics styling
+.summary-stat {
+  text-align: center;
+  padding: 1rem;
+  
+  ion-icon {
+    margin-bottom: 0.5rem;
+  }
+  
+  h2 {
+    margin: 0.5rem 0;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+  
+  p {
+    margin: 0;
+    color: var(--ion-color-medium);
+    font-size: 0.9rem;
+  }
+}
+
+// Absent worker styling
+.absent-worker {
+  opacity: 0.8;
+  
+  ion-label {
+    opacity: 0.9;
+  }
+  
+  .absent-avatar {
+    filter: grayscale(50%);
+    opacity: 0.7;
+  }
+}
+
+// Free worker styling
+.free-worker {
+  opacity: 0.9;
+  
+  ion-label {
+    opacity: 0.8;
+  }
+  
+  .free-avatar {
+    filter: grayscale(30%);
+    opacity: 0.8;
+  }
+}
+
+// Card styling
+ion-card {
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  
+  ion-card-header {
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      
+      ion-icon {
+        flex-shrink: 0;
+      }
+    }
+  }
+}
+
+// List item styling
+ion-item {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  
+  ion-avatar {
+    margin-right: 16px;
+  }
+  
+  ion-badge {
+    margin-left: 8px;
+    
+    ion-icon {
+      margin-right: 4px;
+    }
+  }
+}
+
+// Header styling
+ion-header {
+  ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+  }
+}
+

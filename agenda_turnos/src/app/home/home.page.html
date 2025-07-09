@@ -1,27 +1,30 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Login
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
   <ion-grid>
     <ion-row class="ion-justify-content-center">
-      <ion-col size="9"  size-md="6">
-        <ion-card>
-          <ion-card-header>Login</ion-card-header>
+      <ion-col size="8"  size-md="4">
+        <ion-card style="position: relative; margin-top: 100px" color="primary">
+          <ion-card-header><h3 class="ion-margin-horizontal">Login</h3></ion-card-header>
+
+            <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
             <ion-item>
-              <ion-input type="email" id="emailregistro" placeholder="correo@dominio.com" labelPlacement="floating" label="correo" [(ngModel)]="emailregistro">
+              <ion-input type="text"  label="ingresa Email" labelPlacement="floating"  formControlName="username" placeholder="Ingresa Email">
               </ion-input>
             </ion-item>
+            <div class="error-message" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.errors?.['required']">Se requiere un Email o usuario</div>
+            <div class="error-message" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.errors?.['minlength']">5 caracteres ñahahaha</div>
             <ion-item>
-              <ion-input type="password" id="contrasena"  labelPlacement="floating" label="contraseña" [(ngModel)]="contrasena">
-              </ion-input>
+              <ion-label position="stacked">Contraseña</ion-label>
+              <ion-input [type]="showPassword ? 'text': 'contraseña'" formControlName="password" placeholder="Ingresa la contraseña"></ion-input>
+              <ion-button fill="clear" slot="end" (click)="togglePasswordVisibility()"><ion-icon [name]="showPassword ? 'eye-off':'eye'"></ion-icon></ion-button>
             </ion-item>
-            <ion-button color="success" (click)="iniciosesion()">Ingresar</ion-button>
-            <ion-button color="danger" (click)="cancelar()">Cancelar</ion-button>
+            <div class="error-message" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']">Se requiere la contraseña</div>
+            <div class="error-message" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['minlength']">Contraseña debe ser al menos de 6 caracteres</div>
+            <ion-button expand="block" type="submit" [disabled]="!loginForm.valid" class="login-button">Login</ion-button>
+          </form>
+
+          <div class="register-link"> 
+              <ion-button fill="clear" (click)="goToRegister()">Registrarse</ion-button>
+          </div>
         </ion-card>
       </ion-col>
     </ion-row>
