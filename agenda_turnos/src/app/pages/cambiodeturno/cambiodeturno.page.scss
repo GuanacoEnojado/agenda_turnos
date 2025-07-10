@@ -1,0 +1,116 @@
+// Shift Change Page Styles
+
+.shift-selectable {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.shift-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.shift-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+ion-card {
+  margin: 8px;
+  
+  &.shift-selectable {
+    border: 2px solid transparent;
+    
+    &:hover {
+      border-color: var(--ion-color-primary);
+    }
+  }
+  
+  &.shift-disabled {
+    background-color: var(--ion-color-light);
+  }
+}
+
+// Worker list styling
+ion-avatar {
+  width: 48px;
+  height: 48px;
+}
+
+// Step indicators and workflow
+.step-header {
+  padding: 16px;
+  text-align: center;
+  
+  h2 {
+    margin: 0;
+    color: var(--ion-color-primary);
+  }
+  
+  p {
+    margin: 8px 0 0 0;
+    color: var(--ion-color-medium);
+  }
+}
+
+// Confirmation styling
+.text-warning {
+  color: var(--ion-color-warning);
+}
+
+.text-primary {
+  color: var(--ion-color-primary);
+}
+
+// Grid improvements
+ion-grid {
+  padding: 0;
+}
+
+ion-col {
+  padding: 4px;
+}
+
+// Badge styling
+ion-badge {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+}
+
+// Button improvements
+ion-button {
+  margin: 8px 0;
+}
+
+// Responsive improvements
+@media (max-width: 768px) {
+  ion-card {
+    margin: 4px;
+  }
+  
+  .shift-indicator {
+    top: 4px;
+    right: 4px;
+    padding: 2px;
+    
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+}

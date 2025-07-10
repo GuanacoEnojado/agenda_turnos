@@ -1,0 +1,240 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Cambio de Turno</ion-title>
+    <ion-buttons slot="start" *ngIf="currentStep !== 'select-worker'">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  
+  <!-- Step 1: Select Original Worker -->
+  <div *ngIf="currentStep === 'select-worker'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Seleccionar Trabajador</ion-card-title>
+        <ion-card-subtitle>Elige el trabajador que quiere cambiar su turno</ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+
+    <ion-list>
+      <ion-item button *ngFor="let worker of allWorkers$ | async" (click)="selectOriginalWorker(worker)">
+        <ion-avatar slot="start">
+          <img [src]="worker.avatarUrl || 'assets/icon/favicon.png'" [alt]="worker.Name1">
+        </ion-avatar>
+        <ion-label>
+          <h2>{{worker.Name1}} {{worker.Name2}}</h2>
+          <p>{{worker.turno}} - {{worker.nivel}}</p>
+          <p>Estado: {{worker.estado}}</p>
+        </ion-label>
+        <ion-badge [color]="worker.estado === 'activo' ? 'success' : worker.estado === 'activoextra' ? 'primary' : 'medium'" slot="end">
+          {{worker.estado}}
+        </ion-badge>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Step 2: Select Original Worker's Shift -->
+  <div *ngIf="currentStep === 'select-original-shift' && selectedOriginalWorker">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Turnos de {{selectedOriginalWorker.Name1}} {{selectedOriginalWorker.Name2}}</ion-card-title>
+        <ion-card-subtitle>Selecciona el turno que quieres cambiar</ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" size-md="4" size-lg="3" *ngFor="let shift of originalWorkerShifts">
+          <ion-card 
+            [button]="shift.isSelectable" 
+            [disabled]="!shift.isSelectable"
+            (click)="shift.isSelectable && selectOriginalShift(shift)"
+            [class.shift-selectable]="shift.isSelectable"
+            [class.shift-disabled]="!shift.isSelectable">
+            
+            <ion-card-header>
+              <ion-card-subtitle>{{formatDate(shift.date)}}</ion-card-subtitle>
+              <ion-card-title>
+                <ion-badge [color]="getShiftColor(shift)">
+                  {{getShiftDisplayName(shift)}}
+                </ion-badge>
+              </ion-card-title>
+            </ion-card-header>
+            
+            <ion-card-content *ngIf="!shift.isSelectable">
+              <ion-text color="medium">
+                <p>{{shift.conflictReason}}</p>
+              </ion-text>
+            </ion-card-content>
+            
+            <!-- Day/Night Indicator -->
+            <div class="shift-indicator" *ngIf="shift.isSelectable">
+              <ion-icon 
+                [name]="getShiftDisplayInfo(shift.shiftInfo.shiftStatus).isDayShift ? 'sunny' : 'moon'"
+                [color]="getShiftDisplayInfo(shift.shiftInfo.shiftStatus).isDayShift ? 'warning' : 'primary'">
+              </ion-icon>
+            </div>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Step 3: Select Target Worker -->
+  <div *ngIf="currentStep === 'select-target-worker' && selectedShiftDate">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Trabajadores Compatibles</ion-card-title>
+        <ion-card-subtitle>
+          Mismo turno ({{selectedOriginalWorker?.turno}}) y nivel ({{selectedOriginalWorker?.nivel}})
+        </ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-content>
+        <ion-text color="primary">
+          <p><strong>Turno seleccionado:</strong> {{formatDate(selectedShiftDate)}} - {{getShiftDisplayName(selectedShiftInfo!)}}</p>
+        </ion-text>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-list>
+      <ion-item button *ngFor="let eligibleWorker of eligibleWorkers" (click)="selectTargetWorker(eligibleWorker)">
+        <ion-avatar slot="start">
+          <img [src]="eligibleWorker.trabajador.avatarUrl || 'assets/icon/favicon.png'" [alt]="eligibleWorker.trabajador.Name1">
+        </ion-avatar>
+        <ion-label>
+          <h2>{{eligibleWorker.trabajador.Name1}} {{eligibleWorker.trabajador.Name2}}</h2>
+          <p>{{eligibleWorker.trabajador.turno}} - {{eligibleWorker.trabajador.nivel}}</p>
+        </ion-label>
+        <ion-badge color="success" slot="end">
+          {{eligibleWorker.trabajador.estado}}
+        </ion-badge>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Step 4: Select Target Worker's Shift -->
+  <div *ngIf="currentStep === 'select-target-shift' && selectedTargetWorker">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Turnos de {{selectedTargetWorker.Name1}} {{selectedTargetWorker.Name2}}</ion-card-title>
+        <ion-card-subtitle>Selecciona cuándo puede cubrir el turno</ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
+
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6" size-md="4" size-lg="3" *ngFor="let shift of targetWorkerShifts">
+          <ion-card 
+            [button]="shift.isSelectable" 
+            [disabled]="!shift.isSelectable"
+            (click)="shift.isSelectable && selectTargetShift(shift)"
+            [class.shift-selectable]="shift.isSelectable"
+            [class.shift-disabled]="!shift.isSelectable">
+            
+            <ion-card-header>
+              <ion-card-subtitle>{{formatDate(shift.date)}}</ion-card-subtitle>
+              <ion-card-title>
+                <ion-badge [color]="getShiftColor(shift)">
+                  {{getShiftDisplayName(shift)}}
+                </ion-badge>
+              </ion-card-title>
+            </ion-card-header>
+            
+            <ion-card-content *ngIf="!shift.isSelectable">
+              <ion-text color="medium">
+                <p>{{shift.conflictReason}}</p>
+              </ion-text>
+            </ion-card-content>
+            
+            <!-- Day/Night Indicator -->
+            <div class="shift-indicator" *ngIf="shift.isSelectable">
+              <ion-icon 
+                [name]="getShiftDisplayInfo(shift.shiftInfo.shiftStatus).isDayShift ? 'sunny' : 'moon'"
+                [color]="getShiftDisplayInfo(shift.shiftInfo.shiftStatus).isDayShift ? 'warning' : 'primary'">
+              </ion-icon>
+            </div>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Step 5: Confirm Shift Change -->
+  <div *ngIf="currentStep === 'confirm-change' && currentShiftChangeRequest">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Confirmar Cambio de Turno</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+
+    <!-- Valid Change -->
+    <ion-card *ngIf="currentShiftChangeRequest.isValidChange" color="success">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="checkmark-circle"></ion-icon>
+          Cambio Válido
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" size-md="6">
+              <h3>Trabajador Original</h3>
+              <p><strong>{{currentShiftChangeRequest.originalWorker.Name1}} {{currentShiftChangeRequest.originalWorker.Name2}}</strong></p>
+              <p>Fecha: {{formatDate(currentShiftChangeRequest.shiftDate)}}</p>
+              <p>Turno: {{getShiftDisplayInfo(currentShiftChangeRequest.originalShiftType).name}}</p>
+              <p class="text-warning">→ Quedará como: <strong>Ausente (Cambio de turno)</strong></p>
+            </ion-col>
+            <ion-col size="12" size-md="6">
+              <h3>Trabajador Reemplazo</h3>
+              <p><strong>{{currentShiftChangeRequest.targetWorker.Name1}} {{currentShiftChangeRequest.targetWorker.Name2}}</strong></p>
+              <p>Fecha: {{formatDate(currentShiftChangeRequest.shiftDate)}}</p>
+              <p>Turno: {{getShiftDisplayInfo(currentShiftChangeRequest.targetShiftType).name}}</p>
+              <p class="text-primary">→ Trabajará: <strong>Devolución de turno</strong></p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Invalid Change -->
+    <ion-card *ngIf="!currentShiftChangeRequest.isValidChange" color="danger">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="close-circle"></ion-icon>
+          Cambio No Válido
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p><strong>Motivo:</strong> {{currentShiftChangeRequest.conflictReason}}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Action Buttons -->
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-button expand="block" fill="outline" (click)="cancelShiftChange()">
+            Cancelar
+          </ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button 
+            expand="block" 
+            [disabled]="!currentShiftChangeRequest.isValidChange"
+            (click)="confirmShiftChange()">
+            Confirmar Cambio
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+</ion-content>

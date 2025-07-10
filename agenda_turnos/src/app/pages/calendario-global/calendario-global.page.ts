@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonDatetime, MenuController, LoadingController, AlertController } from '@ionic/angular';
+import { IonDatetime, MenuController, LoadingController, AlertController, ModalController } from '@ionic/angular';
 import { TrabajadoresService } from '../../services/trabajadores.service';
 import { ShiftCalculatorService, WorkerShiftInfo, ShiftType } from '../../services/shift-calculator.service';
+import { ExtraShiftService } from '../../services/extra-shift.service';
 import { trabajador } from '../../services/datos';
 
 @Component({
@@ -20,6 +21,8 @@ export class CalendarioGlobalPage implements OnInit {
   workersOnShift: WorkerShiftInfo[] = [];
   absentWorkers: WorkerShiftInfo[] = [];
   freeWorkers: WorkerShiftInfo[] = [];
+  extraworkers: WorkerShiftInfo[] = [];
+  shiftedworkers: WorkerShiftInfo[] = [];
   allWorkers: trabajador[] = [];
   showResults: boolean = false;
 
@@ -29,7 +32,9 @@ export class CalendarioGlobalPage implements OnInit {
     private trabajadoresService: TrabajadoresService,
     private shiftCalculatorService: ShiftCalculatorService,
     private loadingController: LoadingController,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private modalController: ModalController,
+    private extraShiftService: ExtraShiftService
   ) { }
   
   async ngOnInit() {
@@ -84,6 +89,14 @@ export class CalendarioGlobalPage implements OnInit {
         this.freeWorkers = allWorkerShifts.filter(worker => 
           !worker.isScheduled && !worker.isAbsent
         );
+        
+        this.extraworkers = allWorkerShifts.filter(worker => 
+          !worker.isScheduled && !worker.isAbsent && worker.isExtra
+        );
+
+        this.shiftedworkers = allWorkerShifts.filter(worker => 
+          !worker.isScheduled && !worker.isAbsent && worker.isShifted
+        );
 
         this.showResults = true;
         loading.dismiss();
@@ -91,6 +104,8 @@ export class CalendarioGlobalPage implements OnInit {
         console.log('Workers on shift:', this.workersOnShift.length);
         console.log('Absent workers:', this.absentWorkers.length);
         console.log('Free workers:', this.freeWorkers.length);
+        console.log('Extra workers:', this.extraworkers.length);
+        console.log('Shifted workers:', this.shiftedworkers.length);
         
       } catch (error) {
         loading.dismiss();
@@ -130,11 +145,21 @@ export class CalendarioGlobalPage implements OnInit {
           !worker.isScheduled && !worker.isAbsent
         );
 
+        this.extraworkers = allWorkerShifts.filter(worker => 
+          !worker.isScheduled && !worker.isAbsent && worker.isExtra
+        );
+
+        this.shiftedworkers = allWorkerShifts.filter(worker => 
+          !worker.isScheduled && !worker.isAbsent && worker.isShifted
+        );
+
         this.showResults = true;
         loading.dismiss();
 
         console.log('Workers on shift:', this.workersOnShift.length);
         console.log('Absent workers:', this.absentWorkers.length);
+        console.log('Extra workers:', this.extraworkers.length);
+        console.log('shifted workers:', this.shiftedworkers.length);
         
       } catch (error) {
         loading.dismiss();
@@ -147,11 +172,11 @@ export class CalendarioGlobalPage implements OnInit {
   }
 
   getShiftDisplayName(shiftType: ShiftType): string {
-    return this.shiftCalculatorService.getShiftDisplayName(shiftType);
+    return this.shiftCalculatorService.getShiftDisplayName(shiftType, false, false);
   }
 
   getShiftColor(shiftType: ShiftType): string {
-    return this.shiftCalculatorService.getShiftColor(shiftType);
+    return this.shiftCalculatorService.getShiftColor(shiftType, false, false);
   }
 
   formatTurno(turno: string): string {
@@ -196,5 +221,125 @@ export class CalendarioGlobalPage implements OnInit {
   async listafuncionario(){
     await this.menuCtrl.close();
     this.router.navigate(['/lista-funcionarios']);
+  }
+
+  // Extra shift assignment methods
+  async assignExtraShift(worker: trabajador) {
+    if (!this.selectedDate) {
+      await this.showAlert('Error', 'Debe seleccionar una fecha primero.');
+      return;
+    }
+
+    if (worker.estado === 'activo') {
+      await this.showAlert('Error', 'No se puede asignar turno extra a un trabajador que ya está activo.');
+      return;
+    }
+
+    await this.openExtraShiftModal(worker);
+  }
+
+  async openExtraShiftModal(worker: trabajador) {
+    const alert = await this.alertController.create({
+      header: 'Asignar Turno Extra',
+      message: `¿Asignar turno extra a ${worker.Name1} ${worker.Name2} para el ${this.selectedDate?.toDateString()}?`,
+      inputs: [
+        {
+          name: 'tipo',
+          type: 'radio',
+          label: 'Día',
+          value: 'dia',
+          checked: true
+        },
+        {
+          name: 'tipo',
+          type: 'radio',
+          label: 'Noche',
+          value: 'noche'
+        },
+        {
+          name: 'horas',
+          type: 'number',
+          placeholder: 'Número de horas (ej: 8)',
+          min: 1,
+          max: 24,
+          value: 8
+        },
+        {
+          name: 'detalles',
+          type: 'textarea',
+          placeholder: 'Detalles adicionales (opcional)'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Asignar',
+          handler: async (data) => {
+            if (!data.horas || data.horas < 1) {
+              await this.showAlert('Error', 'Debe especificar el número de horas.');
+              return false;
+            }
+            await this.processExtraShiftAssignment(worker, data);
+            return true;
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async processExtraShiftAssignment(worker: trabajador, data: any) {
+    const loading = await this.loadingController.create({
+      message: 'Asignando turno extra...'
+    });
+    await loading.present();
+
+    try {
+      // Map 'dia'/'noche' to 'day'/'night'
+      const tipoTurno = data.tipo === 'dia' ? 'day' : 'night';
+      
+      // Assign extra shift through service
+      const success = await this.extraShiftService.assignExtraShift(
+        worker,
+        this.selectedDate!,
+        parseInt(data.horas),
+        tipoTurno,
+        data.detalles || ''
+      );
+
+      if (success) {
+        await this.showAlert('Éxito', 
+          `Turno extra asignado correctamente a ${worker.Name1} ${worker.Name2}`);
+        
+        // Refresh the workers list to show updated state
+        await this.refreshWorkersForSelectedDate();
+      } else {
+        await this.showAlert('Error', 'No se pudo asignar el turno extra.');
+      }
+
+    } catch (error) {
+      console.error('Error assigning extra shift:', error);
+      await this.showAlert('Error', 'No se pudo asignar el turno extra. Intente nuevamente.');
+    } finally {
+      await loading.dismiss();
+    }
+  }
+
+  async refreshWorkersForSelectedDate() {
+    if (this.selectedDate) {
+      // Reload workers and recalculate for the selected date
+      await this.loadWorkers();
+      // Simulate date change to refresh the display
+      const event = { detail: { value: this.selectedDatetime } };
+      await this.onDateChange(event);
+    }
+  }
+
+  canAssignExtraShift(worker: trabajador): boolean {
+    return worker.estado !== 'activo';
   }
 }

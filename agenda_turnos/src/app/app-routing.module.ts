@@ -60,8 +60,15 @@ const routes: Routes = [
   },
   {
     path: 'registrofuncionario',
-    loadChildren: () => import('./pages/registrofuncionario/registrofuncionario.module').then( m => m.RegistrofuncionarioPageModule)
+    loadChildren: () => import('./pages/registrofuncionario/registrofuncionario.module').then( m => m.RegistrofuncionarioPageModule),
+    canActivate: [RouteGuardService]
   },
+  {
+    path: 'cambiodeturno',
+    loadChildren: () => import('./pages/cambiodeturno/cambiodeturno.module').then( m => m.CambiodeturnoPageModule),
+    canActivate: [RouteGuardService]
+  },
+
 ];
 
 @NgModule({

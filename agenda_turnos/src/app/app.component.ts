@@ -64,6 +64,21 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/lista-funcionarios']);
   }
 
+  async calendarioTurnos(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/calendario-turnos']);
+  }
+
+  async busquedadia(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/busquedadia']);
+  }
+
+  async cambiodeturno(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/cambiodeturno']);
+  }
+
   async logout(){
     this.authService.logout();
     await this.menuCtrl.close();

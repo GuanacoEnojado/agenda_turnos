@@ -21,6 +21,8 @@ export interface WorkerShiftInfo {
   isScheduled: boolean;
   isAbsent: boolean;
   absenceReason?: string;
+  isExtra: boolean;
+  isShifted: boolean;
 }
 
 @Injectable({
@@ -85,7 +87,9 @@ export class ShiftCalculatorService {
         trabajador,
         shiftStatus: ShiftType.OFF,
         isScheduled: false,
-        isAbsent: false
+        isAbsent: false,
+        isExtra: false,
+        isShifted: false
       };
     }
 
@@ -95,7 +99,9 @@ export class ShiftCalculatorService {
         trabajador,
         shiftStatus: ShiftType.OFF,
         isScheduled: false,
-        isAbsent: false
+        isAbsent: false,
+        isExtra: false,
+        isShifted: false
       };
     }
 
@@ -116,20 +122,25 @@ export class ShiftCalculatorService {
    */
   private calculateDiurnoShift(trabajador: trabajador, targetDate: Date, daysDifference: number): WorkerShiftInfo {
     const dayOfWeek = targetDate.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
-    const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5; // Lunes a Viernes
+    const isWeekday = dayOfWeek >= 1 && dayOfWeek <= 5; // Lunes a Viernes .agrgar holidays
     
     const shiftStatus = isWeekday ? ShiftType.DAY_IN : ShiftType.OFF;
     const isScheduled = isWeekday;
-    
+    const isNotScheduled = !isWeekday;
+
     // Verificar si el trabajador debería estar trabajando pero está ausente por vacaciones/licencia médica
     const isAbsent = isScheduled && this.isWorkerAbsent(trabajador);
     const absenceReason = isAbsent ? this.getAbsenceReason(trabajador) : undefined;
+    const isExtra = isNotScheduled && this.isWorkerExtra(trabajador);
+    const isShifted = isNotScheduled && this.isWorkerShifted(trabajador);
 
     return {
       trabajador,
       shiftStatus,
       isScheduled,
       isAbsent,
+      isExtra,
+      isShifted,
       absenceReason
     };
   }
@@ -144,23 +155,30 @@ export class ShiftCalculatorService {
         trabajador,
         shiftStatus: ShiftType.OFF,
         isScheduled: false,
-        isAbsent: false
+        isAbsent: false,
+        isExtra: false,
+        isShifted: false
       };
     }
 
     const cyclePosition = daysDifference % shiftPattern.cycleLength;
     const shiftStatus = shiftPattern.pattern[cyclePosition];
     const isScheduled = shiftStatus !== ShiftType.OFF;
+    const isNotScheduled = shiftStatus == ShiftType.OFF;
     
-    // Verificar si el trabajador debería estar trabajando pero está ausente
+    // Verificar si el trabajador debería estar trabajando pero está ausente, o la inversa
     const isAbsent = isScheduled && this.isWorkerAbsent(trabajador);
     const absenceReason = isAbsent ? this.getAbsenceReason(trabajador) : undefined;
+    const isExtra = isNotScheduled && this.isWorkerExtra(trabajador);
+    const isShifted = isNotScheduled && this.isWorkerShifted(trabajador);
 
     return {
       trabajador,
       shiftStatus,
       isScheduled,
       isAbsent,
+      isExtra,
+      isShifted,
       absenceReason
     };
   }
@@ -189,6 +207,71 @@ export class ShiftCalculatorService {
   }
 
   /**
+   * Obtener trabajadores que están disponibles para cambios de turno (no programados pero activos)
+   */
+  getAvailableWorkersForShiftChange(trabajadores: trabajador[], targetDate: Date): WorkerShiftInfo[] {
+    return this.calculateWorkersForDate(trabajadores, targetDate)
+      .filter(workerInfo => 
+        !workerInfo.isScheduled && // No programado originalmente
+        !workerInfo.isAbsent && // No ausente
+        !workerInfo.isExtra && // No en turno extra
+        !workerInfo.isShifted && // No con turno cambiado
+        (workerInfo.trabajador.estado === 'activo' || workerInfo.trabajador.estado === 'activoextra')
+      );
+  }
+
+  /**
+   * Obtener trabajadores que están programados y pueden solicitar cambios de turno
+   */
+  getScheduledWorkersForShiftChange(trabajadores: trabajador[], targetDate: Date): WorkerShiftInfo[] {
+    return this.calculateWorkersForDate(trabajadores, targetDate)
+      .filter(workerInfo => 
+        workerInfo.isScheduled && // Programado originalmente
+        !workerInfo.isAbsent && // No ausente
+        !workerInfo.isExtra && // No en turno extra
+        !workerInfo.isShifted && // No con turno cambiado
+        workerInfo.trabajador.estado === 'activo'
+      );
+  }
+
+  /**
+   * Verificar si dos trabajadores pueden intercambiar turnos en una fecha específica
+   */
+  canWorkersSwapShifts(worker1: trabajador, worker2: trabajador, targetDate: Date): {canSwap: boolean, reason?: string} {
+    // Deben tener el mismo turno y nivel
+    if (worker1.turno !== worker2.turno) {
+      return { canSwap: false, reason: 'Los trabajadores deben tener el mismo tipo de turno' };
+    }
+    
+    if (worker1.nivel !== worker2.nivel) {
+      return { canSwap: false, reason: 'Los trabajadores deben tener el mismo nivel' };
+    }
+
+    const worker1Shift = this.calculateWorkerShift(worker1, targetDate);
+    const worker2Shift = this.calculateWorkerShift(worker2, targetDate);
+
+    // Ambos deben estar disponibles para el cambio de turno
+    if (worker1Shift.isAbsent || worker1Shift.isExtra || worker1Shift.isShifted) {
+      return { canSwap: false, reason: 'El primer trabajador no está disponible para cambio de turno' };
+    }
+
+    if (worker2Shift.isAbsent || worker2Shift.isExtra || worker2Shift.isShifted) {
+      return { canSwap: false, reason: 'El segundo trabajador no está disponible para cambio de turno' };
+    }
+
+    // Uno debe estar programado, el otro debe estar libre
+    if (worker1Shift.isScheduled === worker2Shift.isScheduled) {
+      if (worker1Shift.isScheduled) {
+        return { canSwap: false, reason: 'Ambos trabajadores están programados para trabajar' };
+      } else {
+        return { canSwap: false, reason: 'Ninguno de los trabajadores está programado para trabajar' };
+      }
+    }
+
+    return { canSwap: true };
+  }
+
+  /**
    * Calcular la diferencia en días entre dos fechas
    */
   private calculateDaysDifference(startDate: Date, endDate: Date): number {
@@ -204,9 +287,15 @@ export class ShiftCalculatorService {
    */
   private isWorkerAbsent(trabajador: trabajador): boolean {
     // Verificar si el trabajador está de vacaciones o con licencia médica
-    return trabajador.estado === 'vacaciones' || trabajador.estado === 'licencia';
+    return trabajador.estado === 'vacaciones' || trabajador.estado === 'licencia' || trabajador.estado === 'turnocambiadoOFF'|| trabajador.estado === 'permisoadm';
   }
-
+  // Verificar si el trabajador está de extra
+  private isWorkerExtra(trabajador: trabajador): boolean {
+    return trabajador.estado === 'activoextra';
+  }
+  private isWorkerShifted(trabajador: trabajador): boolean {
+    return trabajador.estado === 'turnocamdiadoON';
+  }
   /**
    * Obtener la razón de la ausencia del trabajador
    */
@@ -216,6 +305,8 @@ export class ShiftCalculatorService {
       case 'licencia': return 'Licencia médica';
       case 'suspendido': return 'Suspendido';
       case 'inactivo': return 'Inactivo';
+      case 'permisoadm': return 'Permiso Administrativo';
+      case 'turnocambiadoOFF': return 'Cambio de Turno';
       default: return 'Ausente';
     }
   }
@@ -223,7 +314,13 @@ export class ShiftCalculatorService {
   /**
    * Obtener el nombre de visualización del tipo de turno
    */
-  getShiftDisplayName(shiftType: ShiftType): string {
+  getShiftDisplayName(shiftType: ShiftType, isExtra: boolean, isShifted: boolean): string {
+    if (isExtra) {
+      return 'Turno Extra';
+    }
+    if (isShifted) {
+      return 'Devolución de Turno';
+    }
     switch (shiftType) {
       case ShiftType.DAY_IN: return 'Turno de día';
       case ShiftType.NIGHT_IN: return 'Turno de noche'; 
@@ -238,7 +335,14 @@ export class ShiftCalculatorService {
   /**
    * Obtener el color del tipo de turno para la UI
    */
-  getShiftColor(shiftType: ShiftType): string {
+  getShiftColor(shiftType: ShiftType, isExtra: boolean, isShifted: boolean): string {
+    if (isExtra) {
+      return 'primary';
+    }
+    if (isShifted) {
+      return 'primary';
+    }
+
     switch (shiftType) {
       case ShiftType.DAY_IN: return 'primary';
       case ShiftType.NIGHT_IN: return 'secondary';

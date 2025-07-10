@@ -1,0 +1,58 @@
+// Menu styling
+ion-menu {
+  --width: 280px;
+}
+
+.user-info {
+  margin-bottom: 1rem;
+  
+  ion-card {
+    margin: 0;
+    
+    ion-avatar {
+      width: 50px;
+      height: 50px;
+    }
+    
+    h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    
+    p {
+      margin: 4px 0 0 0;
+      color: var(--ion-color-medium);
+      font-size: 0.9rem;
+    }
+  }
+}
+
+ion-list-header {
+  font-weight: 600;
+  color: var(--ion-color-primary);
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+ion-item {
+  --inner-padding-end: 16px;
+  
+  ion-icon {
+    margin-right: 12px;
+  }
+  
+  &[color="danger"] {
+    margin-top: 1rem;
+    --background: rgba(var(--ion-color-danger-rgb), 0.1);
+    --color: var(--ion-color-danger);
+    
+    ion-icon {
+      color: var(--ion-color-danger);
+    }
+  }
+}

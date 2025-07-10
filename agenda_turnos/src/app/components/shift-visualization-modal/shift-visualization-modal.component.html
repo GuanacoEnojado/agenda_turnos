@@ -1,0 +1,261 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Turnos - {{ worker.Name1 }} {{ worker.Name2 }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  
+  <!-- Worker Info Header -->
+  <ion-card class="worker-header">
+    <ion-card-content>
+      <div class="worker-info">
+        <ion-avatar>
+          <ion-icon 
+            *ngIf="!worker.avatarUrl" 
+            name="person-circle-outline" 
+            size="large">
+          </ion-icon>
+          <img 
+            *ngIf="worker.avatarUrl" 
+            [src]="worker.avatarUrl" 
+            [alt]="worker.Name1 + ' ' + worker.Name2">
+        </ion-avatar>
+        <div class="info">
+          <h2>{{ worker.Name1 }} {{ worker.Name2 }}</h2>
+          <p>{{ getTurnoDisplayText(worker.turno) }}</p>
+          <p>{{ getNivelDisplayText(worker.nivel) }}</p>
+          <ion-badge [color]="getStatusColor(worker.estado)">
+            {{ getEstadoDisplayText(worker.estado) }}
+          </ion-badge>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Calendar Legend -->
+  <ion-card class="legend">
+    <ion-card-header>
+      <ion-card-subtitle>Leyenda</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="legend-grid">
+        <div class="legend-item">
+          <div class="legend-color working"></div>
+          <span>Trabajando</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color free"></div>
+          <span>Libre</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color vacation"></div>
+          <span>Vacaciones</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color sick"></div>
+          <span>Licencia</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color absent"></div>
+          <span>Ausente</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color has-extra"></div>
+          <span>Turno Extra</span>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Current Month Calendar -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ getCurrentMonthName() }} 2025</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="calendar-grid">
+        <!-- Days of week header -->
+        <div class="calendar-header">
+          <div class="day-header">Dom</div>
+          <div class="day-header">Lun</div>
+          <div class="day-header">Mar</div>
+          <div class="day-header">Mié</div>
+          <div class="day-header">Jue</div>
+          <div class="day-header">Vie</div>
+          <div class="day-header">Sáb</div>
+        </div>
+        <!-- Calendar days -->
+        <div class="calendar-body">
+          <div 
+            *ngFor="let day of currentMonth" 
+            [class]="getDayClass(day)"
+            (click)="onDayClick(day)">
+            <span class="day-number">{{ day.dayNumber }}</span>
+            <div class="shift-indicators">
+              <div *ngIf="day.shifts.morning" class="shift-indicator morning"></div>
+              <div *ngIf="day.shifts.evening" class="shift-indicator evening"></div>
+              <div *ngIf="day.shifts.night" class="shift-indicator night"></div>
+              <div *ngIf="day.shifts.extra && day.shifts.extra.length > 0" class="shift-indicator extra">+{{ day.shifts.extra.length }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Next Month Calendar -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ getNextMonthName() }} 2025</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="calendar-grid">
+        <!-- Days of week header -->
+        <div class="calendar-header">
+          <div class="day-header">Dom</div>
+          <div class="day-header">Lun</div>
+          <div class="day-header">Mar</div>
+          <div class="day-header">Mié</div>
+          <div class="day-header">Jue</div>
+          <div class="day-header">Vie</div>
+          <div class="day-header">Sáb</div>
+        </div>
+        <!-- Calendar days -->
+        <div class="calendar-body">
+          <div 
+            *ngFor="let day of nextMonth" 
+            [class]="getDayClass(day)"
+            (click)="onDayClick(day)">
+            <span class="day-number">{{ day.dayNumber }}</span>
+            <div class="shift-indicators">
+              <div *ngIf="day.shifts.morning" class="shift-indicator morning"></div>
+              <div *ngIf="day.shifts.evening" class="shift-indicator evening"></div>
+              <div *ngIf="day.shifts.night" class="shift-indicator night"></div>
+              <div *ngIf="day.shifts.extra && day.shifts.extra.length > 0" class="shift-indicator extra">+{{ day.shifts.extra.length }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<!-- Day Details Modal -->
+<ion-modal [isOpen]="showDayDetails" (willDismiss)="closeDayDetails()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>      <ion-title>
+        Detalles - {{ selectedDay && selectedDay.date ? (selectedDay.date | date:'fullDate') : '' }}
+      </ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeDayDetails()">
+            <ion-icon name="close"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding" *ngIf="selectedDay">
+      <!-- Day Status -->
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Estado del Día</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-chip [color]="getStatusChipColor(selectedDay.status)">
+            <ion-icon [name]="getStatusIcon(selectedDay.status)"></ion-icon>
+            <ion-label>{{ getStatusText(selectedDay.status) }}</ion-label>
+          </ion-chip>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Regular Shifts -->
+      <ion-card *ngIf="selectedDay.shifts.morning || selectedDay.shifts.evening || selectedDay.shifts.night">
+        <ion-card-header>
+          <ion-card-title>Turnos Regulares</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          
+          <!-- Morning Shift -->
+          <ion-item *ngIf="selectedDay.shifts.morning" lines="none">
+            <ion-icon name="sunny-outline" slot="start" color="warning"></ion-icon>
+            <ion-label>
+              <h3>Turno Matutino</h3>
+              <p>{{ selectedDay.shifts.morning.startTime }} - {{ selectedDay.shifts.morning.endTime }}</p>
+              <p *ngIf="selectedDay.shifts.morning.type === 'swapped'" class="swapped-info">
+                <ion-text color="tertiary">Intercambiado con: {{ selectedDay.shifts.morning.swappedWith }}</ion-text>
+              </p>
+              <p *ngIf="selectedDay.shifts.morning.details">{{ selectedDay.shifts.morning.details }}</p>
+            </ion-label>
+          </ion-item>
+
+          <!-- Evening Shift -->
+          <ion-item *ngIf="selectedDay.shifts.evening" lines="none">
+            <ion-icon name="partly-sunny-outline" slot="start" color="secondary"></ion-icon>
+            <ion-label>
+              <h3>Turno Vespertino</h3>
+              <p>{{ selectedDay.shifts.evening.startTime }} - {{ selectedDay.shifts.evening.endTime }}</p>
+              <p *ngIf="selectedDay.shifts.evening.type === 'swapped'" class="swapped-info">
+                <ion-text color="tertiary">Intercambiado con: {{ selectedDay.shifts.evening.swappedWith }}</ion-text>
+              </p>
+              <p *ngIf="selectedDay.shifts.evening.details">{{ selectedDay.shifts.evening.details }}</p>
+            </ion-label>
+          </ion-item>
+
+          <!-- Night Shift -->
+          <ion-item *ngIf="selectedDay.shifts.night" lines="none">
+            <ion-icon name="moon-outline" slot="start" color="dark"></ion-icon>
+            <ion-label>
+              <h3>Turno Nocturno</h3>
+              <p>{{ selectedDay.shifts.night.startTime }} - {{ selectedDay.shifts.night.endTime }}</p>
+              <p *ngIf="selectedDay.shifts.night.type === 'swapped'" class="swapped-info">
+                <ion-text color="tertiary">Intercambiado con: {{ selectedDay.shifts.night.swappedWith }}</ion-text>
+              </p>
+              <p *ngIf="selectedDay.shifts.night.details">{{ selectedDay.shifts.night.details }}</p>
+            </ion-label>
+          </ion-item>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Extra Shifts -->
+      <ion-card *ngIf="selectedDay.shifts.extra && selectedDay.shifts.extra.length > 0">
+        <ion-card-header>
+          <ion-card-title>Turnos Extra</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item *ngFor="let extra of selectedDay.shifts.extra" lines="none">
+            <ion-icon 
+              [name]="getShiftIcon(extra.type)" 
+              slot="start" 
+              color="tertiary">
+            </ion-icon>
+            <ion-label>
+              <h3>Turno Extra {{ getShiftTypeText(extra.type) }}</h3>
+              <p><strong>Horas:</strong> {{ extra.hours }}</p>
+              <p *ngIf="extra.details"><strong>Detalles:</strong> {{ extra.details }}</p>
+              <p *ngIf="extra.assignedBy"><strong>Asignado por:</strong> {{ extra.assignedBy }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- No shifts -->
+      <ion-card *ngIf="hasNoShifts(selectedDay)">
+        <ion-card-content class="ion-text-center">
+          <ion-icon name="calendar-clear-outline" size="large" color="medium"></ion-icon>
+          <h3>Sin turnos asignados</h3>
+          <p>No hay turnos programados para este día.</p>
+        </ion-card-content>
+      </ion-card>
+
+    </ion-content>
+  </ng-template>
+</ion-modal>

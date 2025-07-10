@@ -26,7 +26,7 @@
     <ion-item 
       *ngFor="let trabajador of filteredTrabajadores" 
       button
-      (click)="openEditModal(trabajador)"
+      (click)="openShiftVisualization(trabajador)"
       [class]="getStatusClass(trabajador.estado)">
       
       <!-- Avatar -->
@@ -47,19 +47,42 @@
         <h2>{{ trabajador.Name1 }} {{ trabajador.Name2 }}</h2>
         <p>{{ formatTurno(trabajador.turno) }}</p>
         <p>{{ formatNivel(trabajador.nivel) }}</p>
-        <p class="shift-status">En turno: <span class="pending">Pendiente</span></p>
+        <p class="shift-status">Clic para ver turnos</p>
       </ion-label>
 
-      <!-- Estado -->
-      <ion-badge 
-        [color]="getStatusColor(trabajador.estado)" 
-        slot="end">
-        <ion-icon 
-          [name]="getStatusIcon(trabajador.estado)" 
-          size="small">
-        </ion-icon>
-        {{ trabajador.estado | titlecase }}
-      </ion-badge>
+      <!-- Actions and Estado -->
+      <div slot="end" class="worker-actions">
+        <!-- Edit Button -->
+        <ion-button 
+          fill="outline" 
+          size="small" 
+          color="primary"
+          (click)="$event.stopPropagation(); openEditModal(trabajador)">
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          Editar
+        </ion-button>
+        
+        <!-- Extra Shift Button (only show for non-active workers) -->
+        <ion-button 
+          *ngIf="canAssignExtraShift(trabajador)" 
+          fill="outline" 
+          size="small" 
+          color="tertiary"
+          (click)="$event.stopPropagation(); assignExtraShift(trabajador)">
+          <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+          Turno Extra
+        </ion-button>
+        
+        <!-- Estado -->
+        <ion-badge 
+          [color]="getStatusColor(trabajador.estado)">
+          <ion-icon 
+            [name]="getStatusIcon(trabajador.estado)" 
+            size="small">
+          </ion-icon>
+          {{ trabajador.estado | titlecase }}
+        </ion-badge>
+      </div>
     </ion-item>
   </ion-list>
 

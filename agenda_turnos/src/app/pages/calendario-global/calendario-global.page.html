@@ -39,16 +39,16 @@
     </ion-card>
 
     <!-- Trabajadores en Turno -->
-    <ion-card *ngIf="workersOnShift.length > 0">
+    <ion-card *ngIf="workersOnShift.length + extraworkers.length > 0">
       <ion-card-header>
         <ion-card-title color="success">
           <ion-icon name="people-outline"></ion-icon>
-          Funcionarios en Turno ({{ workersOnShift.length }})
+          Funcionarios en Turno ({{ workersOnShift.length + extraworkers.length + shiftedworkers.length }})
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
-          <ion-item *ngFor="let workerInfo of workersOnShift">
+          <ion-item *ngFor="let workerInfo of workersOnShift.concat(extraworkers)">
             <!-- Avatar del Trabajador -->
             <ion-avatar slot="start">
               <ion-icon 
@@ -67,18 +67,33 @@
               <h2>{{ workerInfo.trabajador.Name1 }} {{ workerInfo.trabajador.Name2 }}</h2>
               <p>{{ formatTurno(workerInfo.trabajador.turno) }}</p>
               <p>{{ workerInfo.trabajador.nivel | titlecase }}</p>
+              <p *ngIf="workerInfo.isExtra == true">Turno Extra</p>
+              <p *ngIf="workerInfo.isShifted == true">Devolución de Turno</p>
             </ion-label>
 
-            <!-- Badge de turno -->
-            <ion-badge 
-              [color]="getShiftColor(workerInfo.shiftStatus)" 
-              slot="end">
-              <ion-icon 
-                name="time-outline" 
-                size="small">
-              </ion-icon>
-              {{ getShiftDisplayName(workerInfo.shiftStatus) }}
-            </ion-badge>
+            <!-- Actions and Badge -->
+            <div slot="end" class="worker-actions">
+              <!-- Extra Shift Button (only show for non-active workers) -->
+              <ion-button 
+                *ngIf="canAssignExtraShift(workerInfo.trabajador)" 
+                fill="outline" 
+                size="small" 
+                color="tertiary"
+                (click)="assignExtraShift(workerInfo.trabajador)">
+                <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+                Turno Extra
+              </ion-button>
+              
+              <!-- Badge de turno -->
+              <ion-badge 
+                [color]="getShiftColor(workerInfo.shiftStatus)">
+                <ion-icon 
+                  name="time-outline" 
+                  size="small">
+                </ion-icon>
+                {{ getShiftDisplayName(workerInfo.shiftStatus) }}
+              </ion-badge>
+            </div>
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -121,16 +136,29 @@
               <p><strong>Debería estar en:</strong> {{ getShiftDisplayName(workerInfo.shiftStatus) }}</p>
             </ion-label>
 
-            <!-- Marcador de ausente -->
-            <ion-badge 
-              color="danger" 
-              slot="end">
-              <ion-icon 
-                name="close-circle-outline" 
-                size="small">
-              </ion-icon>
-              {{ workerInfo.absenceReason }}
-            </ion-badge>
+            <!-- Actions and Badge -->
+            <div slot="end" class="worker-actions">
+              <!-- Extra Shift Button (only show for non-active workers) -->
+              <ion-button 
+                *ngIf="canAssignExtraShift(workerInfo.trabajador)" 
+                fill="outline" 
+                size="small" 
+                color="tertiary"
+                (click)="assignExtraShift(workerInfo.trabajador)">
+                <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+                Turno Extra
+              </ion-button>
+              
+              <!-- Marcador de ausente -->
+              <ion-badge 
+                color="danger">
+                <ion-icon 
+                  name="close-circle-outline" 
+                  size="small">
+                </ion-icon>
+                {{ workerInfo.absenceReason }}
+              </ion-badge>
+            </div>
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -172,16 +200,29 @@
               <p>{{ workerInfo.trabajador.nivel | titlecase }}</p>
             </ion-label>
 
-            <!-- Free Status Badge -->
-            <ion-badge 
-              color="light" 
-              slot="end">
-              <ion-icon 
-                name="moon-outline" 
-                size="small">
-              </ion-icon>
-              Libre
-            </ion-badge>
+            <!-- Actions and Badge -->
+            <div slot="end" class="worker-actions">
+              <!-- Extra Shift Button (only show for non-active workers) -->
+              <ion-button 
+                *ngIf="canAssignExtraShift(workerInfo.trabajador)" 
+                fill="outline" 
+                size="small" 
+                color="tertiary"
+                (click)="assignExtraShift(workerInfo.trabajador)">
+                <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+                Turno Extra
+              </ion-button>
+              
+              <!-- Free Status Badge -->
+              <ion-badge 
+                color="light">
+                <ion-icon 
+                  name="moon-outline" 
+                  size="small">
+                </ion-icon>
+                Libre
+              </ion-badge>
+            </div>
           </ion-item>
         </ion-list>
       </ion-card-content>
@@ -210,7 +251,7 @@
             <ion-col size="4">
               <div class="summary-stat">
                 <ion-icon name="checkmark-circle" color="success" size="large"></ion-icon>
-                <h2>{{ workersOnShift.length }}</h2>
+                <h2>{{ workersOnShift.length + extraworkers.length + shiftedworkers.length }}</h2>
                 <p>En turno</p>
               </div>
             </ion-col>

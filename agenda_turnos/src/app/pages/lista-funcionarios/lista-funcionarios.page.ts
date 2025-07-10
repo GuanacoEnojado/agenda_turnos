@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { MenuController, AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TrabajadoresService } from '../../services/trabajadores.service';
+import { ExtraShiftService } from '../../services/extra-shift.service';
+import { ShiftVisualizationModalComponent } from '../../components/shift-visualization-modal/shift-visualization-modal.component';
 import { trabajador, turno, contrato, estado, nivel } from '../../services/datos';
 
 @Component({
@@ -33,7 +35,8 @@ export class ListaFuncionariosPage implements OnInit {
     private alertController: AlertController,
     private loadingController: LoadingController,
     private modalController: ModalController,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private extraShiftService: ExtraShiftService
   ) { 
     this.editForm = this.formBuilder.group({
       Name1: ['', [Validators.required, Validators.minLength(2)]], 
@@ -276,5 +279,131 @@ export class ListaFuncionariosPage implements OnInit {
   async listafuncionario(){
     await this.menuCtrl.close();
     this.router.navigate(['/lista-funcionarios']);
+  }
+
+  // Extra shift assignment methods
+  async assignExtraShift(worker: trabajador) {
+    if (worker.estado === 'activo') {
+      await this.showAlert('Error', 'No se puede asignar turno extra a un trabajador que ya está activo.');
+      return;
+    }
+
+    await this.openExtraShiftModal(worker);
+  }
+
+  async openExtraShiftModal(worker: trabajador) {
+    const alert = await this.alertController.create({
+      header: 'Asignar Turno Extra',
+      message: `Asignar turno extra a ${worker.Name1} ${worker.Name2}`,
+      inputs: [
+        {
+          name: 'fecha',
+          type: 'date',
+          min: new Date().toISOString().split('T')[0],
+          max: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          value: new Date().toISOString().split('T')[0]
+        },
+        {
+          name: 'tipo',
+          type: 'radio',
+          label: 'Día',
+          value: 'dia',
+          checked: true
+        },
+        {
+          name: 'tipo',
+          type: 'radio',
+          label: 'Noche',
+          value: 'noche'
+        },
+        {
+          name: 'horas',
+          type: 'number',
+          placeholder: 'Número de horas (ej: 8)',
+          min: 1,
+          max: 24,
+          value: 8
+        },
+        {
+          name: 'detalles',
+          type: 'textarea',
+          placeholder: 'Detalles adicionales (opcional)'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Asignar',
+          handler: async (data) => {
+            if (!data.fecha || !data.horas || data.horas < 1) {
+              await this.showAlert('Error', 'Debe completar todos los campos requeridos.');
+              return false;
+            }
+            await this.processExtraShiftAssignment(worker, data);
+            return true;
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async processExtraShiftAssignment(worker: trabajador, data: any) {
+    const loading = await this.loadingController.create({
+      message: 'Asignando turno extra...'
+    });
+    await loading.present();
+
+    try {
+      // Map 'dia'/'noche' to 'day'/'night'
+      const tipoTurno = data.tipo === 'dia' ? 'day' : 'night';
+      const shiftDate = new Date(data.fecha);
+      
+      // Assign extra shift through service
+      const success = await this.extraShiftService.assignExtraShift(
+        worker,
+        shiftDate,
+        parseInt(data.horas),
+        tipoTurno,
+        data.detalles || ''
+      );
+
+      if (success) {
+        await this.showAlert('Éxito', 
+          `Turno extra asignado correctamente a ${worker.Name1} ${worker.Name2} para el ${shiftDate.toDateString()}`);
+        
+        // Refresh the workers list to show updated state
+        await this.loadTrabajadores();
+      } else {
+        await this.showAlert('Error', 'No se pudo asignar el turno extra.');
+      }
+
+    } catch (error) {
+      console.error('Error assigning extra shift:', error);
+      await this.showAlert('Error', 'No se pudo asignar el turno extra. Intente nuevamente.');
+    } finally {
+      await loading.dismiss();
+    }
+  }
+
+  canAssignExtraShift(worker: trabajador): boolean {
+    return worker.estado !== 'activo';
+  }
+
+  // Shift visualization methods
+  async openShiftVisualization(worker: trabajador) {
+    const modal = await this.modalController.create({
+      component: ShiftVisualizationModalComponent,
+      componentProps: {
+        worker: worker
+      },
+      cssClass: 'shift-visualization-modal'
+    });
+
+    await modal.present();
   }
 }

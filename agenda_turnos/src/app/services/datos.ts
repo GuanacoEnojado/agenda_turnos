@@ -40,11 +40,32 @@ export type estado =
     | 'inactivo'
     | 'licencia'
     | 'vacaciones'
-    | 'suspendido';
+    | 'suspendido'
+    | 'turnocambiadoOFF'
+    | 'turnocamdiadoON'
+    | 'activoextra'
+    | 'permisoadm'
+    | 'permisoadmAM'
+    | 'permisoadmPM'
+    | 'inasistente';
 export type nivel =
     | 'tecnico'
     | 'manipulador'
     | 'auxiliar'
     | 'profesional';
+
+export interface ExtraShift {
+  id?: number;
+  trabajadorId: number;
+  fechaCreacion: Date;     // When the extra shift was assigned
+  fechaTurnoExtra: Date;   // The day the extra shift is for
+  horasExtras: number;     // Number of extra hours
+  tipoTurno: 'day' | 'night'; // Day or night shift
+  detalles: string;        // Additional details from admin
+  estado: 'programado' | 'completado' | 'cancelado'; // Status of the extra shift
+  createdBy?: number;      // ID of admin who created it
+  createdAt?: Date;
+  updatedAt?: Date;
+}
 
 

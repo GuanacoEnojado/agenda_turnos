@@ -1,0 +1,37 @@
+ion-card {
+  margin-bottom: 16px;
+}
+
+ion-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+ion-item {
+  --inner-padding-end: 0;
+}
+
+ion-input[type="number"] {
+  text-align: right;
+}
+
+ion-badge {
+  margin-left: 8px;
+}
+
+ion-button[type="submit"] {
+  --color: white;
+}
+
+ion-button[fill="outline"] {
+  --border-width: 2px;
+}
+
+ion-avatar {
+  width: 56px;
+  height: 56px;
+}
+
+ion-spinner {
+  margin-right: 8px;
+}

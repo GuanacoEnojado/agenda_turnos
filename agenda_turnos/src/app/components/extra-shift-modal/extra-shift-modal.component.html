@@ -1,0 +1,153 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Asignar Turno Extra</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form #extraShiftForm="ngForm" (ngSubmit)="onSubmit(extraShiftForm)">
+    
+    <!-- Worker Info -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Trabajador Seleccionado</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-avatar slot="start">
+            <ion-icon 
+              *ngIf="!worker.avatarUrl" 
+              name="person-circle-outline" 
+              size="large">
+            </ion-icon>
+            <img 
+              *ngIf="worker.avatarUrl" 
+              [src]="worker.avatarUrl" 
+              [alt]="worker.Name1 + ' ' + worker.Name2">
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ worker.Name1 }} {{ worker.Name2 }}</h2>
+            <p>{{ formatTurno(worker.turno) }}</p>
+            <p>{{ worker.nivel | titlecase }}</p>
+            <p><ion-badge [color]="getEstadoColor(worker.estado)">{{ worker.estado }}</ion-badge></p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Date Selection (only show if not from calendario-global) -->
+    <ion-card *ngIf="!preselectedDate">
+      <ion-card-header>
+        <ion-card-title>Fecha del Turno Extra</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Seleccionar Fecha</ion-label>
+          <ion-datetime
+            presentation="date"
+            [(ngModel)]="formData.fecha"
+            name="fecha"
+            required
+            [min]="minDate"
+            [max]="maxDate">
+          </ion-datetime>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Selected Date Display (when preselected) -->
+    <ion-card *ngIf="preselectedDate">
+      <ion-card-header>
+        <ion-card-title>Fecha del Turno Extra</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="none">
+          <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h2>{{ preselectedDate | date:'fullDate' }}</h2>
+            <p>Fecha seleccionada en el calendario</p>
+          </ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Extra Shift Details -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Detalles del Turno Extra</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        
+        <!-- Type of Extra Shift -->
+        <ion-item>
+          <ion-label position="stacked">Tipo de Turno</ion-label>
+          <ion-select 
+            [(ngModel)]="formData.tipo" 
+            name="tipo" 
+            required
+            placeholder="Seleccionar tipo">
+            <ion-select-option value="dia">Día</ion-select-option>
+            <ion-select-option value="noche">Noche</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <!-- Hours -->
+        <ion-item>
+          <ion-label position="stacked">Horas del Turno</ion-label>
+          <ion-input
+            type="number"
+            [(ngModel)]="formData.horas"
+            name="horas"
+            required
+            min="1"
+            max="24"
+            placeholder="Ej: 8">
+          </ion-input>
+        </ion-item>
+
+        <!-- Details/Notes -->
+        <ion-item>
+          <ion-label position="stacked">Detalles/Notas (Opcional)</ion-label>
+          <ion-textarea
+            [(ngModel)]="formData.detalles"
+            name="detalles"
+            rows="3"
+            placeholder="Razón del turno extra, instrucciones especiales, etc.">
+          </ion-textarea>
+        </ion-item>
+
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Action Buttons -->
+    <ion-grid>
+      <ion-row>
+        <ion-col size="6">
+          <ion-button
+            expand="block"
+            fill="outline"
+            color="medium"
+            (click)="dismiss()">
+            Cancelar
+          </ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button
+            expand="block"
+            type="submit"
+            color="primary"
+            [disabled]="!extraShiftForm.valid || isLoading">
+            <ion-spinner name="dots" *ngIf="isLoading"></ion-spinner>
+            <span *ngIf="!isLoading">Asignar Turno</span>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+  </form>
+</ion-content>

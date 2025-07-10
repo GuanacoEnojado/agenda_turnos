@@ -5,6 +5,7 @@ require('dotenv').config();
 const sequelize = require('./util/database');
 const User = require('./models/user');
 const Trabajador = require('./models/trabajador');
+const ExtraShift = require('./models/extrashift');
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.get('/', (req, res, next) => {
 //CRUD routes
 app.use('/users', require('./routes/users'));
 app.use('/trabajadores', require('./routes/trabajadores'));
+app.use('/extrashifts', require('./routes/extrashifts'));
 
 
 //error handling
@@ -42,7 +44,7 @@ app.use((error, req, res, next) => {
 
 //sync database with schema updates
 sequelize
-  .sync({ alter: true })
+  .sync({ force: false })
   .then(result => {
     console.log("Database connected and schema updated");
     app.listen(3000);

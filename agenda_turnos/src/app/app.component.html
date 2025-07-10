@@ -24,14 +24,40 @@
       </div>
 
       <ion-list>
+        <!-- Navigation Section -->
+        <ion-list-header>
+          <ion-label>Navegación</ion-label>
+        </ion-list-header>
+        <ion-item button (click)="main()">
+          <ion-icon name="home-outline" slot="start"></ion-icon>
+          <ion-label>Inicio</ion-label>
+        </ion-item>
+
+        <!-- Search and View Section -->
+        <ion-list-header>
+          <ion-label>Consultas</ion-label>
+        </ion-list-header>
         <ion-item button (click)="listafuncionario()">
           <ion-icon name="people-outline" slot="start"></ion-icon>
-          <ion-label>Busqueda por funcionario</ion-label>
+          <ion-label>Lista de Funcionarios</ion-label>
         </ion-item>
         <ion-item button (click)="calendarioglobal()">
           <ion-icon name="calendar-outline" slot="start"></ion-icon>
-          <ion-label>Busqueda por día</ion-label>
+          <ion-label>Turnos por Fecha</ion-label>
         </ion-item>
+        <ion-item button (click)="calendarioTurnos()">
+          <ion-icon name="calendar-number-outline" slot="start"></ion-icon>
+          <ion-label>Calendario de Turnos</ion-label>
+        </ion-item>
+        <ion-item button (click)="busquedadia()">
+          <ion-icon name="search-outline" slot="start"></ion-icon>
+          <ion-label>Búsqueda por Día</ion-label>
+        </ion-item>
+
+        <!-- Management Section -->
+        <ion-list-header>
+          <ion-label>Gestión</ion-label>
+        </ion-list-header>
         <ion-item button (click)="registrofuncionario()">
           <ion-icon name="person-add-outline" slot="start"></ion-icon>
           <ion-label>Registrar Funcionario</ion-label>
@@ -42,16 +68,23 @@
         </ion-item>
         <ion-item button (click)="eliminarfuncionario()">
           <ion-icon name="person-remove-outline" slot="start"></ion-icon>
-          <ion-label>Inhabilitar funcionario</ion-label>
+          <ion-label>Inhabilitar Funcionario</ion-label>
         </ion-item>
+        <ion-item button (click)="cambiodeturno()">
+          <ion-icon name="swap-horizontal-outline" slot="start"></ion-icon>
+          <ion-label>Cambio de Turno</ion-label>
+        </ion-item>
+
+        <!-- Settings Section -->
+        <ion-list-header>
+          <ion-label>Configuración</ion-label>
+        </ion-list-header>
         <ion-item button (click)="preferencias()">
           <ion-icon name="settings-outline" slot="start"></ion-icon>
           <ion-label>Preferencias</ion-label>
         </ion-item>
-        <ion-item button (click)="main()">
-          <ion-icon name="home-outline" slot="start"></ion-icon>
-          <ion-label>Volver al inicio</ion-label>
-        </ion-item>
+
+        <!-- Logout -->
         <ion-item button (click)="logout()" *ngIf="currentUser" color="danger">
           <ion-icon name="log-out-outline" slot="start"></ion-icon>
           <ion-label>Cerrar Sesión</ion-label>

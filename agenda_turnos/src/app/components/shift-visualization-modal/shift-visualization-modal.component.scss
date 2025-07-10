@@ -1,0 +1,310 @@
+// Worker header
+.worker-header {
+  margin-bottom: 16px;
+  
+  .worker-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    
+    ion-avatar {
+      width: 60px;
+      height: 60px;
+    }
+    
+    .info {
+      flex: 1;
+      
+      h2 {
+        margin: 0 0 4px 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+      
+      p {
+        margin: 2px 0;
+        color: var(--ion-color-medium);
+        font-size: 0.9rem;
+      }
+      
+      ion-badge {
+        margin-top: 8px;
+      }
+    }
+  }
+}
+
+// Legend
+.legend {
+  margin-bottom: 16px;
+  
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      
+      .legend-color {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border: 1px solid var(--ion-color-light-shade);
+        
+        &.working {
+          background: var(--ion-color-success);
+        }
+        
+        &.free {
+          background: var(--ion-color-light);
+        }
+        
+        &.vacation {
+          background: var(--ion-color-primary);
+        }
+        
+        &.sick {
+          background: var(--ion-color-warning);
+        }
+        
+        &.absent {
+          background: var(--ion-color-danger);
+        }
+        
+        &.has-extra {
+          background: var(--ion-color-tertiary);
+          position: relative;
+          
+          &::after {
+            content: '+';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Calendar
+.calendar-grid {
+  .calendar-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 8px;
+    
+    .day-header {
+      text-align: center;
+      font-weight: 600;
+      color: var(--ion-color-medium);
+      font-size: 0.8rem;
+      padding: 8px 4px;
+    }
+  }
+  
+  .calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border: 1px solid var(--ion-color-light);
+  border-radius: 8px;
+  padding: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .day-number {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2px;
+  }
+  
+  .shift-indicators {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    align-items: center;
+    justify-content: center;
+    
+    .shift-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      font-size: 6px;
+      
+      &.morning {
+        background: var(--ion-color-warning);
+      }
+      
+      &.evening {
+        background: var(--ion-color-secondary);
+      }
+      
+      &.night {
+        background: var(--ion-color-dark);
+      }
+      
+      &.extra {
+        background: var(--ion-color-tertiary);
+        color: white;
+        border-radius: 4px;
+        padding: 1px 2px;
+        font-size: 6px;
+        font-weight: bold;
+        width: auto;
+        height: auto;
+        min-width: 12px;
+        text-align: center;
+      }
+    }
+  }
+  
+  // Day status styles
+  &.today {
+    border-color: var(--ion-color-primary);
+    border-width: 2px;
+    
+    .day-number {
+      color: var(--ion-color-primary);
+      font-weight: 700;
+    }
+  }
+  
+  &.working {
+    background: rgba(var(--ion-color-success-rgb), 0.1);
+    border-color: var(--ion-color-success);
+  }
+  
+  &.free {
+    background: rgba(var(--ion-color-light-rgb), 0.3);
+  }
+  
+  &.vacation {
+    background: rgba(var(--ion-color-primary-rgb), 0.1);
+    border-color: var(--ion-color-primary);
+    
+    .day-number {
+      color: var(--ion-color-primary);
+    }
+  }
+  
+  &.sick {
+    background: rgba(var(--ion-color-warning-rgb), 0.1);
+    border-color: var(--ion-color-warning);
+    
+    .day-number {
+      color: var(--ion-color-warning-shade);
+    }
+  }
+  
+  &.absent {
+    background: rgba(var(--ion-color-danger-rgb), 0.1);
+    border-color: var(--ion-color-danger);
+    
+    .day-number {
+      color: var(--ion-color-danger);
+    }
+  }
+  
+  &.swapped {
+    background: rgba(var(--ion-color-tertiary-rgb), 0.1);
+    border-color: var(--ion-color-tertiary);
+    
+    .day-number {
+      color: var(--ion-color-tertiary);
+    }
+  }
+  
+  &.has-extra {
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      width: 8px;
+      height: 8px;
+      background: var(--ion-color-tertiary);
+      border-radius: 50%;
+      border: 1px solid white;
+    }
+  }
+  
+  &.other-month {
+    opacity: 0.4;
+    
+    .day-number {
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+// Day details
+.swapped-info {
+  font-style: italic;
+  margin-top: 4px !important;
+}
+
+// Status colors helper
+.getStatusColor {
+  &.activo { color: var(--ion-color-success); }
+  &.inactivo { color: var(--ion-color-danger); }
+  &.licencia { color: var(--ion-color-warning); }
+  &.vacaciones { color: var(--ion-color-primary); }
+  &.suspendido { color: var(--ion-color-dark); }
+  &.activoextra { color: var(--ion-color-tertiary); }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .calendar-day {
+    min-height: 50px;
+    padding: 2px;
+    
+    .day-number {
+      font-size: 0.75rem;
+    }
+    
+    .shift-indicators {
+      .shift-indicator {
+        width: 6px;
+        height: 6px;
+        
+        &.extra {
+          font-size: 5px;
+          min-width: 10px;
+        }
+      }
+    }
+  }
+  
+  .legend-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
