@@ -1,31 +1,86 @@
-<ion-content>
+<ion-content class="ion-padding app-background">
   <ion-grid>
     <ion-row class="ion-justify-content-center">
-      <ion-col size="8"  size-md="4">
-        <ion-card style="position: relative; margin-top: 100px" color="primary">
-          <ion-card-header><h3 class="ion-margin-horizontal">Login</h3></ion-card-header>
+      <ion-col size="12" size-md="6" size-lg="4">
+        <div class="login-form">
+          <ion-card class="app-card">
+            <ion-card-header class="app-card-header">
+              <ion-card-title class="app-card-title">
+                <ion-icon name="log-in-outline" class="title-icon"></ion-icon>
+                Iniciar Sesión
+              </ion-card-title>
+              <ion-card-subtitle class="app-card-subtitle">
+                Accede al sistema de gestión de turnos
+              </ion-card-subtitle>
+            </ion-card-header>
+            <ion-card-content class="app-card-content">
+              <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+                <ion-item class="app-form-item">
+                  <ion-input 
+                    type="text"  
+                    label="Email o Usuario" 
+                    labelPlacement="floating"  
+                    formControlName="username" 
+                    placeholder="Ingresa tu email">
+                  </ion-input>
+                </ion-item>
+                <div class="app-error-message" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.errors?.['required']">
+                  <ion-icon name="alert-circle-outline"></ion-icon>
+                  Se requiere un email o usuario
+                </div>
+                <div class="app-error-message" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.errors?.['minlength']">
+                  <ion-icon name="alert-circle-outline"></ion-icon>
+                  Mínimo 5 caracteres
+                </div>
+                
+                <ion-item class="app-form-item">
+                  <ion-input 
+                    [type]="showPassword ? 'text': 'password'" 
+                    label="Contraseña"
+                    labelPlacement="floating"
+                    formControlName="password" 
+                    placeholder="Ingresa tu contraseña">
+                  </ion-input>
+                  <ion-button 
+                    fill="clear" 
+                    slot="end" 
+                    class="app-icon-button"
+                    (click)="togglePasswordVisibility()">
+                    <ion-icon [name]="showPassword ? 'eye-off':'eye'"></ion-icon>
+                  </ion-button>
+                </ion-item>
+                <div class="app-error-message" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']">
+                  <ion-icon name="alert-circle-outline"></ion-icon>
+                  Se requiere la contraseña
+                </div>
+                <div class="app-error-message" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['minlength']">
+                  <ion-icon name="alert-circle-outline"></ion-icon>
+                  La contraseña debe tener al menos 6 caracteres
+                </div>
+                
+                <ion-button 
+                  expand="block" 
+                  type="submit" 
+                  [disabled]="!loginForm.valid" 
+                  class="app-button app-button-primary">
+                  <ion-icon name="log-in-outline" slot="start"></ion-icon>
+                  Iniciar Sesión
+                </ion-button>
+              </form>
 
-            <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-            <ion-item>
-              <ion-input type="text"  label="ingresa Email" labelPlacement="floating"  formControlName="username" placeholder="Ingresa Email">
-              </ion-input>
-            </ion-item>
-            <div class="error-message" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.errors?.['required']">Se requiere un Email o usuario</div>
-            <div class="error-message" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.errors?.['minlength']">5 caracteres ñahahaha</div>
-            <ion-item>
-              <ion-label position="stacked">Contraseña</ion-label>
-              <ion-input [type]="showPassword ? 'text': 'contraseña'" formControlName="password" placeholder="Ingresa la contraseña"></ion-input>
-              <ion-button fill="clear" slot="end" (click)="togglePasswordVisibility()"><ion-icon [name]="showPassword ? 'eye-off':'eye'"></ion-icon></ion-button>
-            </ion-item>
-            <div class="error-message" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['required']">Se requiere la contraseña</div>
-            <div class="error-message" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors?.['minlength']">Contraseña debe ser al menos de 6 caracteres</div>
-            <ion-button expand="block" type="submit" [disabled]="!loginForm.valid" class="login-button">Login</ion-button>
-          </form>
-
-          <div class="register-link"> 
-              <ion-button fill="clear" (click)="goToRegister()">Registrarse</ion-button>
-          </div>
-        </ion-card>
+              <div class="register-link"> 
+                <p class="app-text-muted">¿No tienes cuenta?</p>
+                <ion-button 
+                  fill="clear" 
+                  class="app-button-outline"
+                  (click)="goToRegister()">
+                  <ion-icon name="person-add-outline" slot="start"></ion-icon>
+                  Registrarse
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
       </ion-col>
     </ion-row>
   </ion-grid>

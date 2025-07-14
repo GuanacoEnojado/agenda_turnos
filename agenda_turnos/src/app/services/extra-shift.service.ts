@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Observable, firstValueFrom, combineLatest } from 'rxjs';
 import { ExtraShift, trabajador } from './datos';
 import { TrabajadoresService } from './trabajadores.service';
 import { map, catchError, tap } from 'rxjs/operators';
@@ -164,7 +164,48 @@ export class ExtraShiftService {
   }
 
   /**
-   * Assign extra shift to worker and update their estado
+   * Check if worker is eligible for extra shifts based on their base estado
+   */
+  private isWorkerEligibleForExtraShift(trabajador: trabajador): boolean {
+    // Workers who can work extra shifts (those not permanently unavailable)
+    const eligibleStates = ['activo', 'inactivo'];
+    return eligibleStates.includes(trabajador.estado);
+  }
+
+  /**
+   * Check if worker has extra shift of specific type on specific date
+   */
+  hasExtraShiftOfTypeOnDate(trabajadorId: number, date: Date, tipoTurno: 'day' | 'night'): Observable<boolean> {
+    return this.extraShifts.pipe(
+      map(shifts => shifts.some(shift => 
+        shift.trabajadorId === trabajadorId &&
+        this.isSameDate(shift.fechaTurnoExtra, date) &&
+        shift.tipoTurno === tipoTurno &&
+        shift.estado === 'programado'
+      ))
+    );
+  }
+
+  /**
+   * Get extra shift of specific type for worker on specific date
+   */
+  getExtraShiftOfTypeForWorkerOnDate(trabajadorId: number, date: Date, tipoTurno: 'day' | 'night'): Observable<ExtraShift | null> {
+    return this.extraShifts.pipe(
+      map(shifts => {
+        const shift = shifts.find(shift => 
+          shift.trabajadorId === trabajadorId &&
+          this.isSameDate(shift.fechaTurnoExtra, date) &&
+          shift.tipoTurno === tipoTurno &&
+          shift.estado === 'programado'
+        );
+        return shift || null;
+      })
+    );
+  }
+
+  /**
+   * Assign extra shift to worker (do NOT change worker's current estado)
+   * Now allows multiple shifts per day (day and night separately)
    */
   async assignExtraShift(
     trabajador: trabajador, 
@@ -174,20 +215,33 @@ export class ExtraShiftService {
     detalles: string
   ): Promise<boolean> {
     try {
-      // Check if worker can be assigned extra shift
-      if (trabajador.estado === 'activo') {
-        throw new Error('No se puede asignar turno extra a trabajadores activos');
+      // Check if worker can be assigned extra shift (only check base estado, not current date)
+      if (!this.isWorkerEligibleForExtraShift(trabajador)) {
+        throw new Error('No se puede asignar turno extra a trabajadores con este estado');
       }
 
-      // Create extra shift record via API
+      // Check if worker already has an extra shift of this type on that date
+      const hasExtraShiftOfType = await firstValueFrom(
+        this.hasExtraShiftOfTypeOnDate(trabajador.id!, fechaTurnoExtra, tipoTurno)
+      );
+      
+      if (hasExtraShiftOfType) {
+        const shiftTypeName = tipoTurno === 'day' ? 'día' : 'noche';
+        throw new Error(`El trabajador ya tiene un turno extra de ${shiftTypeName} asignado para esta fecha`);
+      }
+
+      // Create extra shift record via API (DO NOT change worker estado)
+      // Fix date to ensure no timezone issues
+      const normalizedDate = new Date(fechaTurnoExtra.getFullYear(), fechaTurnoExtra.getMonth(), fechaTurnoExtra.getDate());
       const extraShiftData = {
-        trabajadorId: trabajador.id,
+        trabajadorId: trabajador.id!,
         fechaCreacion: new Date(),
-        fechaTurnoExtra,
+        fechaTurnoExtra: normalizedDate,
         horasExtras,
         tipoTurno,
         detalles,
-        estado: 'programado' as const
+        estado: 'programado' as const,
+        createdBy: 1 // TODO: Get from current user session
       };
 
       const createdShift = await firstValueFrom(this.createExtraShiftApi(extraShiftData));
@@ -196,22 +250,9 @@ export class ExtraShiftService {
         throw new Error('Failed to create extra shift via API');
       }
 
-      // Update worker estado to activoextra
-      const updateResult = await firstValueFrom(
-        this.trabajadoresService.updateTrabajador(
-          trabajador.id!, 
-          { estado: 'activoextra' }
-        )
-      );
-
-      if (updateResult) {
-        // Refresh extra shifts from backend
-        this.loadExtraShiftsFromBackend();
-        return true;
-      } else {
-        console.error('Failed to update worker estado, rolling back extra shift creation');
-        return false;
-      }
+      // Refresh extra shifts from backend
+      this.loadExtraShiftsFromBackend();
+      return true;
 
     } catch (error) {
       console.error('Error assigning extra shift:', error);
@@ -220,9 +261,9 @@ export class ExtraShiftService {
   }
 
   /**
-   * Cancel extra shift and restore worker estado
+   * Cancel extra shift (do NOT change worker's current estado)
    */
-  async cancelExtraShift(extraShiftId: number, newEstado: string = 'inactivo'): Promise<boolean> {
+  async cancelExtraShift(extraShiftId: number): Promise<boolean> {
     try {
       const currentShifts = this.extraShifts.value;
       const shift = currentShifts.find(s => s.id === extraShiftId);
@@ -237,19 +278,9 @@ export class ExtraShiftService {
       );
 
       if (updatedShift) {
-        // Update worker estado
-        const updateSuccess = await firstValueFrom(
-          this.trabajadoresService.updateTrabajador(
-            shift.trabajadorId, 
-            { estado: newEstado }
-          )
-        );
-
-        if (updateSuccess) {
-          // Refresh extra shifts from backend
-          this.loadExtraShiftsFromBackend();
-          return true;
-        }
+        // Refresh extra shifts from backend
+        this.loadExtraShiftsFromBackend();
+        return true;
       }
 
       return false;
@@ -314,21 +345,167 @@ export class ExtraShiftService {
    * Validate if worker can be assigned extra shift
    */
   canAssignExtraShift(trabajador: trabajador): { canAssign: boolean, reason?: string } {
-    if (trabajador.estado === 'activo') {
+    if (!this.isWorkerEligibleForExtraShift(trabajador)) {
       return { 
         canAssign: false, 
-        reason: 'No se puede asignar turno extra a trabajadores activos' 
-      };
-    }
-
-    if (trabajador.estado === 'activoextra') {
-      return { 
-        canAssign: false, 
-        reason: 'El trabajador ya tiene un turno extra asignado' 
+        reason: `No se puede asignar turno extra a trabajadores con estado: ${trabajador.estado}` 
       };
     }
 
     return { canAssign: true };
+  }
+
+  /**
+   * Get worker's effective status on a specific date
+   * This considers their base estado plus any date-specific statuses (extra shifts, medical leaves, etc.)
+   */
+  getWorkerStatusOnDate(trabajador: trabajador, date: Date): Observable<{
+    baseEstado: string;
+    effectiveEstado: string;
+    hasExtraShift: boolean;
+    extraShiftDetails?: ExtraShift;
+    // Future: add medical leaves, vacations, etc.
+    hasMedicalLeave?: boolean;
+    hasScheduledVacation?: boolean;
+  }> {
+    return this.getExtraShiftForWorkerOnDate(trabajador.id!, date).pipe(
+      map(extraShift => {
+        const hasExtraShift = extraShift !== null;
+        
+        // Determine effective estado for this specific date
+        let effectiveEstado = trabajador.estado;
+        
+        if (hasExtraShift) {
+          effectiveEstado = 'activoextra';
+        }
+        // Future: Add other date-specific status checks here
+        // Example:
+        // if (hasMedicalLeaveOnDate(trabajador.id!, date)) {
+        //   effectiveEstado = 'licencia';
+        // }
+        // if (hasScheduledVacationOnDate(trabajador.id!, date)) {
+        //   effectiveEstado = 'vacaciones';
+        // }
+        
+        return {
+          baseEstado: trabajador.estado,
+          effectiveEstado,
+          hasExtraShift,
+          extraShiftDetails: extraShift || undefined
+        };
+      })
+    );
+  }
+
+  /**
+   * Check if worker is available for assignment on a specific date
+   * This considers both their base estado and any date-specific statuses
+   */
+  isWorkerAvailableOnDate(trabajador: trabajador, date: Date): Observable<{
+    isAvailable: boolean;
+    reason?: string;
+    currentStatus: string;
+  }> {
+    return this.getWorkerStatusOnDate(trabajador, date).pipe(
+      map(statusInfo => {
+        const { effectiveEstado } = statusInfo;
+        
+        // Workers who are not available for any assignments
+        const unavailableStates = [
+          'licencia', 
+          'vacaciones', 
+          'suspendido', 
+          'activoextra', // Already has extra shift
+          'inasistente'
+        ];
+        
+        if (unavailableStates.includes(effectiveEstado)) {
+          return {
+            isAvailable: false,
+            reason: `Trabajador no disponible: ${effectiveEstado}`,
+            currentStatus: effectiveEstado
+          };
+        }
+        
+        return {
+          isAvailable: true,
+          currentStatus: effectiveEstado
+        };
+      })
+    );
+  }
+
+  /**
+   * Get all workers who are available for extra shifts on a specific date
+   */
+  getAvailableWorkersForExtraShift(trabajadores: trabajador[], date: Date): Observable<trabajador[]> {
+    // First filter by base eligibility
+    const eligibleWorkers = trabajadores.filter(worker => 
+      this.isWorkerEligibleForExtraShift(worker)
+    );
+    
+    // Then check date-specific availability
+    const availabilityChecks = eligibleWorkers.map(worker =>
+      this.isWorkerAvailableOnDate(worker, date).pipe(
+        map(availability => ({ worker, availability }))
+      )
+    );
+    
+    // Combine all availability checks
+    if (availabilityChecks.length === 0) {
+      return of([]);
+    }
+    
+    return combineLatest(availabilityChecks).pipe(
+      map((workerAvailabilities: Array<{worker: trabajador, availability: any}>) => 
+        workerAvailabilities
+          .filter(({ availability }) => availability.isAvailable)
+          .map(({ worker }) => worker)
+      )
+    );
+  }
+
+  /**
+   * Get all extra shifts for a worker on a specific date (both day and night)
+   */
+  getAllExtraShiftsForWorkerOnDate(trabajadorId: number, date: Date): Observable<ExtraShift[]> {
+    return this.extraShifts.pipe(
+      map(shifts => shifts.filter(shift => 
+        shift.trabajadorId === trabajadorId &&
+        this.isSameDate(shift.fechaTurnoExtra, date) &&
+        shift.estado === 'programado'
+      ))
+    );
+  }
+
+  /**
+   * Delete/cancel a specific extra shift
+   */
+  async deleteExtraShift(extraShiftId: number): Promise<boolean> {
+    try {
+      const currentShifts = this.extraShifts.value;
+      const shift = currentShifts.find(s => s.id === extraShiftId);
+      
+      if (!shift) {
+        throw new Error('Turno extra no encontrado');
+      }
+
+      // Update extra shift status via API
+      const updatedShift = await firstValueFrom(
+        this.updateExtraShiftApi(extraShiftId, { estado: 'cancelado' })
+      );
+
+      if (updatedShift) {
+        // Refresh extra shifts from backend
+        this.loadExtraShiftsFromBackend();
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error deleting extra shift:', error);
+      throw error;
+    }
   }
 
   /**

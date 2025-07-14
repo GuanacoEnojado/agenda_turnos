@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 import { AuthService } from './services/auth.service';
+import { ThemeService } from './services/theme.service';
 import { User } from './services/datos';
 import { Observable } from 'rxjs';
 
@@ -18,9 +19,11 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router, 
     private menuCtrl: MenuController,
-    private authService: AuthService
+    private authService: AuthService,
+    private themeService: ThemeService
   ) {
     this.currentUser$ = this.authService.currentUser$;
+    // Initialize theme service - this will apply saved theme or default
   }
 
   ngOnInit() {
@@ -44,11 +47,7 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/preferencias']);
   }
   
-  async eliminarfuncionario(){
-    await this.menuCtrl.close();
-    this.router.navigate(['/eliminacion']);
-  }
-  
+
   async registrofuncionario(){
     await this.menuCtrl.close();
     this.router.navigate(['/registrofuncionario']);
@@ -64,15 +63,7 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/lista-funcionarios']);
   }
 
-  async calendarioTurnos(){
-    await this.menuCtrl.close();
-    this.router.navigate(['/calendario-turnos']);
-  }
 
-  async busquedadia(){
-    await this.menuCtrl.close();
-    this.router.navigate(['/busquedadia']);
-  }
 
   async cambiodeturno(){
     await this.menuCtrl.close();

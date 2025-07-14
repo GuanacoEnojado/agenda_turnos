@@ -1,0 +1,43 @@
+/* Registrofuncionario Page - Form Specific Styles */
+
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  
+  .app-card {
+    margin-top: var(--app-spacing-md);
+  }
+  
+  .header-icon {
+    text-align: center;
+    margin-bottom: var(--app-spacing-md);
+    
+    .title-icon {
+      font-size: 3rem;
+      color: var(--app-text-light);
+    }
+  }
+}
+
+.button-container {
+  margin-top: var(--app-spacing-lg);
+  
+  ion-button {
+    margin-bottom: var(--app-spacing-sm);
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .form-container {
+    margin: 0 var(--app-spacing-sm);
+    
+    .app-card {
+      margin-top: var(--app-spacing-sm);
+    }
+  }
+}

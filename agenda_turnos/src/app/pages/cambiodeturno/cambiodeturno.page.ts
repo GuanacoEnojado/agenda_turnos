@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { trabajador } from '../../services/datos';
 import { ShiftchangeService, ShiftChangeRequest, MonthlyShiftInfo, EligibleWorker } from '../../services/shiftchange.service';
 import { ShiftCalculatorService, ShiftType } from '../../services/shift-calculator.service';
 import { TrabajadoresService } from '../../services/trabajadores.service';
-import { AlertController, ToastController } from '@ionic/angular';
+import { AlertController, ToastController, MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-cambiodeturno',
@@ -37,6 +38,8 @@ export class CambiodeturnoPage implements OnInit {
   currentStep: 'select-worker' | 'select-original-shift' | 'select-target-worker' | 'select-target-shift' | 'confirm-change' = 'select-worker';
 
   constructor(
+    private router: Router,
+    private menuCtrl: MenuController,
     private shiftChangeService: ShiftchangeService,
     private shiftCalculator: ShiftCalculatorService,
     private trabajadoresService: TrabajadoresService,
@@ -281,5 +284,56 @@ export class CambiodeturnoPage implements OnInit {
       buttons: ['OK']
     });
     await alert.present();
+  }
+
+  // Navigation methods for menu integration
+  async calendarioglobal(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/calendario-global']);
+  }
+  
+  async main(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/main']);
+  }
+  
+  async preferencias(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/preferencias']);
+  }
+  
+  async eliminarfuncionario(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/eliminacion']);
+  }
+  
+  async registrofuncionario(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/registrofuncionario']);
+  }
+  
+  async listafuncionario(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/lista-funcionarios']);
+  }
+
+  async calendarioTurnos(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/calendario-turnos']);
+  }
+
+  async busquedadia(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/busquedadia']);
+  }
+
+  async registroUsuario(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/registro']);
+  }
+
+  async cambiodeturno(){
+    await this.menuCtrl.close();
+    this.router.navigate(['/cambiodeturno']);
   }
 }

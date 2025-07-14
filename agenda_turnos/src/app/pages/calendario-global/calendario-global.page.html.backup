@@ -48,7 +48,7 @@
     </ion-card>
 
     <!-- Trabajadores en Turno -->
-    <ion-card *ngIf="workersOnShift.length + extraworkers.length > 0" class="workers-on-shift">
+    <ion-card *ngIf="workersOnShift.length + extraworkers.length > 0">
       <ion-card-header>
         <ion-card-title color="success">
           <ion-icon name="people-outline"></ion-icon>
@@ -126,7 +126,7 @@
     </ion-card>
 
     <!-- Trabajadores Ausentes -->
-    <ion-card *ngIf="absentWorkers.length > 0" class="absent-workers">
+    <ion-card *ngIf="absentWorkers.length > 0">
       <ion-card-header>
         <ion-card-title color="warning">
           <ion-icon name="warning-outline"></ion-icon>
@@ -191,7 +191,7 @@
     </ion-card>
 
     <!-- Trabajadores Libres -->
-    <ion-card *ngIf="freeWorkers.length > 0" class="free-workers">
+    <ion-card *ngIf="freeWorkers.length > 0">
       <ion-card-header>
         <ion-card-title color="medium">
           <ion-icon name="time-outline"></ion-icon>
@@ -264,7 +264,7 @@
     </ion-card>
 
     <!-- Tarjeta de Resumen -->
-    <ion-card class="summary-card">
+    <ion-card>
       <ion-card-header>
         <ion-card-title>
           <ion-icon name="analytics-outline" color="primary"></ion-icon>

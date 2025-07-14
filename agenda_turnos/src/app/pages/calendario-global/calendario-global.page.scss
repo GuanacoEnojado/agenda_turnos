@@ -1,49 +1,32 @@
-ion-datetime {
-  --background: #fff1f2;
-  --background-rgb: 255, 241, 242;
-  border-radius: 16px;
-  box-shadow: rgba(var(--ion-color-rose-rgb), 0.3) 0px 10px 15px -3px;
+/* Calendario Global - Page Specific Styles */
+
+/* Card type-specific header colors */
+.workers-on-shift ion-card-header {
+  background: var(--app-color-blue-1) !important;
 }
 
-// Empty state styling
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  
-  ion-icon {
-    color: var(--ion-color-medium);
-    margin-bottom: 1rem;
-  }
-  
-  h3 {
-    color: var(--ion-color-medium-shade);
-    margin-bottom: 0.5rem;
-  }
-  
-  p {
-    color: var(--ion-color-medium);
-    font-size: 0.9rem;
-  }
+.absent-workers ion-card-header {
+  background: var(--app-color-grey-2) !important;
 }
 
-// Summary statistics styling
-.summary-stat {
-  text-align: center;
-  padding: 1rem;
+.free-workers ion-card-header {
+  background: var(--app-color-grey-1) !important;
+}
+
+.summary-card ion-card-header {
+  background: var(--app-color-blue-2) !important;
+}
+
+/* Page-specific overrides only */
+.extra-shift-label,
+.shifted-label {
+  color: var(--app-color-blue-2) !important;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: var(--app-spacing-xs);
   
   ion-icon {
-    margin-bottom: 0.5rem;
-  }
-  
-  h2 {
-    margin: 0.5rem 0;
-    font-size: 2rem;
-    font-weight: bold;
-  }
-  
-  p {
-    margin: 0;
-    color: var(--ion-color-medium);
     font-size: 0.9rem;
   }
 }
@@ -170,6 +153,50 @@ ion-button[color="tertiary"] {
   
   &:hover {
     --background: rgba(var(--ion-color-tertiary-rgb), 0.1);
+  }
+}
+
+// Date-specific status styling
+.extra-shift-label {
+  color: var(--ion-color-tertiary);
+  font-weight: 500;
+  
+  ion-icon {
+    margin-right: 0.25rem;
+  }
+}
+
+.shifted-label {
+  color: var(--ion-color-success);
+  font-weight: 500;
+  
+  ion-icon {
+    margin-right: 0.25rem;
+  }
+}
+
+.date-specific-status {
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  
+  &.extra-shift {
+    background-color: var(--ion-color-tertiary-tint);
+    color: var(--ion-color-tertiary-shade);
+  }
+  
+  &.medical-leave {
+    background-color: var(--ion-color-warning-tint);
+    color: var(--ion-color-warning-shade);
+  }
+  
+  &.vacation {
+    background-color: var(--ion-color-success-tint);
+    color: var(--ion-color-success-shade);
   }
 }
 

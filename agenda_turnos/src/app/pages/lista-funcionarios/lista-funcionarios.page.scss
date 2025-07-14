@@ -1,199 +1,462 @@
-// Status-based styling for workers
-.status-active {
-  --background: var(--ion-color-success-tint);
-  --color: var(--ion-color-success-contrast);
-  
-  ion-label h2 {
-    color: var(--ion-color-success-shade);
-    font-weight: 600;
-  }
+/* Lista Funcionarios - Compact Design */
+
+/* Main container styling */
+ion-content {
+  --padding-start: var(--app-spacing-sm);
+  --padding-end: var(--app-spacing-sm);
 }
 
-.status-inactive {
-  --background: var(--ion-color-medium-tint);
-  --color: var(--ion-color-medium-contrast);
-  opacity: 0.7;
+/* Search bar styling */
+ion-searchbar {
+  --background: var(--app-color-blue-1);
+  --color: var(--app-text-light);
+  --placeholder-color: rgba(255, 255, 255, 0.7);
+  --icon-color: var(--app-text-light);
+  --clear-button-color: var(--app-text-light);
+  --border-radius: var(--app-border-radius);
+  margin-bottom: var(--app-spacing-md);
+}
+
+/* List styling */
+ion-list {
+  background: transparent;
+  padding: 0;
+}
+
+/* Compact item styling */
+ion-item {
+  --min-height: 60px;
+  --padding-start: var(--app-spacing-sm);
+  --padding-end: var(--app-spacing-sm);
+  --border-radius: var(--app-border-radius-sm);
+  margin-bottom: var(--app-spacing-xs);
+  
+  /* Default styling */
+  --background: var(--app-color-blue-1);
+  --color: var(--app-text-light);
+  border-radius: var(--app-border-radius-sm);
+  
+  ion-avatar {
+    --size: 40px;
+    margin-right: var(--app-spacing-sm);
+    
+    ion-icon {
+      font-size: 32px;
+      color: var(--app-text-light);
+    }
+    
+    img {
+      border-radius: 50%;
+      border: 2px solid var(--app-text-light);
+    }
+  }
   
   ion-label {
-    opacity: 0.8;
-  }
-  
-  ion-label h2 {
-    color: var(--ion-color-medium-shade);
-    text-decoration: line-through;
-  }
-}
-
-.status-medical {
-  --background: var(--ion-color-warning-tint);
-  --color: var(--ion-color-warning-contrast);
-  
-  ion-label h2 {
-    color: var(--ion-color-warning-shade);
-    font-weight: 500;
-  }
-}
-
-.status-vacation {
-  --background: var(--ion-color-primary-tint);
-  --color: var(--ion-color-primary-contrast);
-  
-  ion-label h2 {
-    color: var(--ion-color-primary-shade);
-    font-weight: 500;
-  }
-}
-
-.status-suspended {
-  --background: var(--ion-color-danger-tint);
-  --color: var(--ion-color-danger-contrast);
-  
-  ion-label h2 {
-    color: var(--ion-color-danger-shade);
-    font-weight: 600;
-  }
-}
-
-// Shift status styling
-.shift-status {
-  font-size: 0.85rem;
-  margin-top: 4px;
-  
-  .pending {
-    color: var(--ion-color-warning);
-    font-style: italic;
-    font-weight: 500;
-  }
-}
-
-// Empty state styling
-.empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  
-  ion-icon {
-    color: var(--ion-color-medium);
-    margin-bottom: 1rem;
-  }
-  
-  h3 {
-    color: var(--ion-color-medium-shade);
-    margin-bottom: 0.5rem;
-  }
-  
-  p {
-    color: var(--ion-color-medium);
-    font-size: 0.9rem;
-  }
-}
-
-// Modal styling
-ion-modal {
-  --height: 90%;
-}
-
-// Modal styling for shift visualization
-.shift-visualization-modal {
-  --width: 90%;
-  --max-width: 800px;
-  --height: 90%;
-  --max-height: 900px;
-}
-
-@media (max-width: 768px) {
-  .shift-visualization-modal {
-    --width: 95%;
-    --height: 95%;
-  }
-}
-
-// Form styling
-.button-container {
-  margin-top: 2rem;
-  padding: 0 1rem;
-  
-  ion-button {
-    margin-bottom: 0.5rem;
-  }
-}
-
-.error-message {
-  color: var(--ion-color-danger);
-  font-size: 0.8rem;
-  margin: 0.25rem 0 0.5rem 1rem;
-}
-
-// Search bar styling
-ion-searchbar {
-  --background: var(--ion-color-light);
-  --border-radius: 8px;
-  margin-bottom: 1rem;
-}
-
-// List item spacing
-ion-list {
-  ion-item {
-    --padding-start: 16px;
-    --padding-end: 16px;
-    margin-bottom: 8px;
-    border-radius: 8px;
+    margin: var(--app-spacing-xs) 0;
     
-    ion-avatar {
-      margin-right: 16px;
+    h2 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin: 0 0 var(--app-spacing-xs) 0;
+      color: var(--app-text-light);
+      line-height: 1.2;
     }
     
-    ion-badge {
-      margin-left: 8px;
+    p {
+      font-size: 0.8rem;
+      margin: 0;
+      color: var(--app-text-light);
+      opacity: 0.9;
+      line-height: 1.1;
+      
+      &:not(:last-child) {
+        margin-bottom: 2px;
+      }
+      
+      &.shift-status {
+        font-size: 0.75rem;
+        font-style: italic;
+        opacity: 0.95;
+      }
     }
   }
 }
 
-// Header styling
-ion-header {
-  ion-toolbar {
-    --background: var(--ion-color-primary);
-    --color: var(--ion-color-primary-contrast);
-  }
-}
-
-// Card styling in modal
-ion-card {
-  margin-bottom: 1rem;
-  
-  ion-card-content {
-    padding: 1rem;
-  }
-}
-
-// Worker actions styling
+/* Worker actions styling */
 .worker-actions {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8px;
+  gap: 3px;
+  min-width: 85px;
+  max-width: 90px;
   
   ion-button {
-    margin: 0;
-    min-height: 32px;
+    --border-radius: 4px;
+    --padding-start: 4px;
+    --padding-end: 4px;
+    --padding-top: 2px;
+    --padding-bottom: 2px;
+    --color: var(--app-text-light);
+    --border-color: var(--app-text-light);
+    --border-width: 1px;
+    font-size: 0.65rem;
+    font-weight: 500;
+    height: 22px;
+    min-height: 22px;
+    width: 100%;
+    text-transform: none;
+    letter-spacing: 0;
     
-    &[size="small"] {
-      --padding-start: 8px;
-      --padding-end: 8px;
-      font-size: 0.8rem;
+    &[fill="outline"] {
+      --background: transparent;
+      --background-hover: rgba(255, 255, 255, 0.1);
+      --background-activated: rgba(255, 255, 255, 0.2);
+    }
+    
+    &[color="tertiary"] {
+      --color: var(--app-text-light);
+      --border-color: var(--app-text-light);
+      
+      &:hover {
+        --background: rgba(255, 255, 255, 0.1);
+      }
+    }
+    
+    ion-icon {
+      font-size: 0.75rem;
+      margin-right: 2px;
     }
   }
   
   ion-badge {
-    margin-left: 0;
+    --background: rgba(255, 255, 255, 0.2);
+    --color: var(--app-text-light);
+    --padding-start: 4px;
+    --padding-end: 4px;
+    --padding-top: 2px;
+    --padding-bottom: 2px;
+    border-radius: 4px;
+    font-size: 0.6rem;
+    font-weight: 500;
+    height: 18px;
+    min-height: 18px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    ion-icon {
+      font-size: 0.65rem;
+      margin-right: 2px;
+    }
   }
 }
 
-// Extra shift specific styling
-ion-button[color="tertiary"] {
-  --color: var(--ion-color-tertiary);
-  --border-color: var(--ion-color-tertiary);
+/* Status-based styling with new color palette */
+.status-active {
+  --background: var(--app-color-blue-1);
+  --color: var(--app-text-light);
   
-  &:hover {
-    --background: rgba(var(--ion-color-tertiary-rgb), 0.1);
+  ion-label {
+    h2, p {
+      color: var(--app-text-light);
+    }
+  }
+  
+  ion-avatar ion-icon {
+    color: var(--app-text-light);
+  }
+  
+  .worker-actions ion-badge {
+    --background: rgba(255, 255, 255, 0.25);
+    --color: var(--app-text-light);
+  }
+}
+
+.status-inactive {
+  --background: var(--app-color-grey-1);
+  --color: var(--app-text-light);
+  opacity: 0.9;
+  
+  ion-label {
+    h2 {
+      text-decoration: line-through;
+      opacity: 0.8;
+      color: var(--app-text-light);
+    }
+    
+    p {
+      opacity: 0.7;
+      color: var(--app-text-light);
+    }
+  }
+  
+  ion-avatar ion-icon {
+    color: var(--app-text-light);
+  }
+  
+  .worker-actions ion-badge {
+    --background: rgba(255, 255, 255, 0.2);
+    --color: var(--app-text-light);
+  }
+}
+
+.status-medical {
+  --background: var(--app-color-grey-2);
+  --color: var(--app-text-light);
+  
+  ion-label {
+    h2, p {
+      color: var(--app-text-light);
+    }
+  }
+  
+  ion-avatar ion-icon {
+    color: var(--app-text-light);
+  }
+  
+  .worker-actions ion-badge {
+    --background: rgba(255, 255, 255, 0.25);
+    --color: var(--app-text-light);
+  }
+}
+
+.status-vacation {
+  --background: var(--app-color-blue-2);
+  --color: var(--app-text-light);
+  
+  ion-label {
+    h2, p {
+      color: var(--app-text-light);
+    }
+  }
+  
+  ion-avatar ion-icon {
+    color: var(--app-text-light);
+  }
+  
+  .worker-actions ion-badge {
+    --background: rgba(255, 255, 255, 0.25);
+    --color: var(--app-text-light);
+  }
+}
+
+.status-suspended {
+  --background: var(--app-color-grey-3);
+  --color: var(--app-text-light);
+  
+  ion-label {
+    h2 {
+      text-decoration: line-through;
+      font-weight: 700;
+      color: var(--app-text-light);
+    }
+    
+    p {
+      color: var(--app-text-light);
+    }
+  }
+  
+  ion-avatar ion-icon {
+    color: var(--app-text-light);
+  }
+  
+  .worker-actions ion-badge {
+    --background: rgba(255, 255, 255, 0.2);
+    --color: var(--app-text-light);
+  }
+}
+
+/* Default status styling */
+.status-default {
+  --background: var(--app-color-blue-1);
+  --color: var(--app-text-light);
+  
+  ion-label {
+    h2, p {
+      color: var(--app-text-light);
+    }
+  }
+  
+  ion-avatar ion-icon {
+    color: var(--app-text-light);
+  }
+  
+  .worker-actions ion-badge {
+    --background: rgba(255, 255, 255, 0.25);
+    --color: var(--app-text-light);
+  }
+}
+
+/* Empty state styling */
+.empty-state {
+  text-align: center;
+  padding: var(--app-spacing-xl);
+  
+  ion-icon {
+    color: var(--app-color-grey-2);
+    margin-bottom: var(--app-spacing-md);
+    font-size: 4rem;
+  }
+  
+  h3 {
+    color: var(--app-color-grey-3);
+    margin-bottom: var(--app-spacing-sm);
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  
+  p {
+    color: var(--app-color-grey-2);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}
+
+/* Modal styling */
+ion-modal {
+  --height: 85%;
+  --width: 95%;
+  --max-width: 600px;
+  --border-radius: var(--app-border-radius-lg);
+}
+
+/* Modal header styling */
+.modal-header {
+  background: var(--app-color-blue-1);
+  color: var(--app-text-light);
+  
+  ion-toolbar {
+    --background: var(--app-color-blue-1);
+    --color: var(--app-text-light);
+    
+    ion-title {
+      color: var(--app-text-light);
+    }
+    
+    ion-button {
+      --color: var(--app-text-light);
+    }
+  }
+}
+
+/* Form styling in modals */
+.modal-form {
+  padding: var(--app-spacing-md);
+  
+  ion-item {
+    --background: transparent;
+    --border-color: var(--app-color-grey-1);
+    --border-width: 1px;
+    --border-style: solid;
+    --border-radius: var(--app-border-radius-sm);
+    margin-bottom: var(--app-spacing-sm);
+    
+    ion-label {
+      font-weight: 500;
+      color: var(--app-color-blue-3);
+    }
+    
+    ion-input, ion-select {
+      --color: var(--app-color-blue-4);
+    }
+  }
+}
+
+/* Button styling in modals */
+.modal-buttons {
+  padding: var(--app-spacing-md);
+  display: flex;
+  gap: var(--app-spacing-sm);
+  
+  ion-button {
+    --border-radius: var(--app-border-radius);
+    flex: 1;
+    
+    &[color="primary"] {
+      --background: var(--app-color-blue-1);
+      --color: var(--app-text-light);
+    }
+    
+    &[fill="outline"] {
+      --border-color: var(--app-color-grey-2);
+      --color: var(--app-color-grey-3);
+    }
+  }
+}
+
+/* Responsive design */
+@media (max-width: 576px) {
+  ion-item {
+    --min-height: 55px;
+    
+    ion-avatar {
+      --size: 35px;
+      
+      ion-icon {
+        font-size: 28px;
+      }
+    }
+    
+    ion-label {
+      h2 {
+        font-size: 0.9rem;
+      }
+      
+      p {
+        font-size: 0.75rem;
+      }
+    }
+  }
+  
+  .worker-actions {
+    min-width: 75px;
+    max-width: 80px;
+    
+    ion-button {
+      font-size: 0.6rem;
+      height: 20px;
+      min-height: 20px;
+      
+      ion-icon {
+        font-size: 0.7rem;
+      }
+    }
+    
+    ion-badge {
+      font-size: 0.55rem;
+      height: 16px;
+      min-height: 16px;
+      
+      ion-icon {
+        font-size: 0.6rem;
+      }
+    }
+  }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  ion-item {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  ion-item {
+    --border-width: 2px;
+    --border-style: solid;
+    --border-color: var(--app-text-dark);
+  }
+  
+  .worker-actions ion-badge {
+    --border-width: 1px;
+    --border-style: solid;
+    --border-color: var(--app-text-dark);
   }
 }

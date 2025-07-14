@@ -1,0 +1,38 @@
+/* Registro Page - Registration Form Specific Styles */
+
+.register-form {
+  margin-top: var(--app-spacing-lg);
+  
+  .app-card {
+    max-width: 400px;
+    margin: 0 auto;
+    border: none;
+    box-shadow: 0 8px 24px rgba(4, 102, 200, 0.15);
+  }
+  
+  .title-icon {
+    margin-right: var(--app-spacing-sm);
+    font-size: 1.2rem;
+  }
+}
+
+.login-link {
+  text-align: center;
+  margin-top: var(--app-spacing-lg);
+  
+  p {
+    margin-bottom: var(--app-spacing-xs);
+    font-size: 0.9rem;
+  }
+}
+
+/* Responsive adjustments for registration */
+@media (max-width: 576px) {
+  .register-form {
+    margin-top: var(--app-spacing-md);
+    
+    .app-card {
+      margin: 0 var(--app-spacing-sm);
+    }
+  }
+}

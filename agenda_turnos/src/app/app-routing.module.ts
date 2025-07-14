@@ -23,24 +23,14 @@ const routes: Routes = [
     loadChildren: () => import('./pages/lista-funcionarios/lista-funcionarios.module').then( m => m.ListaFuncionariosPageModule),
     canActivate: [RouteGuardService]
   },
-  {
-    path: 'calendario-turnos',
-    loadChildren: () => import('./pages/calendario-turnos/calendario-turnos.module').then( m => m.CalendarioTurnosPageModule),
-    canActivate: [RouteGuardService]
 
-  },
   {
     path: 'calendario-global',
     loadChildren: () => import('./pages/calendario-global/calendario-global.module').then( m => m.CalendarioGlobalPageModule),
         canActivate: [RouteGuardService]
 
   },
-  {
-    path: 'busquedadia',
-    loadChildren: () => import('./pages/busquedadia/busquedadia.module').then( m => m.BusquedadiaPageModule),
-        canActivate: [RouteGuardService]
 
-  },
   {
     path: 'preferencias',
     loadChildren: () => import('./pages/preferencias/preferencias.module').then( m => m.PreferenciasPageModule),
@@ -52,12 +42,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/registro/registro.module').then( m => m.RegistroPageModule),
     canActivate: [RouteGuardService]
   },
-  {
-    path: 'eliminacion',
-    loadChildren: () => import('./pages/eliminacion/eliminacion.module').then( m => m.EliminacionPageModule),
-        canActivate: [RouteGuardService]
 
-  },
   {
     path: 'registrofuncionario',
     loadChildren: () => import('./pages/registrofuncionario/registrofuncionario.module').then( m => m.RegistrofuncionarioPageModule),

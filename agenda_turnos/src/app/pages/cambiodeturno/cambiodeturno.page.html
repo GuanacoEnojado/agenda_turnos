@@ -1,11 +1,12 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>Cambio de Turno</ion-title>
-    <ion-buttons slot="start" *ngIf="currentStep !== 'select-worker'">
-      <ion-button (click)="goBack()">
+    <ion-buttons slot="start">
+      <ion-menu-button *ngIf="currentStep === 'select-worker'"></ion-menu-button>
+      <ion-button *ngIf="currentStep !== 'select-worker'" (click)="goBack()">
         <ion-icon name="arrow-back"></ion-icon>
       </ion-button>
     </ion-buttons>
+    <ion-title>Cambio de Turno</ion-title>
   </ion-toolbar>
 </ion-header>
 

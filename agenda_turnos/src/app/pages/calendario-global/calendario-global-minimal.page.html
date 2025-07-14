@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Simple Test</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <h1>Basic Test</h1>
+  
+  <ion-card>
+    <ion-card-content>
+      <p>Test: {{ selectedDatetime || 'No date selected' }}</p>
+      
+      <!-- Most basic datetime possible -->
+      <ion-datetime [(ngModel)]="selectedDatetime"></ion-datetime>
+      
+      <br><br>
+      <ion-button expand="block" (click)="testButton()">
+        Click Me
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

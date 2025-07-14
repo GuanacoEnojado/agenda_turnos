@@ -1,30 +1,38 @@
-#container {
+/* Home Page - Login Form Specific Styles */
+
+.login-form {
+  margin-top: var(--app-spacing-xl);
+  
+  .app-card {
+    max-width: 400px;
+    margin: 0 auto;
+    border: none;
+    box-shadow: 0 8px 24px rgba(4, 102, 200, 0.15);
+  }
+  
+  .title-icon {
+    margin-right: var(--app-spacing-sm);
+    font-size: 1.2rem;
+  }
+}
+
+.register-link {
   text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  margin-top: var(--app-spacing-lg);
+  
+  p {
+    margin-bottom: var(--app-spacing-xs);
+    font-size: 0.9rem;
+  }
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-ion-content {
-  padding: 10px;
+/* Responsive adjustments for login */
+@media (max-width: 576px) {
+  .login-form {
+    margin-top: var(--app-spacing-lg);
+    
+    .app-card {
+      margin: 0 var(--app-spacing-sm);
+    }
+  }
 }

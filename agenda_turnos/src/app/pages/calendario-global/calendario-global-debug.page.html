@@ -1,0 +1,47 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Turnos por fecha - Debug</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <h1>Debug Page</h1>
+  
+  <!-- Simple datetime test -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Test Fecha</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Selected datetime: {{ selectedDatetime }}</p>
+      <p>All workers count: {{ allWorkers.length }}</p>
+      
+      <ion-datetime 
+        color="primary" 
+        id="datetime-test" 
+        presentation="date"
+        [(ngModel)]="selectedDatetime"
+        (ionChange)="onDateChange($event)">
+      </ion-datetime>
+      
+      <ion-button (click)="testButton()" fill="outline">
+        Test Button
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Results -->
+  <ion-card *ngIf="showResults">
+    <ion-card-header>
+      <ion-card-title>Results</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Workers on shift: {{ workersOnShift.length }}</p>
+      <p>Free workers: {{ freeWorkers.length }}</p>
+      <p>Absent workers: {{ absentWorkers.length }}</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

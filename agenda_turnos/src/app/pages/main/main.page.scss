@@ -1,0 +1,81 @@
+/* Main Page - Dashboard Specific Styles */
+
+.welcome-section {
+  margin-top: var(--app-spacing-md);
+  
+  .welcome-card {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .title-icon {
+    margin-right: var(--app-spacing-sm);
+    font-size: 1.2rem;
+  }
+  
+  .welcome-text {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: var(--app-spacing-sm);
+    color: var(--app-text-light);
+  }
+  
+  .description-text {
+    font-size: 0.9rem;
+    margin-bottom: var(--app-spacing-lg);
+    opacity: 0.9;
+    line-height: 1.4;
+  }
+}
+
+.quick-actions {
+  margin-top: var(--app-spacing-md);
+  
+  ion-col {
+    padding: var(--app-spacing-xs);
+  }
+}
+
+.no-user-section {
+  margin-top: var(--app-spacing-xl);
+  
+  .error-card {
+    max-width: 400px;
+    margin: 0 auto;
+    border: 2px solid var(--app-color-grey-2);
+  }
+  
+  .error-content {
+    text-align: center;
+    
+    .error-icon {
+      font-size: 4rem;
+      color: var(--app-color-grey-3);
+      margin-bottom: var(--app-spacing-md);
+    }
+    
+    .error-title {
+      margin: 0 0 var(--app-spacing-sm) 0;
+      color: var(--app-color-blue-1);
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    .error-description {
+      margin-bottom: var(--app-spacing-lg);
+      color: var(--app-text-light);
+      opacity: 0.9;
+    }
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .welcome-section .welcome-card {
+    margin: 0 var(--app-spacing-sm);
+  }
+  
+  .no-user-section .error-card {
+    margin: 0 var(--app-spacing-sm);
+  }
+}

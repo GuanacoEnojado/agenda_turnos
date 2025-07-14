@@ -1,0 +1,78 @@
+/* Preferences Page - Specific Styles */
+
+/* Theme actions specific styling */
+.theme-actions {
+  margin-top: var(--app-spacing-md);
+  
+  ion-button {
+    margin-bottom: var(--app-spacing-sm);
+  }
+}
+
+.navigation-section {
+  margin-top: var(--app-spacing-lg);
+  margin-bottom: var(--app-spacing-lg);
+}
+
+/* Radio group specific styling */
+ion-radio-group {
+  ion-item {
+    /* Use global item styling but override specific properties */
+    --background: white;
+    --color: var(--app-color-blue-4);
+    border: 1px solid var(--app-color-grey-1);
+    
+    ion-label {
+      margin: var(--app-spacing-sm) 0;
+      
+      h2 {
+        font-size: 1.1em;
+        font-weight: 500;
+        margin-bottom: var(--app-spacing-xs);
+        color: var(--app-color-blue-3);
+      }
+      
+      p {
+        font-size: 0.9em;
+        opacity: 0.7;
+        margin: 0;
+        color: var(--app-color-grey-3);
+      }
+    }
+    
+    ion-radio {
+      margin-right: var(--app-spacing-md);
+      --color: var(--app-color-blue-1);
+      --color-checked: var(--app-color-blue-1);
+    }
+  }
+}
+
+/* Info list items in preferences */
+.preferences-info ion-item {
+  --background: white;
+  --color: var(--app-color-blue-4);
+  border: 1px solid var(--app-color-grey-1);
+  
+  ion-icon[slot="start"] {
+    margin-right: var(--app-spacing-md);
+    font-size: 1.2em;
+    color: var(--app-color-blue-1);
+  }
+  
+  ion-label {
+    h2 {
+      font-size: 1em;
+      font-weight: 500;
+      margin-bottom: var(--app-spacing-xs);
+      color: var(--app-color-blue-3);
+    }
+    
+    p {
+      font-size: 0.9em;
+      opacity: 0.7;
+      margin: 0;
+      color: var(--app-color-grey-3);
+    }
+  }
+}

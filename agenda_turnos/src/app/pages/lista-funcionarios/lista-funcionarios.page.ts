@@ -106,11 +106,11 @@ export class ListaFuncionariosPage implements OnInit {
     } else {
       const term = this.searchTerm.toLowerCase();
       this.filteredTrabajadores = this.trabajadores.filter(trabajador =>
-        trabajador.Name1.toLowerCase().includes(term) ||
-        trabajador.Name2.toLowerCase().includes(term) ||
-        trabajador.email.toLowerCase().includes(term) ||
-        trabajador.turno.toLowerCase().includes(term) ||
-        trabajador.nivel.toLowerCase().includes(term)
+        (trabajador.Name1 && trabajador.Name1.toLowerCase().includes(term)) ||
+        (trabajador.Name2 && trabajador.Name2.toLowerCase().includes(term)) ||
+        (trabajador.email && trabajador.email.toLowerCase().includes(term)) ||
+        (trabajador.turno && trabajador.turno.toLowerCase().includes(term)) ||
+        (trabajador.nivel && trabajador.nivel.toLowerCase().includes(term))
       );
     }
   }
@@ -119,7 +119,8 @@ export class ListaFuncionariosPage implements OnInit {
     this.filterTrabajadores();
   }
 
-  getStatusClass(estado: string): string {
+  getStatusClass(estado: any): string {
+    if (!estado || typeof estado !== 'string') return 'status-default';
     switch (estado) {
       case 'activo': return 'status-active';
       case 'inactivo': return 'status-inactive';
@@ -130,7 +131,8 @@ export class ListaFuncionariosPage implements OnInit {
     }
   }
 
-  getStatusIcon(estado: string): string {
+  getStatusIcon(estado: any): string {
+    if (!estado || typeof estado !== 'string') return 'help-circle';
     switch (estado) {
       case 'activo': return 'checkmark-circle';
       case 'inactivo': return 'close-circle';
@@ -141,7 +143,8 @@ export class ListaFuncionariosPage implements OnInit {
     }
   }
 //en revisión, resulta algo molesto con los colores por defecto, probablemente agregue colores para este propósito
-  getStatusColor(estado: string): string {
+  getStatusColor(estado: any): string {
+    if (!estado || typeof estado !== 'string') return 'medium';
     switch (estado) {
       case 'activo': return 'success';
       case 'inactivo': return 'medium';
@@ -152,14 +155,17 @@ export class ListaFuncionariosPage implements OnInit {
     }
   }
 
-  formatTurno(turno: string): string {
+  formatTurno(turno: any): string {
+    if (!turno || typeof turno !== 'string') return 'Sin especificar';
     return turno.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
 
-  formatNivel(nivel: string): string {
+  formatNivel(nivel: any): string {
+    if (!nivel || typeof nivel !== 'string') return 'Sin especificar';
     return nivel.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
-  formatContrato(contrato: string): string {
+  formatContrato(contrato: any): string {
+    if (!contrato || typeof contrato !== 'string') return 'Sin especificar';
     return contrato.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   }
 
@@ -283,8 +289,11 @@ export class ListaFuncionariosPage implements OnInit {
 
   // Extra shift assignment methods
   async assignExtraShift(worker: trabajador) {
-    if (worker.estado === 'activo') {
-      await this.showAlert('Error', 'No se puede asignar turno extra a un trabajador que ya está activo.');
+    // Check if worker is eligible for extra shifts using the service
+    const eligibilityCheck = this.extraShiftService.canAssignExtraShift(worker);
+    
+    if (!eligibilityCheck.canAssign) {
+      await this.showAlert('Error', eligibilityCheck.reason || 'No se puede asignar turno extra a este trabajador');
       return;
     }
 
@@ -292,9 +301,46 @@ export class ListaFuncionariosPage implements OnInit {
   }
 
   async openExtraShiftModal(worker: trabajador) {
+    // First, let user select shift type
+    const typeAlert = await this.alertController.create({
+      header: 'Tipo de Turno Extra',
+      message: 'Seleccione el tipo de turno extra:',
+      inputs: [
+        {
+          type: 'radio',
+          label: 'Turno de Día',
+          value: 'dia',
+          checked: true
+        },
+        {
+          type: 'radio',
+          label: 'Turno de Noche',
+          value: 'noche',
+          checked: false
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Continuar',
+          handler: async (selectedType) => {
+            // Now show the rest of the form with the selected type
+            await this.showExtraShiftDetailsModal(worker, selectedType);
+          }
+        }
+      ]
+    });
+
+    await typeAlert.present();
+  }
+
+  async showExtraShiftDetailsModal(worker: trabajador, tipoTurno: string) {
     const alert = await this.alertController.create({
-      header: 'Asignar Turno Extra',
-      message: `Asignar turno extra a ${worker.Name1} ${worker.Name2}`,
+      header: 'Detalles del Turno Extra',
+      message: `Turno ${tipoTurno === 'dia' ? 'de Día' : 'de Noche'} para ${worker.Name1} ${worker.Name2}`,
       inputs: [
         {
           name: 'fecha',
@@ -302,19 +348,6 @@ export class ListaFuncionariosPage implements OnInit {
           min: new Date().toISOString().split('T')[0],
           max: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           value: new Date().toISOString().split('T')[0]
-        },
-        {
-          name: 'tipo',
-          type: 'radio',
-          label: 'Día',
-          value: 'dia',
-          checked: true
-        },
-        {
-          name: 'tipo',
-          type: 'radio',
-          label: 'Noche',
-          value: 'noche'
         },
         {
           name: 'horas',
@@ -342,7 +375,14 @@ export class ListaFuncionariosPage implements OnInit {
               await this.showAlert('Error', 'Debe completar todos los campos requeridos.');
               return false;
             }
-            await this.processExtraShiftAssignment(worker, data);
+            
+            // Add the shift type to the data
+            const processData = {
+              ...data,
+              tipo: tipoTurno
+            };
+            
+            await this.processExtraShiftAssignment(worker, processData);
             return true;
           }
         }
@@ -391,7 +431,9 @@ export class ListaFuncionariosPage implements OnInit {
   }
 
   canAssignExtraShift(worker: trabajador): boolean {
-    return worker.estado !== 'activo';
+    if (!worker) return false;
+    const eligibilityCheck = this.extraShiftService.canAssignExtraShift(worker);
+    return eligibilityCheck.canAssign;
   }
 
   // Shift visualization methods

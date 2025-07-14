@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
-import { trabajador } from '../../services/datos';
+import { trabajador, ExtraShift } from '../../services/datos';
 import { ShiftCalculatorService } from '../../services/shift-calculator.service';
 import { ExtraShiftService } from '../../services/extra-shift.service';
 
@@ -50,6 +50,7 @@ export class ShiftVisualizationModalComponent implements OnInit {
   nextMonth: DayShift[] = [];
   selectedDay: DayShift | null = null;
   showDayDetails = false;
+  workerExtraShifts: ExtraShift[] = [];
 
   monthNames = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -63,7 +64,38 @@ export class ShiftVisualizationModalComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.generateCalendarData();
+    this.loadExtraShiftsAndGenerateCalendar();
+  }
+
+  private async loadExtraShiftsAndGenerateCalendar() {
+    try {
+      // Load extra shifts first
+      await this.loadExtraShifts();
+      // Then generate calendar data
+      this.generateCalendarData();
+    } catch (error) {
+      console.error('Error loading extra shifts:', error);
+      // Generate calendar anyway, just without extra shifts
+      this.generateCalendarData();
+    }
+  }
+
+  private async loadExtraShifts() {
+    if (!this.worker.id) return;
+    
+    return new Promise<void>((resolve, reject) => {
+      this.extraShiftService.getExtraShiftsForWorker(this.worker.id!).subscribe({
+        next: (extraShifts) => {
+          this.workerExtraShifts = extraShifts;
+          resolve();
+        },
+        error: (error) => {
+          console.error('Error loading extra shifts:', error);
+          this.workerExtraShifts = [];
+          resolve(); // Don't reject, just continue without extra shifts
+        }
+      });
+    });
   }
 
   generateCalendarData() {
@@ -81,7 +113,33 @@ export class ShiftVisualizationModalComponent implements OnInit {
     const month = monthStart.getMonth();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const today = new Date();
+    
+    // Get the first day of the month and its day of week
+    const firstDay = new Date(year, month, 1);
+    const firstDayOfWeek = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    // Add padding days from previous month if needed
+    if (firstDayOfWeek > 0) {
+      const prevMonth = month === 0 ? 11 : month - 1;
+      const prevYear = month === 0 ? year - 1 : year;
+      const daysInPrevMonth = new Date(prevYear, prevMonth + 1, 0).getDate();
+      
+      for (let i = firstDayOfWeek - 1; i >= 0; i--) {
+        const prevDate = new Date(prevYear, prevMonth, daysInPrevMonth - i);
+        const dayShift: DayShift = {
+          date: prevDate,
+          dayOfWeek: this.getDayOfWeek(prevDate.getDay()),
+          dayNumber: daysInPrevMonth - i,
+          isToday: this.isSameDate(prevDate, today),
+          isCurrentMonth: false,
+          shifts: this.calculateShiftsForDay(prevDate),
+          status: this.getWorkerStatusForDay(prevDate)
+        };
+        days.push(dayShift);
+      }
+    }
 
+    // Add all days of the current month
     for (let day = 1; day <= daysInMonth; day++) {
       const date = new Date(year, month, day);
       const dayShift: DayShift = {
@@ -92,6 +150,26 @@ export class ShiftVisualizationModalComponent implements OnInit {
         isCurrentMonth,
         shifts: this.calculateShiftsForDay(date),
         status: this.getWorkerStatusForDay(date)
+      };
+      days.push(dayShift);
+    }
+
+    // Add padding days from next month to complete the grid (42 days = 6 weeks)
+    const totalDays = days.length;
+    const remainingDays = 42 - totalDays;
+    const nextMonth = month === 11 ? 0 : month + 1;
+    const nextYear = month === 11 ? year + 1 : year;
+    
+    for (let day = 1; day <= remainingDays; day++) {
+      const nextDate = new Date(nextYear, nextMonth, day);
+      const dayShift: DayShift = {
+        date: nextDate,
+        dayOfWeek: this.getDayOfWeek(nextDate.getDay()),
+        dayNumber: day,
+        isToday: this.isSameDate(nextDate, today),
+        isCurrentMonth: false,
+        shifts: this.calculateShiftsForDay(nextDate),
+        status: this.getWorkerStatusForDay(nextDate)
       };
       days.push(dayShift);
     }
@@ -122,20 +200,19 @@ export class ShiftVisualizationModalComponent implements OnInit {
       }
     }
 
-    // Add extra shifts
-    this.extraShiftService.getExtraShiftsForWorker(this.worker.id!).subscribe(extraShifts => {
-      const dayExtraShifts = extraShifts.filter(shift => 
-        this.isSameDate(shift.fechaTurnoExtra, date)
-      );
-      
-      if (dayExtraShifts.length > 0) {
-        shifts.extra = dayExtraShifts.map(shift => ({
-          hours: shift.horasExtras,
-          type: shift.tipoTurno === 'day' ? 'day' : 'night',
-          details: shift.detalles
-        }));
-      }
-    });
+    // Add extra shifts from pre-loaded data
+    const dayExtraShifts = this.workerExtraShifts.filter(shift => 
+      this.isSameDate(shift.fechaTurnoExtra, date)
+    );
+    
+    if (dayExtraShifts.length > 0) {
+      shifts.extra = dayExtraShifts.map(shift => ({
+        hours: shift.horasExtras,
+        type: shift.tipoTurno === 'day' ? 'day' : 'night',
+        details: shift.detalles,
+        assignedBy: `Usuario ${shift.createdBy || 'Desconocido'}`
+      }));
+    }
 
     return shifts;
   }
@@ -189,9 +266,15 @@ export class ShiftVisualizationModalComponent implements OnInit {
   }
 
   isSameDate(date1: Date, date2: Date): boolean {
-    return date1.getDate() === date2.getDate() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getFullYear() === date2.getFullYear();
+    if (!date1 || !date2) return false;
+    
+    // Convert to Date objects if they are strings
+    const d1 = new Date(date1);
+    const d2 = new Date(date2);
+    
+    return d1.getDate() === d2.getDate() &&
+           d1.getMonth() === d2.getMonth() &&
+           d1.getFullYear() === d2.getFullYear();
   }
 
   getDayClass(day: DayShift): string {
