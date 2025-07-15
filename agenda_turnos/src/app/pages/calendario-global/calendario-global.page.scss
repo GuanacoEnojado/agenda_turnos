@@ -1,6 +1,6 @@
-/* Calendario Global - Page Specific Styles */
+/* Calendario Global - Estilos Específicos de Página */
 
-/* Card type-specific header colors */
+/* Colores específicos de encabezado por tipo de tarjeta */
 .workers-on-shift ion-card-header {
   background: var(--app-color-blue-1) !important;
 }
@@ -17,7 +17,7 @@
   background: var(--app-color-blue-2) !important;
 }
 
-/* Page-specific overrides only */
+/* Solo sobrescrituras específicas de página */
 .extra-shift-label,
 .shifted-label {
   color: var(--app-color-blue-2) !important;
@@ -31,7 +31,7 @@
   }
 }
 
-// Absent worker styling
+// Estilo de trabajador ausente
 .absent-worker {
   opacity: 0.8;
   
@@ -45,7 +45,7 @@
   }
 }
 
-// Free worker styling
+// Estilo de trabajador libre
 .free-worker {
   opacity: 0.9;
   
@@ -59,7 +59,7 @@
   }
 }
 
-// Card styling
+// Estilo de tarjetas
 ion-card {
   margin-bottom: 1rem;
   border-radius: 12px;
@@ -77,7 +77,7 @@ ion-card {
   }
 }
 
-// List item styling
+// Estilo de elementos de lista
 ion-item {
   --padding-start: 16px;
   --padding-end: 16px;
@@ -97,7 +97,7 @@ ion-item {
   }
 }
 
-// Header styling
+// Estilo de encabezado
 ion-header {
   ion-toolbar {
     --background: var(--ion-color-primary);
@@ -105,7 +105,7 @@ ion-header {
   }
 }
 
-// Worker actions styling
+// Estilo de acciones de trabajador
 .worker-actions {
   display: flex;
   flex-direction: column;
@@ -128,7 +128,7 @@ ion-header {
   }
 }
 
-// Worker card states
+// Estados de tarjetas de trabajador
 .absent-worker {
   --background: rgba(var(--ion-color-warning-rgb), 0.1);
   
@@ -146,7 +146,7 @@ ion-header {
   }
 }
 
-// Extra shift specific styling
+// Estilo específico para turnos extra
 ion-button[color="tertiary"] {
   --color: var(--ion-color-tertiary);
   --border-color: var(--ion-color-tertiary);
@@ -156,7 +156,7 @@ ion-button[color="tertiary"] {
   }
 }
 
-// Date-specific status styling
+// Estilo de estado específico por fecha
 .extra-shift-label {
   color: var(--ion-color-tertiary);
   font-weight: 500;

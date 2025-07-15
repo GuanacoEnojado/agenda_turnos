@@ -26,7 +26,7 @@ export class TrabajadoresService {
   constructor(private http: HttpClient) { }
 
   /**
-   * Get all trabajadores
+   * Obtener todos los trabajadores
    */
   getTrabajadores(): Observable<trabajador[]> {
     return this.http.get<TrabajadorApiResponse>(`${this.API_URL}/trabajadores`, this.httpOptions)
@@ -38,7 +38,7 @@ export class TrabajadoresService {
   }
 
   /**
-   * Create a new trabajador
+   * Crear un nuevo trabajador
    */
   createTrabajador(trabajadorData: Omit<trabajador, 'id'>): Observable<trabajador | null> {
     console.log('TrabajadoresService createTrabajador called with:', trabajadorData);
@@ -53,7 +53,7 @@ export class TrabajadoresService {
   }
 
   /**
-   * Update an existing trabajador
+   * Actualizar un trabajador existente
    */
   updateTrabajador(id: number, trabajadorData: Partial<trabajador>): Observable<trabajador | null> {
     console.log('TrabajadoresService updateTrabajador called with:', id, trabajadorData);
@@ -68,7 +68,7 @@ export class TrabajadoresService {
   }
 
   /**
-   * Delete a trabajador
+   * Eliminar un trabajador
    */
   deleteTrabajador(id: number): Observable<boolean> {
     console.log('TrabajadoresService deleteTrabajador called with:', id);
@@ -83,7 +83,7 @@ export class TrabajadoresService {
   }
 
   /**
-   * Get a single trabajador by ID
+   * Obtener un trabajador específico por ID
    */
   getTrabajadorById(id: number): Observable<trabajador | null> {
     return this.http.get<TrabajadorApiResponse>(`${this.API_URL}/trabajadores/${id}`, this.httpOptions)
@@ -95,7 +95,7 @@ export class TrabajadoresService {
   }
 
   /**
-   * Helper method to handle HTTP errors
+   * Método auxiliar para manejar errores HTTP
    */
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {

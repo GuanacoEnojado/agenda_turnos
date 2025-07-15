@@ -18,7 +18,7 @@ export interface ShiftChangeRequest {
 export interface MonthlyShiftInfo {
   date: Date;
   shiftInfo: WorkerShiftInfo;
-  isSelectable: boolean; // Can be selected for shift change
+  isSelectable: boolean; // Puede ser seleccionado para cambio de turno
   conflictReason?: string;
 }
 
@@ -41,42 +41,42 @@ export class ShiftchangeService {
   ) { }
 
   /**
-   * Get current shift change request observable
+   * Obtener observable de solicitud de cambio de turno actual
    */
   getCurrentShiftChangeRequest(): Observable<ShiftChangeRequest | null> {
     return this.currentShiftChangeRequest.asObservable();
   }
 
   /**
-   * Get active shift changes observable
+   * Obtener observable de cambios de turno activos
    */
   getActiveShiftChanges(): Observable<Map<string, ShiftChangeRequest>> {
     return this.activeShiftChanges.asObservable();
   }
 
   /**
-   * Get monthly shifts for a worker (current month + next month)
-   * Only shows shifts with estado: activo or activoextra
+   * Obtener turnos mensuales para un trabajador (mes actual + mes siguiente)
+   * Solo muestra turnos con estado: activo o activoextra
    */
   getWorkerMonthlyShifts(worker: trabajador, startDate: Date = new Date()): MonthlyShiftInfo[] {
     const monthlyShifts: MonthlyShiftInfo[] = [];
     
-    // Get current month and next month
+    // Obtener mes actual y mes siguiente
     const currentMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
     const nextMonth = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 1);
-    const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 2, 0); // Last day of next month
+    const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 2, 0); // Último día del mes siguiente
 
-    // Only process if worker is active or activoextra
+    // Solo procesar si el trabajador está activo o activoextra
     if (!this.isWorkerEligibleForShiftDisplay(worker)) {
       return monthlyShifts;
     }
 
-    // Generate shifts for both months
+    // Generar turnos para ambos meses
     for (let date = new Date(currentMonth); date <= endDate; date.setDate(date.getDate() + 1)) {
       const currentDate = new Date(date);
       const shiftInfo = this.shiftCalculator.calculateWorkerShift(worker, currentDate);
       
-      // Only include days where worker is scheduled to work (activo or activoextra)
+      // Solo incluir días donde el trabajador está programado para trabajar (activo o activoextra)
       const isSelectable = this.isShiftSelectable(shiftInfo, currentDate);
       
       monthlyShifts.push({
@@ -91,7 +91,7 @@ export class ShiftchangeService {
   }
 
   /**
-   * Get workers eligible for shift change (same turno and nivel)
+   * Obtener trabajadores elegibles para cambio de turno (mismo turno y nivel)
    */
   getEligibleWorkersForShiftChange(originalWorker: trabajador): Observable<EligibleWorker[]> {
     return this.trabajadoresService.getTrabajadores().pipe(
@@ -107,13 +107,13 @@ export class ShiftchangeService {
   }
 
   /**
-   * Validate if a shift change is possible between two workers on a specific date
+   * Validar si es posible un cambio de turno entre dos trabajadores en una fecha específica
    */
   validateShiftChange(originalWorker: trabajador, targetWorker: trabajador, shiftDate: Date): ShiftChangeRequest {
     const originalShiftInfo = this.shiftCalculator.calculateWorkerShift(originalWorker, shiftDate);
     const targetShiftInfo = this.shiftCalculator.calculateWorkerShift(targetWorker, shiftDate);
 
-    // Check if both workers are on the same shift at the same time
+    // Verificar si ambos trabajadores están en el mismo turno al mismo tiempo
     const isConflict = this.checkShiftConflict(originalShiftInfo, targetShiftInfo, shiftDate);
     
     const request: ShiftChangeRequest = {
@@ -130,20 +130,20 @@ export class ShiftchangeService {
   }
 
   /**
-   * Execute a shift change between two workers
+   * Ejecutar un cambio de turno entre dos trabajadores
    */
   executeShiftChange(shiftChangeRequest: ShiftChangeRequest): Observable<boolean> {
     if (!shiftChangeRequest.isValidChange) {
       throw new Error('Invalid shift change request: ' + shiftChangeRequest.conflictReason);
     }
 
-    // Update original worker to 'turnocambiadoOFF' (absent with shift change motive)
+    // Actualizar trabajador original a 'turnocambiadoOFF' (ausente con motivo de cambio de turno)
     const originalWorkerUpdate = this.updateWorkerForShiftChange(
       shiftChangeRequest.originalWorker, 
       'turnocambiadoOFF'
     );
 
-    // Update target worker to 'turnocamdiadoON' (working the shifted day)
+    // Actualizar trabajador objetivo a 'turnocamdiadoON' (trabajando el día intercambiado)
     const targetWorkerUpdate = this.updateWorkerForShiftChange(
       shiftChangeRequest.targetWorker, 
       'turnocamdiadoON'
@@ -152,7 +152,7 @@ export class ShiftchangeService {
     return combineLatest([originalWorkerUpdate, targetWorkerUpdate]).pipe(
       map(([originalSuccess, targetSuccess]) => {
         if (originalSuccess && targetSuccess) {
-          // Add to active shift changes
+          // Agregar a cambios de turno activos
           const shiftKey = this.generateShiftChangeKey(shiftChangeRequest);
           const currentShiftChanges = this.activeShiftChanges.value;
           currentShiftChanges.set(shiftKey, shiftChangeRequest);
@@ -166,16 +166,16 @@ export class ShiftchangeService {
   }
 
   /**
-   * Cancel a shift change and restore original worker states
+   * Cancelar un cambio de turno y restaurar estados originales de trabajadores
    */
   cancelShiftChange(shiftChangeRequest: ShiftChangeRequest): Observable<boolean> {
-    // Restore original worker to 'activo'
+    // Restaurar trabajador original a 'activo'
     const originalWorkerRestore = this.updateWorkerForShiftChange(
       shiftChangeRequest.originalWorker, 
       'activo'
     );
 
-    // Restore target worker to 'activo'
+    // Restaurar trabajador objetivo a 'activo'
     const targetWorkerRestore = this.updateWorkerForShiftChange(
       shiftChangeRequest.targetWorker, 
       'activo'
@@ -184,7 +184,7 @@ export class ShiftchangeService {
     return combineLatest([originalWorkerRestore, targetWorkerRestore]).pipe(
       map(([originalSuccess, targetSuccess]) => {
         if (originalSuccess && targetSuccess) {
-          // Remove from active shift changes
+          // Eliminar de cambios de turno activos
           const shiftKey = this.generateShiftChangeKey(shiftChangeRequest);
           const currentShiftChanges = this.activeShiftChanges.value;
           currentShiftChanges.delete(shiftKey);
@@ -198,14 +198,14 @@ export class ShiftchangeService {
   }
 
   /**
-   * Check if worker is eligible for shift display (activo or activoextra)
+   * Verificar si el trabajador es elegible para mostrar turno (activo o activoextra)
    */
   private isWorkerEligibleForShiftDisplay(worker: trabajador): boolean {
     return worker.estado === 'activo' || worker.estado === 'activoextra';
   }
 
   /**
-   * Check if worker is eligible for shift change (same turno, nivel and currently active)
+   * Verificar si el trabajador es elegible para cambio de turno (mismo turno, nivel y actualmente activo)
    */
   private isWorkerEligibleForShiftChange(worker: trabajador, originalWorker: trabajador): boolean {
     return worker.id !== originalWorker.id &&
@@ -215,20 +215,20 @@ export class ShiftchangeService {
   }
 
   /**
-   * Check if a shift is selectable for shift change
+   * Verificar si un turno es seleccionable para cambio de turno
    */
   private isShiftSelectable(shiftInfo: WorkerShiftInfo, date: Date): boolean {
-    // Only scheduled shifts (not OFF) can be selected
-    // Don't allow selection if worker is already absent or on extra/shifted duty
+    // Solo turnos programados (no OFF) pueden ser seleccionados
+    // No permitir selección si el trabajador ya está ausente o en servicio extra/intercambiado
     return shiftInfo.isScheduled && 
            !shiftInfo.isAbsent && 
            !shiftInfo.isExtra && 
            !shiftInfo.isShifted &&
-           date >= new Date(); // Can't change past shifts
+           date >= new Date(); // No se pueden cambiar turnos pasados
   }
 
   /**
-   * Get reason why shift is not selectable
+   * Obtener motivo por el cual el turno no es seleccionable
    */
   private getSelectabilityReason(shiftInfo: WorkerShiftInfo): string {
     if (!shiftInfo.isScheduled) return 'Día libre';
@@ -239,31 +239,31 @@ export class ShiftchangeService {
   }
 
   /**
-   * Check if there's a conflict between two workers' shifts
+   * Verificar si hay conflicto entre los turnos de dos trabajadores
    */
   private checkShiftConflict(originalShift: WorkerShiftInfo, targetShift: WorkerShiftInfo, date: Date): {hasConflict: boolean, reason?: string} {
-    // Can't change shifts in the past
+    // No se pueden cambiar turnos en el pasado
     if (date < new Date()) {
       return { hasConflict: true, reason: 'No se pueden cambiar turnos del pasado' };
     }
 
-    // Original worker must be scheduled to work
+    // El trabajador original debe estar programado para trabajar
     if (!originalShift.isScheduled) {
       return { hasConflict: true, reason: 'El trabajador original no tiene turno programado este día' };
     }
 
-    // Target worker must be free (not scheduled)
+    // El trabajador objetivo debe estar libre (no programado)
     if (targetShift.isScheduled) {
       return { hasConflict: true, reason: 'El trabajador objetivo ya tiene turno programado este día' };
     }
 
-    // Check if both would be working the same shift type (day/night conflict)
+    // Verificar si ambos estarían trabajando el mismo tipo de turno (conflicto día/noche)
     if (originalShift.shiftStatus === targetShift.shiftStatus && 
         (originalShift.shiftStatus === ShiftType.DAY_IN || originalShift.shiftStatus === ShiftType.NIGHT_IN)) {
       return { hasConflict: true, reason: 'Ambos trabajadores tienen el mismo tipo de turno' };
     }
 
-    // Target worker should not be absent, on extra, or already shifted
+    // El trabajador objetivo no debería estar ausente, en extra, o ya intercambiado
     if (targetShift.isAbsent) {
       return { hasConflict: true, reason: 'El trabajador objetivo está ausente: ' + (targetShift.absenceReason || 'Motivo no especificado') };
     }
@@ -280,7 +280,7 @@ export class ShiftchangeService {
   }
 
   /**
-   * Update worker estado for shift change
+   * Actualizar estado del trabajador para cambio de turno
    */
   private updateWorkerForShiftChange(worker: trabajador, newEstado: estado): Observable<boolean> {
     return this.trabajadoresService.updateTrabajador(worker.id, { estado: newEstado }).pipe(
@@ -289,14 +289,14 @@ export class ShiftchangeService {
   }
 
   /**
-   * Generate unique key for shift change tracking
+   * Generar clave única para seguimiento de cambio de turno
    */
   private generateShiftChangeKey(request: ShiftChangeRequest): string {
     return `${request.originalWorker.id}-${request.targetWorker.id}-${request.shiftDate.toISOString().split('T')[0]}`;
   }
 
   /**
-   * Get display information for shift types (day vs night identification)
+   * Obtener información de visualización para tipos de turno (identificación día vs noche)
    */
   getShiftDisplayInfo(shiftType: ShiftType): {name: string, color: string, isDayShift: boolean} {
     switch (shiftType) {
@@ -310,14 +310,14 @@ export class ShiftchangeService {
   }
 
   /**
-   * Set current shift change request for UI state management
+   * Establecer solicitud de cambio de turno actual para gestión de estado de UI
    */
   setCurrentShiftChangeRequest(request: ShiftChangeRequest | null): void {
     this.currentShiftChangeRequest.next(request);
   }
 
   /**
-   * Get all active shift changes for a specific date
+   * Obtener todos los cambios de turno activos para una fecha específica
    */
   getActiveShiftChangesForDate(date: Date): Observable<ShiftChangeRequest[]> {
     return this.activeShiftChanges.pipe(
@@ -331,7 +331,7 @@ export class ShiftchangeService {
   }
 
   /**
-   * Get all active shift changes for a specific worker
+   * Obtener todos los cambios de turno activos para un trabajador específico
    */
   getActiveShiftChangesForWorker(workerId: number): Observable<ShiftChangeRequest[]> {
     return this.activeShiftChanges.pipe(

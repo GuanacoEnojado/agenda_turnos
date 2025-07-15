@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
     private themeService: ThemeService
   ) {
     this.currentUser$ = this.authService.currentUser$;
-    // Initialize theme service - this will apply saved theme or default
+    // Inicializar servicio de tema - esto aplicará el tema guardado o el predeterminado
   }
 
   ngOnInit() {

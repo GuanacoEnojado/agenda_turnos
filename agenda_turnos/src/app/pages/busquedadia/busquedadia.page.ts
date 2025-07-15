@@ -18,7 +18,7 @@ export class BusquedadiaPage implements OnInit {
   ngOnInit() {
   }
 
-  // Navigation methods
+  // Métodos de navegación
   async calendarioglobal(){
     await this.menuCtrl.close();
     this.router.navigate(['/calendario-global']);

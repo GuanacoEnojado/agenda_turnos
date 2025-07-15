@@ -22,7 +22,7 @@ export class ListaFuncionariosPage implements OnInit {
   isEditModalOpen: boolean = false;
   editForm: FormGroup;
 
-  // Opciones
+  // Opciones para formularios
   turnoOptions: turno[] = ['4to_turno_modificado', '3er_turno', '4to_turno', 'diurno_hospital', 'diurno_empresa', 'volante'];
   contratoOptions: contrato[] = ['contrato_indefinido', 'contrato_fijo', 'planta', 'contrata', 'volante'];
   estadoOptions: estado[] = ['activo', 'inactivo', 'licencia', 'vacaciones', 'suspendido'];
@@ -85,7 +85,7 @@ export class ListaFuncionariosPage implements OnInit {
   }
 
   sortTrabajadores() {
-    // metodo para ordenar trabajadores por estado y luego por nombre, copiado de otra app, no fue mi solucion
+    // Método para ordenar trabajadores por estado y luego por nombre
     this.trabajadores.sort((a, b) => {
       const statusOrder = { 'activo': 1, 'inactivo': 2, 'licencia': 3, 'vacaciones': 4, 'suspendido': 5 };
       const aOrder = statusOrder[a.estado as keyof typeof statusOrder] || 6;
@@ -95,7 +95,7 @@ export class ListaFuncionariosPage implements OnInit {
         return aOrder - bOrder;
       }
       
-      // retorna orden por nombre si son del mismo estado
+      // Retorna orden por nombre si son del mismo estado
       return a.Name1.localeCompare(b.Name1);
     });
   }

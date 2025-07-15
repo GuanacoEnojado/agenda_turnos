@@ -15,26 +15,26 @@ import { AlertController, ToastController, MenuController } from '@ionic/angular
 })
 export class CambiodeturnoPage implements OnInit {
 
-  // Main workflow states
+  // Estados principales del flujo de trabajo
   selectedOriginalWorker: trabajador | null = null;
   originalWorkerShifts: MonthlyShiftInfo[] = [];
   selectedShiftDate: Date | null = null;
   selectedShiftInfo: MonthlyShiftInfo | null = null;
   
-  // Eligible workers for shift change
+  // Trabajadores elegibles para cambio de turno
   eligibleWorkers: EligibleWorker[] = [];
   selectedTargetWorker: trabajador | null = null;
   targetWorkerShifts: MonthlyShiftInfo[] = [];
   selectedTargetDate: Date | null = null;
   selectedTargetShiftInfo: MonthlyShiftInfo | null = null;
 
-  // All workers for initial selection
+  // Todos los trabajadores para selección inicial
   allWorkers$: Observable<trabajador[]>;
   
-  // Current shift change request
+  // Solicitud actual de cambio de turno
   currentShiftChangeRequest: ShiftChangeRequest | null = null;
 
-  // UI state
+  // Estado de la interfaz de usuario
   currentStep: 'select-worker' | 'select-original-shift' | 'select-target-worker' | 'select-target-shift' | 'confirm-change' = 'select-worker';
 
   constructor(
@@ -50,14 +50,14 @@ export class CambiodeturnoPage implements OnInit {
   }
 
   ngOnInit() {
-    // Subscribe to current shift change request updates
+    // Suscribirse a las actualizaciones de solicitud de cambio de turno actual
     this.shiftChangeService.getCurrentShiftChangeRequest().subscribe(request => {
       this.currentShiftChangeRequest = request;
     });
   }
 
   /**
-   * Step 1: Select the original worker who wants to change shift
+   * Paso 1: Seleccionar el trabajador original que quiere cambiar turno
    */
   selectOriginalWorker(worker: trabajador) {
     this.selectedOriginalWorker = worker;
@@ -67,7 +67,7 @@ export class CambiodeturnoPage implements OnInit {
   }
 
   /**
-   * Step 2: Select the shift date from original worker's schedule
+   * Paso 2: Seleccionar la fecha del turno del cronograma del trabajador original
    */
   selectOriginalShift(shiftInfo: MonthlyShiftInfo) {
     if (!shiftInfo.isSelectable) {
@@ -82,7 +82,7 @@ export class CambiodeturnoPage implements OnInit {
   }
 
   /**
-   * Step 3: Load and display eligible workers for shift change
+   * Paso 3: Cargar y mostrar trabajadores elegibles para cambio de turno
    */
   private loadEligibleWorkers() {
     if (!this.selectedOriginalWorker) return;
@@ -94,7 +94,7 @@ export class CambiodeturnoPage implements OnInit {
   }
 
   /**
-   * Step 3: Select target worker for the shift change
+   * Paso 3: Seleccionar trabajador objetivo para el cambio de turno
    */
   selectTargetWorker(eligibleWorker: EligibleWorker) {
     this.selectedTargetWorker = eligibleWorker.trabajador;
@@ -103,7 +103,7 @@ export class CambiodeturnoPage implements OnInit {
   }
 
   /**
-   * Step 4: Select target worker's shift date
+   * Paso 4: Seleccionar fecha del turno del trabajador objetivo
    */
   selectTargetShift(shiftInfo: MonthlyShiftInfo) {
     if (!shiftInfo.isSelectable) {
@@ -117,7 +117,7 @@ export class CambiodeturnoPage implements OnInit {
   }
 
   /**
-   * Step 5: Validate the shift change and show confirmation
+   * Paso 5: Validar el cambio de turno y mostrar confirmación
    */
   private validateShiftChange() {
     if (!this.selectedOriginalWorker || !this.selectedTargetWorker || !this.selectedShiftDate) {
@@ -135,7 +135,7 @@ export class CambiodeturnoPage implements OnInit {
   }
 
   /**
-   * Execute the confirmed shift change
+   * Ejecutar el cambio de turno confirmado
    */
   async confirmShiftChange() {
     if (!this.currentShiftChangeRequest || !this.currentShiftChangeRequest.isValidChange) {

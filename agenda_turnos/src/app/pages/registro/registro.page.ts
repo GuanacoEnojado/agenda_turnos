@@ -77,9 +77,9 @@ async onRegister() {
       await alert.present();
     }
   } else {
-    console.log('Form is invalid:', this.registroForm.errors); // Debug log
-    console.log('Form values:', this.registroForm.value); // Debug log
-    console.log('Form status:', this.registroForm.status); // Debug log
+    console.log('Form is invalid:', this.registroForm.errors); // Log de depuración
+    console.log('Form values:', this.registroForm.value); // Log de depuración
+    console.log('Form status:', this.registroForm.status); // Log de depuración
     
     const alert = await this.alertController.create({ 
       header: 'Formulario inválido', 

@@ -24,7 +24,7 @@ export class MainPage implements OnInit {
   }
   
   ngOnInit() {
-    // current user como observable
+    // usuario actual como observable
     this.currentUser$.subscribe(user => {
       this.currentUser = user;
       console.log('Current user in main page:', user);

@@ -24,19 +24,19 @@ export class ExtraShiftService {
     })
   };
 
-  // Local cache for extra shifts
+  // Caché local para turnos extra
   private extraShifts = new BehaviorSubject<ExtraShift[]>([]);
 
   constructor(
     private trabajadoresService: TrabajadoresService,
     private http: HttpClient
   ) {
-    // Load extra shifts from backend on initialization
+    // Cargar turnos extra desde el backend al inicializar
     this.loadExtraShiftsFromBackend();
   }
 
   /**
-   * Load extra shifts from backend
+   * Cargar turnos extra desde el backend
    */
   private loadExtraShiftsFromBackend(): void {
     this.getExtraShiftsFromApi().subscribe({
@@ -45,21 +45,21 @@ export class ExtraShiftService {
       },
       error: (error) => {
         console.error('Error loading extra shifts from backend:', error);
-        // Keep empty array if backend fails
+        // Mantener arreglo vacío si el backend falla
         this.extraShifts.next([]);
       }
     });
   }
 
   /**
-   * Get extra shifts from API
+   * Obtener turnos extra desde la API
    */
   private getExtraShiftsFromApi(): Observable<ExtraShift[]> {
     return this.http.get<ExtraShiftApiResponse>(`${this.API_URL}/extrashifts`, this.httpOptions)
       .pipe(
         map((response: any) => {
           const shifts = response.extraShifts || [];
-          // Convert date strings to Date objects
+          // Convertir strings de fecha a objetos Date
           return shifts.map((shift: any) => ({
             ...shift,
             fechaCreacion: new Date(shift.fechaCreacion || shift.createdAt),
@@ -73,7 +73,7 @@ export class ExtraShiftService {
   }
 
   /**
-   * Create extra shift via API
+   * Crear turno extra vía API
    */
   private createExtraShiftApi(extraShift: Omit<ExtraShift, 'id' | 'createdAt' | 'updatedAt'>): Observable<ExtraShift | null> {
     return this.http.post<ExtraShiftApiResponse>(`${this.API_URL}/extrashifts`, extraShift, this.httpOptions)
@@ -96,7 +96,7 @@ export class ExtraShiftService {
   }
 
   /**
-   * Update extra shift via API
+   * Actualizar turno extra vía API
    */
   private updateExtraShiftApi(id: number, updates: Partial<ExtraShift>): Observable<ExtraShift | null> {
     return this.http.put<ExtraShiftApiResponse>(`${this.API_URL}/extrashifts/${id}`, updates, this.httpOptions)

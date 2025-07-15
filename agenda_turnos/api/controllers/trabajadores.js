@@ -1,7 +1,7 @@
 const Trabajador = require('../models/trabajador');
 
-// CRUD Controllers
-// Get all trabajadores
+// Controladores CRUD
+// Obtener todos los trabajadores
 exports.getTrabajadores = (req, res, next) => {
     Trabajador.findAll()
         .then(trabajadores => {
@@ -12,7 +12,7 @@ exports.getTrabajadores = (req, res, next) => {
             res.status(500).json({ message: 'Error fetching trabajadores' });
         });
 }
-// Get trabajador by id
+// Obtener trabajador por id
 exports.getTrabajador = (req, res, next) => {
     const trabajadorId = req.params.trabajadorId;
     Trabajador.findByPk(trabajadorId)
@@ -27,7 +27,7 @@ exports.getTrabajador = (req, res, next) => {
             res.status(500).json({ message: 'Error fetching trabajador' });
         });
 }
-// Create trabajador
+// Crear trabajador
 exports.createTrabajador = (req, res, next) => {
     const { Name1, Name2, fecha_nacimiento, fecha_ingreso, email, turno, fechainicioturno, contrato, estado, nivel, avatarUrl } = req.body;
     Trabajador.create({
@@ -55,7 +55,7 @@ exports.createTrabajador = (req, res, next) => {
         res.status(500).json({ message: 'Error creating trabajador' });
     });
 }
-// Update trabajador
+// Actualizar trabajador
 exports.updateTrabajador = (req, res, next) => {
     const trabajadorId = req.params.trabajadorId;
     const { Name1, Name2, fecha_nacimiento, fecha_ingreso, email, turno, fechainicioturno, contrato, estado, nivel, avatarUrl } = req.body;
@@ -86,7 +86,7 @@ exports.updateTrabajador = (req, res, next) => {
         });
 }
 
-// Delete trabajador
+// Eliminar trabajador
 exports.deleteTrabajador = (req, res, next) => {
     const trabajadorId = req.params.trabajadorId;
     Trabajador.findByPk(trabajadorId)

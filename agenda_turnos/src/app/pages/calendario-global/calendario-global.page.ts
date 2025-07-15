@@ -51,13 +51,13 @@ export class CalendarioGlobalPage implements OnInit {
         },
         error: (error) => {
           console.error('Error loading workers:', error);
-          this.allWorkers = []; // Ensure it's an empty array, not undefined
+          this.allWorkers = []; // Asegurar que sea un arreglo vacío, no undefined
           this.showAlert('Error', 'No se pudieron cargar los funcionarios: ' + (error?.message || 'Error desconocido'));
         }
       });
     } catch (error) {
       console.error('Error in loadWorkers:', error);
-      this.allWorkers = []; // Ensure it's an empty array
+      this.allWorkers = []; // Asegurar que sea un arreglo vacío
       this.showAlert('Error', 'No se pudieron cargar los funcionarios');
     }
   }
@@ -72,16 +72,16 @@ export class CalendarioGlobalPage implements OnInit {
       await loading.present();
 
       try {
-        // Fix date parsing to avoid timezone issues
+        // Corregir análisis de fecha para evitar problemas de zona horaria
         const fechaString = event.detail.value.toString().split('T')[0];
-        // Use local date construction to avoid timezone offset issues
+        // Usar construcción de fecha local para evitar problemas de desplazamiento de zona horaria
         const [year, month, day] = fechaString.split('-').map(Number);
-        this.selectedDate = new Date(year, month - 1, day); // month is 0-based
+        this.selectedDate = new Date(year, month - 1, day); // mes es base 0
         this.selectedDatetime = event.detail.value;
         
         console.log('Selected date parsed:', this.selectedDate);
         
-        // Check if we have workers loaded
+        // Verificar si tenemos trabajadores cargados
         if (this.allWorkers.length === 0) {
           console.warn('No workers loaded yet');
           loading.dismiss();
@@ -93,7 +93,7 @@ export class CalendarioGlobalPage implements OnInit {
         const allWorkerShifts = this.shiftCalculatorService.calculateWorkersForDate(this.allWorkers, this.selectedDate);
         console.log('Worker shifts calculated:', allWorkerShifts.length);
         
-        // For now, skip extra shift logic to test basic functionality
+        // Por ahora, omitir lógica de turnos extra para probar funcionalidad básica
         this.workersOnShift = allWorkerShifts.filter(worker => 
           worker.isScheduled && !worker.isAbsent
         );

@@ -78,6 +78,9 @@ export class ShiftCalculatorService {
 
   /**
    * Calcular el estado del turno para un trabajador en una fecha específica
+   * @param trabajador - El trabajador
+   * @param targetDate - La fecha objetivo
+   * @returns El tipo de turno para esa fecha
    */
   calculateWorkerShift(trabajador: trabajador, targetDate: Date): WorkerShiftInfo {
     const shiftPattern = this.shiftPatterns.get(trabajador.turno as turno);

@@ -1,8 +1,8 @@
 const ExtraShift = require('../models/extrashift');
 const Trabajador = require('../models/trabajador');
 
-// CRUD Controllers
-// Get all extra shifts
+// Controladores CRUD
+// Obtener todos los turnos extra
 exports.getExtraShifts = (req, res, next) => {
     ExtraShift.findAll({
         include: [{
@@ -19,7 +19,7 @@ exports.getExtraShifts = (req, res, next) => {
         });
 }
 
-// Get extra shift by id
+// Obtener turno extra por id
 exports.getExtraShift = (req, res, next) => {
     const extraShiftId = req.params.extraShiftId;
     ExtraShift.findByPk(extraShiftId, {
@@ -40,7 +40,7 @@ exports.getExtraShift = (req, res, next) => {
         });
 }
 
-// Get extra shifts by trabajador id
+// Obtener turnos extra por id de trabajador
 exports.getExtraShiftsByTrabajador = (req, res, next) => {
     const trabajadorId = req.params.trabajadorId;
     ExtraShift.findAll({
@@ -60,7 +60,7 @@ exports.getExtraShiftsByTrabajador = (req, res, next) => {
         });
 }
 
-// Create extra shift
+// Crear turno extra
 exports.createExtraShift = (req, res, next) => {
     const { 
         trabajadorId, 
@@ -72,14 +72,14 @@ exports.createExtraShift = (req, res, next) => {
         createdBy 
     } = req.body;
 
-    // Validate required fields
+    // Validar campos requeridos
     if (!trabajadorId || !fechaTurnoExtra || !horasExtras || !tipoTurno) {
         return res.status(400).json({ 
             message: 'Missing required fields: trabajadorId, fechaTurnoExtra, horasExtras, tipoTurno' 
         });
     }
 
-    // Check if trabajador exists
+    // Verificar si el trabajador existe
     Trabajador.findByPk(trabajadorId)
         .then(trabajador => {
             if (!trabajador) {
