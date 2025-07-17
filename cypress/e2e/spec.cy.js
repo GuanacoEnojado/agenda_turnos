@@ -97,19 +97,16 @@ describe('Agenda Turnos - E2E Tests', () => {
       cy.get('ion-card-content ion-input[formControlName="email"] input').first().clear().type(trabajador.email);
       
       cy.get('ion-card-content ion-datetime[formControlName="fecha_nacimiento"]').first().click();
-      cy.get('ion-picker-column[aria-label*="year"] ion-picker-column-option[aria-label*="1985"]').click();
-      cy.get('ion-button:contains("Done")').click();
+      cy.get('ion-card-content ion-input[formControlName="fecha_nacimiento"] input').first().clear().type(trabajador.fecha_nacimiento);
       
       cy.get('ion-card-content ion-datetime[formControlName="fecha_ingreso"]').first().click();
-      cy.get('ion-picker-column[aria-label*="year"] ion-picker-column-option[aria-label*="2020"]').click();
-      cy.get('ion-button:contains("Done")').click();
-      
+      cy.get('ion-card-content ion-input[formControlName="fecha_ingreso"] input').first().clear().type(trabajador.fecha_ingreso);
+
       cy.get('ion-card-content ion-select[formControlName="turno"]').first().click();
       cy.get(`ion-select-option[value="${trabajador.turno}"]`).click();
       
       cy.get('ion-card-content ion-datetime[formControlName="fechainicioturno"]').first().click();
-      cy.get('ion-picker-column[aria-label*="year"] ion-picker-column-option[aria-label*="2020"]').click();
-      cy.get('ion-button:contains("Done")').click();
+      cy.get('ion-card-content ion-input[formControlName="fechainicioturno"] input').first().clear().type(trabajador.fechainicioturno);
       
       cy.get('ion-card-content ion-select[formControlName="contrato"]').first().click();
       cy.get(`ion-select-option[value="${trabajador.contrato}"]`).click();
