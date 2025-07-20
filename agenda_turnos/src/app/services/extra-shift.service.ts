@@ -59,13 +59,13 @@ export class ExtraShiftService {
       .pipe(
         map((response: any) => {
           const shifts = response.extraShifts || [];
-          // Convertir strings de fecha a objetos Date
+          // Convertir strings de fecha a objetos Date con manejo correcto de zona horaria
           return shifts.map((shift: any) => ({
             ...shift,
-            fechaCreacion: new Date(shift.fechaCreacion || shift.createdAt),
-            fechaTurnoExtra: new Date(shift.fechaTurnoExtra),
-            createdAt: shift.createdAt ? new Date(shift.createdAt) : undefined,
-            updatedAt: shift.updatedAt ? new Date(shift.updatedAt) : undefined
+            fechaCreacion: this.parseDate(shift.fechaCreacion || shift.createdAt),
+            fechaTurnoExtra: this.parseDate(shift.fechaTurnoExtra),
+            createdAt: shift.createdAt ? this.parseDate(shift.createdAt) : undefined,
+            updatedAt: shift.updatedAt ? this.parseDate(shift.updatedAt) : undefined
           }));
         }),
         catchError(this.handleError<ExtraShift[]>('getExtraShiftsFromApi', []))
@@ -83,10 +83,10 @@ export class ExtraShiftService {
           if (shift) {
             return {
               ...shift,
-              fechaCreacion: new Date(shift.fechaCreacion || shift.createdAt),
-              fechaTurnoExtra: new Date(shift.fechaTurnoExtra),
-              createdAt: shift.createdAt ? new Date(shift.createdAt) : undefined,
-              updatedAt: shift.updatedAt ? new Date(shift.updatedAt) : undefined
+              fechaCreacion: this.parseDate(shift.fechaCreacion || shift.createdAt),
+              fechaTurnoExtra: this.parseDate(shift.fechaTurnoExtra),
+              createdAt: shift.createdAt ? this.parseDate(shift.createdAt) : undefined,
+              updatedAt: shift.updatedAt ? this.parseDate(shift.updatedAt) : undefined
             };
           }
           return null;
@@ -106,10 +106,10 @@ export class ExtraShiftService {
           if (shift) {
             return {
               ...shift,
-              fechaCreacion: new Date(shift.fechaCreacion || shift.createdAt),
-              fechaTurnoExtra: new Date(shift.fechaTurnoExtra),
-              createdAt: shift.createdAt ? new Date(shift.createdAt) : undefined,
-              updatedAt: shift.updatedAt ? new Date(shift.updatedAt) : undefined
+              fechaCreacion: this.parseDate(shift.fechaCreacion || shift.createdAt),
+              fechaTurnoExtra: this.parseDate(shift.fechaTurnoExtra),
+              createdAt: shift.createdAt ? this.parseDate(shift.createdAt) : undefined,
+              updatedAt: shift.updatedAt ? this.parseDate(shift.updatedAt) : undefined
             };
           }
           return null;
@@ -168,8 +168,13 @@ export class ExtraShiftService {
    */
   private isWorkerEligibleForExtraShift(trabajador: trabajador): boolean {
     // Workers who can work extra shifts (those not permanently unavailable)
+    // Incluir 'volante' ya que los trabajadores volantes también pueden hacer turnos extra
     const eligibleStates = ['activo', 'inactivo'];
-    return eligibleStates.includes(trabajador.estado);
+    
+    // Los trabajadores volantes (por turno) también pueden hacer turnos extra
+    const isVolante = trabajador.turno === 'volante';
+    
+    return eligibleStates.includes(trabajador.estado) || isVolante;
   }
 
   /**
@@ -231,8 +236,8 @@ export class ExtraShiftService {
       }
 
       // Create extra shift record via API (DO NOT change worker estado)
-      // Fix date to ensure no timezone issues
-      const normalizedDate = new Date(fechaTurnoExtra.getFullYear(), fechaTurnoExtra.getMonth(), fechaTurnoExtra.getDate());
+      // Ensure date is properly normalized to avoid timezone issues
+      const normalizedDate = new Date(fechaTurnoExtra.getFullYear(), fechaTurnoExtra.getMonth(), fechaTurnoExtra.getDate(), 12, 0, 0, 0);
       const extraShiftData = {
         trabajadorId: trabajador.id!,
         fechaCreacion: new Date(),
@@ -346,9 +351,13 @@ export class ExtraShiftService {
    */
   canAssignExtraShift(trabajador: trabajador): { canAssign: boolean, reason?: string } {
     if (!this.isWorkerEligibleForExtraShift(trabajador)) {
+      const reason = trabajador.turno === 'volante' 
+        ? `No se puede asignar turno extra: estado ${trabajador.estado} no compatible`
+        : `No se puede asignar turno extra a trabajadores con estado: ${trabajador.estado}`;
+      
       return { 
         canAssign: false, 
-        reason: `No se puede asignar turno extra a trabajadores con estado: ${trabajador.estado}` 
+        reason 
       };
     }
 
@@ -479,6 +488,17 @@ export class ExtraShiftService {
   }
 
   /**
+   * Eliminar turno extra vía API (eliminación física)
+   */
+  private deleteExtraShiftApi(id: number): Observable<boolean> {
+    return this.http.delete(`${this.API_URL}/extrashifts/${id}`, this.httpOptions)
+      .pipe(
+        map(() => true),
+        catchError(this.handleError<boolean>('deleteExtraShiftApi', false))
+      );
+  }
+
+  /**
    * Delete/cancel a specific extra shift
    */
   async deleteExtraShift(extraShiftId: number): Promise<boolean> {
@@ -490,13 +510,17 @@ export class ExtraShiftService {
         throw new Error('Turno extra no encontrado');
       }
 
-      // Update extra shift status via API
-      const updatedShift = await firstValueFrom(
-        this.updateExtraShiftApi(extraShiftId, { estado: 'cancelado' })
+      // Delete extra shift physically via API
+      const deleted = await firstValueFrom(
+        this.deleteExtraShiftApi(extraShiftId)
       );
 
-      if (updatedShift) {
-        // Refresh extra shifts from backend
+      if (deleted) {
+        // Remove from local state immediately
+        const updatedShifts = currentShifts.filter(s => s.id !== extraShiftId);
+        this.extraShifts.next(updatedShifts);
+        
+        // Also refresh from backend to ensure consistency
         this.loadExtraShiftsFromBackend();
         return true;
       }
@@ -517,5 +541,23 @@ export class ExtraShiftService {
     return d1.getFullYear() === d2.getFullYear() &&
            d1.getMonth() === d2.getMonth() &&
            d1.getDate() === d2.getDate();
+  }
+
+  /**
+   * Helper method to parse date strings correctly avoiding timezone issues
+   */
+  private parseDate(dateString: string | Date): Date {
+    if (dateString instanceof Date) {
+      return dateString;
+    }
+    
+    // If it's a date-only string (YYYY-MM-DD), parse it as local date
+    if (typeof dateString === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+      const [year, month, day] = dateString.split('-').map(Number);
+      return new Date(year, month - 1, day, 12, 0, 0, 0); // Set to noon to avoid timezone issues
+    }
+    
+    // For full datetime strings, use normal Date constructor
+    return new Date(dateString);
   }
 }

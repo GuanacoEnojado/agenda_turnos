@@ -106,7 +106,9 @@ export class CalendarioGlobalPage implements OnInit {
           !worker.isScheduled && !worker.isAbsent
         );
         
-        this.extraworkers = []; // Temporarily empty
+        // Obtener trabajadores con turnos extra para esta fecha
+        await this.loadExtraWorkersForDate();
+        
         this.shiftedworkers = allWorkerShifts.filter(worker => 
           !worker.isScheduled && !worker.isAbsent && worker.isShifted
         );
@@ -173,7 +175,9 @@ export class CalendarioGlobalPage implements OnInit {
           !worker.isScheduled && !worker.isAbsent
         );
         
-        this.extraworkers = []; // Temporarily empty
+        // Obtener trabajadores con turnos extra para esta fecha
+        await this.loadExtraWorkersForDate();
+        
         this.shiftedworkers = allWorkerShifts.filter(worker => 
           !worker.isScheduled && !worker.isAbsent && worker.isShifted
         );
@@ -545,6 +549,64 @@ export class CalendarioGlobalPage implements OnInit {
     });
 
     await confirmAlert.present();
+  }
+
+  /**
+   * Cargar trabajadores con turnos extra para la fecha seleccionada
+   */
+  private async loadExtraWorkersForDate(): Promise<void> {
+    if (!this.selectedDate) {
+      this.extraworkers = [];
+      return;
+    }
+
+    try {
+      // Obtener turnos extra para la fecha seleccionada
+      const extraShifts = await this.extraShiftService.getExtraShiftsForDate(this.selectedDate).toPromise();
+      
+      if (!extraShifts) {
+        this.extraworkers = [];
+        return;
+      }
+      
+      // Crear WorkerShiftInfo para cada trabajador con turno extra
+      this.extraworkers = extraShifts.map(extraShift => {
+        // Buscar el trabajador correspondiente
+        const trabajador = this.allWorkers.find(w => w.id === extraShift.trabajadorId);
+        
+        if (!trabajador) {
+          console.warn(`Worker not found for extra shift: ${extraShift.trabajadorId}`);
+          return null;
+        }
+
+        // Determinar el tipo de turno según el ShiftType esperado
+        let shiftStatus: ShiftType;
+        if (extraShift.tipoTurno === 'day') {
+          shiftStatus = 'morning' as ShiftType;
+        } else {
+          shiftStatus = 'night' as ShiftType;
+        }
+
+        // Crear el objeto WorkerShiftInfo
+        const workerShiftInfo: WorkerShiftInfo = {
+          trabajador: trabajador,
+          shiftStatus: shiftStatus,
+          isScheduled: true,
+          isAbsent: false,
+          isExtra: true,
+          isShifted: false,
+          absenceReason: undefined
+        };
+
+        return workerShiftInfo;
+      }).filter((worker): worker is WorkerShiftInfo => worker !== null);
+
+      console.log('Extra workers loaded for date:', this.extraworkers.length);
+      
+    } catch (error) {
+      console.error('Error loading extra workers for date:', error);
+      this.extraworkers = [];
+    }
   }
 
   // Debug methods

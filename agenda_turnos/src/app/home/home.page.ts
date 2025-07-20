@@ -51,7 +51,7 @@ export class HomePage implements OnInit {
         this.router.navigate(['/main']);
       } else {
         const alert = await this.alertController.create({
-          header: 'Falla en el ingreso debug 3',
+          header: 'Falla en el ingreso',
           message: result.message,
           buttons: ['OK']
         });

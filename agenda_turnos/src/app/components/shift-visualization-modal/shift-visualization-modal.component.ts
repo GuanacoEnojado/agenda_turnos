@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { IonicModule, ModalController, AlertController, LoadingController } from '@ionic/angular';
 import { trabajador, ExtraShift } from '../../services/datos';
 import { ShiftCalculatorService } from '../../services/shift-calculator.service';
 import { ExtraShiftService } from '../../services/extra-shift.service';
@@ -60,7 +60,9 @@ export class ShiftVisualizationModalComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private shiftCalculatorService: ShiftCalculatorService,
-    private extraShiftService: ExtraShiftService
+    private extraShiftService: ExtraShiftService,
+    private alertController: AlertController,
+    private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
@@ -387,6 +389,99 @@ export class ShiftVisualizationModalComponent implements OnInit {
 
   getEstadoDisplayText(estado: string): string {
     return estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase();
+  }
+
+  async deleteExtraShift(day: DayShift | null, extraShiftIndex: number) {
+    if (!day || !day.shifts.extra || extraShiftIndex < 0 || extraShiftIndex >= day.shifts.extra.length) {
+      return;
+    }
+
+    const extraShift = day.shifts.extra[extraShiftIndex];
+    
+    // Mostrar confirmación
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: `¿Está seguro de que desea eliminar el turno extra de ${extraShift.hours} horas del ${day.date.toLocaleDateString()}?`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            await this.confirmDeleteExtraShift(day, extraShiftIndex);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async confirmDeleteExtraShift(day: DayShift, extraShiftIndex: number) {
+    const loading = await this.loadingController.create({
+      message: 'Eliminando turno extra...'
+    });
+    await loading.present();
+
+    try {
+      // Buscar el turno extra real en la lista de turnos del trabajador
+      const extraShiftToDelete = day.shifts.extra![extraShiftIndex];
+      const dateToMatch = day.date;
+      
+      // Encontrar el ID del turno extra que coincida con la fecha y características
+      const matchingExtraShift = this.workerExtraShifts.find(shift => {
+        const shiftDate = new Date(shift.fechaTurnoExtra);
+        return shiftDate.toDateString() === dateToMatch.toDateString() &&
+               shift.horasExtras === extraShiftToDelete.hours &&
+               shift.tipoTurno === extraShiftToDelete.type;
+      });
+
+      if (matchingExtraShift && matchingExtraShift.id) {
+        // Eliminar a través del servicio
+        const success = await this.extraShiftService.deleteExtraShift(matchingExtraShift.id);
+        
+        if (success) {
+          // Actualizar la vista local
+          day.shifts.extra!.splice(extraShiftIndex, 1);
+          
+          // Recargar todos los turnos extra para asegurar consistencia
+          await this.loadExtraShiftsAndGenerateCalendar();
+          
+          await this.showSuccessAlert('Turno extra eliminado correctamente');
+        } else {
+          await this.showErrorAlert('No se pudo eliminar el turno extra');
+        }
+      } else {
+        await this.showErrorAlert('No se pudo encontrar el turno extra para eliminar');
+      }
+
+    } catch (error) {
+      console.error('Error eliminando turno extra:', error);
+      await this.showErrorAlert('Error al eliminar el turno extra');
+    } finally {
+      await loading.dismiss();
+    }
+  }
+
+  private async showSuccessAlert(message: string) {
+    const alert = await this.alertController.create({
+      header: 'Éxito',
+      message: message,
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+
+  private async showErrorAlert(message: string) {
+    const alert = await this.alertController.create({
+      header: 'Error',
+      message: message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   hasNoShifts(day: DayShift | null): boolean {

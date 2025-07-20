@@ -57,17 +57,7 @@
           </div>
 
           <!-- Email -->
-          <ion-item>
-            <ion-label position="stacked">Email *</ion-label>
-            <ion-input
-              type="email"
-              formControlName="email"
-              placeholder="Ingrese el email">
-            </ion-input>
-          </ion-item>
-          <div class="error-message" *ngIf="registroForm.get('email')?.touched && registroForm.get('email')?.errors?.['required']">
-            El email es obligatorio
-          </div>
+
           <ion-item class="app-form-item">
             <ion-label position="stacked">Email *</ion-label>
             <ion-input

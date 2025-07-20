@@ -31,6 +31,11 @@ Este documento registra el progreso de traducción de comentarios en inglés a e
 
 #### `cypress/e2e/spec.cy.js`
 - ✅ Suite de pruebas E2E Cypress - Agenda Turnos
+- ✅ Traducción completa de comentarios y documentación
+- ✅ Implementación de comandos personalizados para ion-datetime
+- ✅ Mejora en selectores robustos para formularios de registro
+- ✅ Automatización completa del flujo de registro de funcionarios
+- ✅ Manejo mejorado de alertas y confirmaciones
 
 #### `services/trabajadores.service.ts`
 - ✅ Obtener todos los trabajadores

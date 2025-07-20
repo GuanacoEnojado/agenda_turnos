@@ -221,3 +221,33 @@
   }
   .legend-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+// Extra Shift Delete Button
+.extra-shift-item {
+  ion-button[slot="end"] {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-top: 4px;
+    --padding-bottom: 4px;
+    
+    ion-icon {
+      font-size: 18px;
+    }
+    
+    &:hover {
+      --background: var(--ion-color-danger-tint);
+    }
+  }
+}
+
+// Better spacing for extra shift items
+ion-card[class*="extra"] {
+  ion-item {
+    --padding-start: 16px;
+    --padding-end: 8px;
+    
+    ion-label {
+      margin-right: 8px;
+    }
+  }
+}

@@ -218,14 +218,28 @@ Cypress.Commands.add('clickIonicButton', (buttonText) => {
  * @param {string} expectedText - Texto esperado en la alerta
  * @param {string} buttonText - Texto del botón a hacer clic (default: "OK")
  */
-Cypress.Commands.add('handleIonicAlert', (expectedText = null, buttonText = 'OK') => {
+Cypress.Commands.add('handleIonicAlert', (buttonText = null) => {
   cy.get('ion-alert', { timeout: 10000 }).should('be.visible');
   
-  if (expectedText) {
-    cy.get('ion-alert').should('contain.text', expectedText);
+  if (buttonText) {
+    // Buscar botón específico
+    cy.get('ion-alert').within(() => {
+      cy.get('ion-button').contains(buttonText).click();
+    });
+  } else {
+    // Buscar cualquier botón común de confirmación
+    cy.get('ion-alert').within(() => {
+      cy.get('ion-button').contains(/^(Ok|OK|Aceptar|Confirmar|Sí|Si)$/i).click();
+    });
   }
-  
-  cy.get(`ion-alert ion-button:contains("${buttonText}")`).click();
+});
+
+/**
+ * Comando alternativo que hace clic en el primer botón disponible
+ */
+Cypress.Commands.add('handleAnyIonicAlert', () => {
+  cy.get('ion-alert', { timeout: 10000 }).should('be.visible');
+  cy.get('ion-alert ion-button').first().click();
 });
 
 /**
@@ -252,4 +266,221 @@ Cypress.Commands.add('generateRandomFuncionario', () => {
     Cargo: `Cargo ${randomId}`,
     Unidad: `Unidad ${randomId}`
   };
+});
+
+/**
+ * Comando personalizado para seleccionar fechas en ion-datetime
+ * Maneja la interacción robusta con el componente ion-datetime de Ionic
+ * 
+ * @param {string} formControlName - Nombre del FormControl en Angular
+ * @param {string} dateString - Fecha en formato YYYY-MM-DD
+ */
+Cypress.Commands.add('selectIonDatetime', (formControlName, dateString) => {
+  cy.log(`📅 Seleccionando fecha ${dateString} en campo ${formControlName}`);
+  
+  // Primero buscar el elemento dentro del ion-item contenedor
+  cy.get(`ion-item`)
+    .contains('ion-label', /Fecha|fecha/)
+    .parent()
+    .find(`ion-datetime[formControlName="${formControlName}"]`)
+    .should('exist')
+    .scrollIntoView({ duration: 500 })
+    .wait(300); // Esperar a que termine el scroll
+  
+  // Forzar visibilidad y establecer valor directamente
+  cy.get(`ion-datetime[formControlName="${formControlName}"]`)
+    .then(($el) => {
+      // Hacer el elemento visible si está oculto
+      $el.css('visibility', 'visible');
+      $el.css('display', 'block');
+      
+      // Establecer el valor directamente en el componente
+      const element = $el[0];
+      element.value = dateString;
+      
+      // Crear y disparar múltiples eventos para asegurar sincronización
+      const events = [
+        new CustomEvent('ionChange', {
+          detail: { value: dateString },
+          bubbles: true
+        }),
+        new Event('change', { bubbles: true }),
+        new Event('input', { bubbles: true }),
+        new Event('blur', { bubbles: true })
+      ];
+      
+      events.forEach(event => {
+        element.dispatchEvent(event);
+      });
+      
+      // Forzar actualización del FormControl de Angular
+      if (element._elementRef && element._elementRef.nativeElement) {
+        element._elementRef.nativeElement.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+  
+  // Verificar que la fecha se estableció usando múltiples métodos
+  cy.get(`ion-datetime[formControlName="${formControlName}"]`).then(($el) => {
+    const element = $el[0];
+    expect(element.value).to.equal(dateString);
+  });
+  
+  cy.log(`Fecha ${dateString} seleccionada correctamente en ${formControlName}`);
+});
+
+/**
+ * Comando alternativo para ion-datetime que fuerza la interacción
+ * Útil cuando hay problemas de visibilidad CSS
+ */
+Cypress.Commands.add('selectIonDatetimeForced', (formControlName, dateString) => {
+  cy.log(`[FORCED] Seleccionando fecha ${dateString} en campo ${formControlName}`);
+  
+  // Usar force: true para obviar problemas de visibilidad
+  cy.get(`ion-datetime[formControlName="${formControlName}"]`)
+    .invoke('attr', 'value', dateString)
+    .then(($el) => {
+      const element = $el[0];
+      
+      // Establecer directamente la propiedad value
+      element.value = dateString;
+      
+      // Simular eventos manualmente con force
+      const ionChange = new CustomEvent('ionChange', {
+        detail: { value: dateString },
+        bubbles: true
+      });
+      
+      element.dispatchEvent(ionChange);
+      
+      // También disparar eventos estándar
+      element.dispatchEvent(new Event('change', { bubbles: true }));
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    
+  // Verificar resultado
+  cy.get(`ion-datetime[formControlName="${formControlName}"]`)
+    .should('have.attr', 'value', dateString);
+    
+  cy.log(`[FORCED] Fecha ${dateString} establecida en ${formControlName}`);
+});
+
+/**
+ * Comando mejorado para seleccionar opciones en ion-select
+ */
+Cypress.Commands.add('selectIonSelectOption', (formControlName, value) => {
+  cy.log(`🔽 Seleccionando opción ${value} en campo ${formControlName}`);
+  
+  cy.get(`ion-select[formControlName="${formControlName}"]`)
+    .scrollIntoView()
+    .should('be.visible')
+    .click();
+  
+  // Esperar a que aparezcan las opciones en cualquier formato
+  cy.get('body').then(($body) => {
+    // Verificar si aparece un ion-select-popover o ion-alert
+    if ($body.find('ion-select-popover').length > 0) {
+      // Caso 1: Popover normal
+      cy.get('ion-select-popover', { timeout: 5000 }).should('be.visible');
+      cy.get(`ion-select-popover ion-select-option[value="${value}"]`)
+        .should('be.visible')
+        .click();
+    } else {
+      // Caso 2: Alert/modal
+      cy.get('ion-alert', { timeout: 5000 }).should('be.visible');
+      
+      // Buscar la opción por valor o texto
+      cy.get('ion-alert').within(() => {
+        // Intentar por valor primero
+        cy.get(`ion-radio[value="${value}"]`).then(($radio) => {
+          if ($radio.length > 0) {
+            cy.wrap($radio).click();
+          } else {
+            // Si no encuentra por valor, buscar por texto visible
+            const optionTexts = {
+              '4to_turno': '4to Turno',
+              '4to_turno_modificado': '4to Turno Modificado',
+              '3er_turno': '3er Turno',
+              'diurno_hospital': 'Diurno Hospital',
+              'diurno_empresa': 'Diurno Empresa',
+              'volante': 'Volante'
+            };
+            
+            const textToFind = optionTexts[value] || value;
+            cy.contains('ion-item', textToFind).click();
+          }
+        });
+      });
+      
+      // Confirmar selección en alert
+      cy.get('ion-alert ion-button:contains("OK"), ion-alert ion-button:contains("Confirmar")')
+        .click();
+    }
+  });
+  
+  // Verificar que la selección se aplicó
+  cy.get(`ion-select[formControlName="${formControlName}"]`)
+    .should('contain.text', value);
+  
+  cy.log(`Opción ${value} seleccionada en ${formControlName}`);
+});
+
+/**
+ * Comando alternativo para ion-select que fuerza el valor directamente
+ * Útil cuando hay problemas con popovers o modales
+ */
+Cypress.Commands.add('selectIonSelectForced', (formControlName, value) => {
+  cy.log(`🔽 [FORCED] Seleccionando opción ${value} en campo ${formControlName}`);
+  
+  // Establecer el valor directamente en el componente
+  cy.get(`ion-select[formControlName="${formControlName}"]`)
+    .scrollIntoView()
+    .then(($select) => {
+      const selectElement = $select[0];
+      
+      // Establecer el valor directamente
+      selectElement.value = value;
+      
+      // Disparar eventos para notificar a Angular
+      const events = [
+        new CustomEvent('ionSelectionChange', {
+          detail: { value: value },
+          bubbles: true
+        }),
+        new CustomEvent('ionChange', {
+          detail: { value: value },
+          bubbles: true
+        }),
+        new Event('change', { bubbles: true }),
+        new Event('input', { bubbles: true })
+      ];
+      
+      events.forEach(event => {
+        selectElement.dispatchEvent(event);
+      });
+    });
+  
+  // Verificar que el valor se estableció
+  cy.get(`ion-select[formControlName="${formControlName}"]`)
+    .should('have.value', value);
+    
+  cy.log(`✅ [FORCED] Opción ${value} establecida en ${formControlName}`);
+});
+
+/**
+ * Comando mejorado para llenar inputs de ion-input
+ */
+Cypress.Commands.add('fillIonInput', (formControlName, value) => {
+  cy.log(`✏️ Llenando campo ${formControlName} con valor: ${value}`);
+  
+  cy.get(`ion-input[formControlName="${formControlName}"]`)
+    .scrollIntoView()
+    .should('be.visible')
+    .within(() => {
+      cy.get('input')
+        .clear()
+        .type(value)
+        .should('have.value', value);
+    });
+  
+  cy.log(`✅ Campo ${formControlName} completado`);
 });

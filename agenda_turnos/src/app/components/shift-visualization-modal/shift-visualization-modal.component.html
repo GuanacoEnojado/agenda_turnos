@@ -231,7 +231,7 @@
           <ion-card-title>Turnos Extra</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <ion-item *ngFor="let extra of selectedDay.shifts.extra" lines="none">
+          <ion-item *ngFor="let extra of selectedDay.shifts.extra; let i = index" lines="none">
             <ion-icon 
               [name]="getShiftIcon(extra.type)" 
               slot="start" 
@@ -243,6 +243,14 @@
               <p *ngIf="extra.details"><strong>Detalles:</strong> {{ extra.details }}</p>
               <p *ngIf="extra.assignedBy"><strong>Asignado por:</strong> {{ extra.assignedBy }}</p>
             </ion-label>
+            <ion-button 
+              slot="end" 
+              fill="clear" 
+              color="danger" 
+              size="small"
+              (click)="deleteExtraShift(selectedDay, i)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
           </ion-item>
         </ion-card-content>
       </ion-card>

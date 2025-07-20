@@ -5,7 +5,7 @@
     </ion-buttons>
     <ion-title>Lista de Funcionarios</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="loadTrabajadores()">
+      <ion-button id="refresh-button" (click)="loadTrabajadores()">
         <ion-icon name="refresh-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -50,32 +50,49 @@
         <p class="shift-status">Clic para ver turnos</p>
       </ion-label>
 
-      <!-- Actions and Estado -->
-      <div slot="end" class="worker-actions">
-        <!-- Edit Button -->
+      <!-- Botones y Estado - Grid 2x2 -->
+      <div slot="end" class="worker-actions-grid">
+        <!-- Fila 1 -->
         <ion-button 
-          fill="outline" 
+          id="edit-button"
+          fill="solid" 
           size="small" 
           color="primary"
+          class="action-button"
           (click)="$event.stopPropagation(); openEditModal(trabajador)">
           <ion-icon name="create-outline" slot="start"></ion-icon>
           Editar
         </ion-button>
         
-        <!-- Extra Shift Button (only show for non-active workers) -->
         <ion-button 
-          *ngIf="canAssignExtraShift(trabajador)" 
-          fill="outline" 
+          *ngIf="canAssignExtraShift(trabajador); else spacerButton" 
+          fill="solid" 
           size="small" 
           color="tertiary"
+          class="action-button"
           (click)="$event.stopPropagation(); assignExtraShift(trabajador)">
           <ion-icon name="add-circle-outline" slot="start"></ion-icon>
           Turno Extra
         </ion-button>
         
-        <!-- Estado -->
+        <ng-template #spacerButton>
+          <div class="action-button-spacer"></div>
+        </ng-template>
+        
+        <!-- Fila 2 -->
+        <ion-button 
+          fill="solid" 
+          size="small" 
+          color="danger"
+          class="action-button"
+          (click)="$event.stopPropagation(); deleteTrabajador(trabajador)">
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Eliminar
+        </ion-button>
+        
         <ion-badge 
-          [color]="getStatusColor(trabajador.estado)">
+          [color]="getStatusColor(trabajador.estado)"
+          class="status-badge">
           <ion-icon 
             [name]="getStatusIcon(trabajador.estado)" 
             size="small">

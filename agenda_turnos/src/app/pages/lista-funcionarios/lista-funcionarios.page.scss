@@ -82,65 +82,74 @@ ion-item {
   }
 }
 
-/* Worker actions styling */
-.worker-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+/* Worker actions grid styling - 2x2 compact layout with text */
+.worker-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 3px;
-  min-width: 85px;
-  max-width: 90px;
+  width: 140px;
+  height: 52px;
+  align-items: center;
+  justify-items: stretch;
   
-  ion-button {
-    --border-radius: 4px;
-    --padding-start: 4px;
-    --padding-end: 4px;
-    --padding-top: 2px;
-    --padding-bottom: 2px;
-    --color: var(--app-text-light);
-    --border-color: var(--app-text-light);
-    --border-width: 1px;
-    font-size: 0.65rem;
-    font-weight: 500;
-    height: 22px;
-    min-height: 22px;
+  .action-button {
+    --border-radius: 6px;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    --padding-top: 4px;
+    --padding-bottom: 4px;
     width: 100%;
+    height: 24px;
+    min-height: 24px;
+    margin: 0;
+    font-size: 0.65rem;
+    font-weight: 600;
     text-transform: none;
     letter-spacing: 0;
     
-    &[fill="outline"] {
-      --background: transparent;
-      --background-hover: rgba(255, 255, 255, 0.1);
-      --background-activated: rgba(255, 255, 255, 0.2);
+    ion-icon {
+      font-size: 12px;
+      margin-right: 3px;
+    }
+    
+    &[color="primary"] {
+      --background: #4a90e2;
+      --background-hover: #357abd;
+      --background-activated: #2968a3;
+      --color: white;
     }
     
     &[color="tertiary"] {
-      --color: var(--app-text-light);
-      --border-color: var(--app-text-light);
-      
-      &:hover {
-        --background: rgba(255, 255, 255, 0.1);
-      }
+      --background: #8e44ad;
+      --background-hover: #7d3c98;
+      --background-activated: #6c3483;
+      --color: white;
     }
     
-    ion-icon {
-      font-size: 0.75rem;
-      margin-right: 2px;
+    &[color="danger"] {
+      --background: #e74c3c;
+      --background-hover: #c0392b;
+      --background-activated: #a93226;
+      --color: white;
     }
   }
   
-  ion-badge {
-    --background: rgba(255, 255, 255, 0.2);
-    --color: var(--app-text-light);
-    --padding-start: 4px;
-    --padding-end: 4px;
-    --padding-top: 2px;
-    --padding-bottom: 2px;
-    border-radius: 4px;
+  .action-button-spacer {
+    width: 100%;
+    height: 24px;
+  }
+  
+  .status-badge {
+    --padding-start: 6px;
+    --padding-end: 6px;
+    --padding-top: 4px;
+    --padding-bottom: 4px;
+    border-radius: 6px;
     font-size: 0.6rem;
-    font-weight: 500;
-    height: 18px;
-    min-height: 18px;
+    font-weight: 600;
+    height: 24px;
+    min-height: 24px;
     width: 100%;
     text-align: center;
     display: flex;
@@ -148,8 +157,34 @@ ion-item {
     justify-content: center;
     
     ion-icon {
-      font-size: 0.65rem;
-      margin-right: 2px;
+      font-size: 10px;
+      margin-right: 3px;
+    }
+    
+    /* Colores sólidos para mejor visibilidad */
+    &[color="success"] {
+      --background: #27ae60;
+      --color: white;
+    }
+    
+    &[color="medium"] {
+      --background: #95a5a6;
+      --color: white;
+    }
+    
+    &[color="warning"] {
+      --background: #f39c12;
+      --color: white;
+    }
+    
+    &[color="primary"] {
+      --background: #3498db;
+      --color: white;
+    }
+    
+    &[color="danger"] {
+      --background: #e74c3c;
+      --color: white;
     }
   }
 }
@@ -169,7 +204,7 @@ ion-item {
     color: var(--app-text-light);
   }
   
-  .worker-actions ion-badge {
+  .worker-actions-grid .status-badge {
     --background: rgba(255, 255, 255, 0.25);
     --color: var(--app-text-light);
   }
@@ -197,7 +232,7 @@ ion-item {
     color: var(--app-text-light);
   }
   
-  .worker-actions ion-badge {
+  .worker-actions-grid .status-badge {
     --background: rgba(255, 255, 255, 0.2);
     --color: var(--app-text-light);
   }
@@ -217,7 +252,7 @@ ion-item {
     color: var(--app-text-light);
   }
   
-  .worker-actions ion-badge {
+  .worker-actions-grid .status-badge {
     --background: rgba(255, 255, 255, 0.25);
     --color: var(--app-text-light);
   }
@@ -237,7 +272,7 @@ ion-item {
     color: var(--app-text-light);
   }
   
-  .worker-actions ion-badge {
+  .worker-actions-grid .status-badge {
     --background: rgba(255, 255, 255, 0.25);
     --color: var(--app-text-light);
   }
@@ -263,7 +298,7 @@ ion-item {
     color: var(--app-text-light);
   }
   
-  .worker-actions ion-badge {
+  .worker-actions-grid .status-badge {
     --background: rgba(255, 255, 255, 0.2);
     --color: var(--app-text-light);
   }
@@ -284,7 +319,7 @@ ion-item {
     color: var(--app-text-light);
   }
   
-  .worker-actions ion-badge {
+  .worker-actions-grid .status-badge {
     --background: rgba(255, 255, 255, 0.25);
     --color: var(--app-text-light);
   }
@@ -413,27 +448,28 @@ ion-modal {
     }
   }
   
-  .worker-actions {
-    min-width: 75px;
-    max-width: 80px;
+  .worker-actions-grid {
+    width: 120px;
+    height: 48px;
+    gap: 2px;
     
-    ion-button {
+    .action-button {
+      height: 22px;
+      min-height: 22px;
       font-size: 0.6rem;
-      height: 20px;
-      min-height: 20px;
       
       ion-icon {
-        font-size: 0.7rem;
+        font-size: 11px;
       }
     }
     
-    ion-badge {
+    .status-badge {
+      height: 22px;
+      min-height: 22px;
       font-size: 0.55rem;
-      height: 16px;
-      min-height: 16px;
       
       ion-icon {
-        font-size: 0.6rem;
+        font-size: 9px;
       }
     }
   }
@@ -454,7 +490,7 @@ ion-modal {
     --border-color: var(--app-text-dark);
   }
   
-  .worker-actions ion-badge {
+  .worker-actions-grid .status-badge {
     --border-width: 1px;
     --border-style: solid;
     --border-color: var(--app-text-dark);

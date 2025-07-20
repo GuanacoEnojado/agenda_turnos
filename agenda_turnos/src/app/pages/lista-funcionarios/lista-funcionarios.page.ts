@@ -401,7 +401,12 @@ export class ListaFuncionariosPage implements OnInit {
     try {
       // Map 'dia'/'noche' to 'day'/'night'
       const tipoTurno = data.tipo === 'dia' ? 'day' : 'night';
-      const shiftDate = new Date(data.fecha);
+      
+      // Fix date parsing to avoid timezone issues
+      // Parse the date string manually to ensure it's in local timezone
+      const dateString = data.fecha;
+      const [year, month, day] = dateString.split('-').map(Number);
+      const shiftDate = new Date(year, month - 1, day); // month is 0-indexed
       
       // Assign extra shift through service
       const success = await this.extraShiftService.assignExtraShift(
@@ -447,5 +452,60 @@ export class ListaFuncionariosPage implements OnInit {
     });
 
     await modal.present();
+  }
+
+  // ===== MÉTODOS DE ELIMINACIÓN =====
+  
+  // Método para eliminar trabajador
+  async deleteTrabajador(trabajador: trabajador) {
+    const alert = await this.alertController.create({
+      header: 'Confirmar eliminación',
+      message: `¿Está seguro de que desea eliminar a ${trabajador.Name1} ${trabajador.Name2}? Esta acción no se puede deshacer.`,
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async () => {
+            await this.confirmDeleteTrabajador(trabajador);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async confirmDeleteTrabajador(trabajador: trabajador) {
+    const loading = await this.loadingController.create({
+      message: 'Eliminando funcionario...'
+    });
+    await loading.present();
+
+    try {
+      this.trabajadoresService.deleteTrabajador(trabajador.id).subscribe({
+        next: async (result) => {
+          loading.dismiss();
+          if (result) {
+            await this.showAlert('Éxito', `${trabajador.Name1} ${trabajador.Name2} ha sido eliminado correctamente`);
+            await this.loadTrabajadores(); // Recargar la lista
+          } else {
+            await this.showAlert('Error', 'No se pudo eliminar el funcionario');
+          }
+        },
+        error: async (error) => {
+          loading.dismiss();
+          console.error('Error al eliminar trabajador:', error);
+          await this.showAlert('Error', 'Error al eliminar funcionario. Intente nuevamente.');
+        }
+      });
+    } catch (error) {
+      loading.dismiss();
+      console.error('Error al eliminar trabajador:', error);
+      await this.showAlert('Error', 'Error al eliminar funcionario. Intente nuevamente.');
+    }
   }
 }

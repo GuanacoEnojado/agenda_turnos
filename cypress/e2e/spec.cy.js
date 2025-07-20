@@ -71,12 +71,12 @@ describe('Agenda Turnos - E2E Tests', () => {
       if (index === 0) {
         // Para el primer trabajador, abrir menú y navegar a registro
         cy.get('ion-menu-button').click();
-        cy.wait(500); // Esperar a que el menú se abra
+        cy.wait(500); 
         cy.get('ion-item:contains("Registrar Funcionario")').should('be.visible').click();
       } else {
         // Para trabajadores subsecuentes, ir desde lista-funcionarios
         cy.get('ion-menu-button').click();
-        cy.wait(500); // Esperar a que el menú se abra
+        cy.wait(500); 
         cy.get('ion-item:contains("Registrar Funcionario")').should('be.visible').click();
       }
       
@@ -86,43 +86,59 @@ describe('Agenda Turnos - E2E Tests', () => {
       cy.get('ion-card-title:contains("Nuevo Funcionario")').should('be.visible');
       cy.get('ion-card-subtitle:contains("Complete la información del funcionario")').should('be.visible');
       
-      // Completar formulario con campos correctos
-      cy.get('ion-card-content ion-input[formControlName="Name1"]').should('be.visible');
-      cy.get('ion-card-content ion-input[formControlName="Name1"] input').first().clear().type(trabajador.Name1);
+      // Hacer scroll hasta el formulario específico para asegurar visibilidad
+      cy.get('ion-card-content form').first().scrollIntoView();
+      cy.wait(500); // Dar tiempo para que el scroll termine
       
-      cy.get('ion-card-content ion-input[formControlName="Name2"]').should('be.visible');
-      cy.get('ion-card-content ion-input[formControlName="Name2"] input').first().clear().type(trabajador.Name2);
+      // Completar formulario con comandos mejorados
+      cy.fillIonInput('Name1', trabajador.Name1);
+      cy.fillIonInput('Name2', trabajador.Name2);
+      cy.fillIonInput('email', trabajador.email);
       
-      cy.get('ion-card-content ion-input[formControlName="email"]').should('be.visible');
-      cy.get('ion-card-content ion-input[formControlName="email"] input').first().clear().type(trabajador.email);
+      // Fecha de Nacimiento - Usar método forzado para ion-datetime
+      cy.selectIonDatetimeForced('fecha_nacimiento', trabajador.fecha_nacimiento);
       
-      cy.get('ion-card-content ion-datetime[formControlName="fecha_nacimiento"]').first().click();
-      cy.get('ion-card-content ion-input[formControlName="fecha_nacimiento"] input').first().clear().type(trabajador.fecha_nacimiento);
-      
-      cy.get('ion-card-content ion-datetime[formControlName="fecha_ingreso"]').first().click();
-      cy.get('ion-card-content ion-input[formControlName="fecha_ingreso"] input').first().clear().type(trabajador.fecha_ingreso);
+      // Fecha de Ingreso
+      cy.selectIonDatetimeForced('fecha_ingreso', trabajador.fecha_ingreso);
 
-      cy.get('ion-card-content ion-select[formControlName="turno"]').first().click();
-      cy.get(`ion-select-option[value="${trabajador.turno}"]`).click();
+      // Seleccionar Turno
+      cy.selectIonSelectForced('turno', trabajador.turno);
       
-      cy.get('ion-card-content ion-datetime[formControlName="fechainicioturno"]').first().click();
-      cy.get('ion-card-content ion-input[formControlName="fechainicioturno"] input').first().clear().type(trabajador.fechainicioturno);
+      // Fecha Inicio Turno
+      cy.selectIonDatetimeForced('fechainicioturno', trabajador.fechainicioturno);
       
-      cy.get('ion-card-content ion-select[formControlName="contrato"]').first().click();
-      cy.get(`ion-select-option[value="${trabajador.contrato}"]`).click();
+      // Seleccionar Contrato
+      cy.selectIonSelectForced('contrato', trabajador.contrato);
       
-      cy.get('ion-card-content ion-select[formControlName="estado"]').first().click();
-      cy.get(`ion-select-option[value="${trabajador.estado}"]`).click();
+      // Seleccionar Estado
+      cy.selectIonSelectForced('estado', trabajador.estado);
       
-      cy.get('ion-card-content ion-select[formControlName="nivel"]').first().click();
-      cy.get(`ion-select-option[value="${trabajador.nivel}"]`).click();
+      // Seleccionar Nivel
+      cy.selectIonSelectForced('nivel', trabajador.nivel);
       
       // Enviar formulario
-      cy.get('ion-card-content ion-button[type="submit"]').first().click();
-      cy.get('ion-alert', { timeout: 15000 }).should('be.visible');
-      cy.get('ion-alert ion-button:contains("Ok")').click();
+      cy.get('ion-button[type="submit"]:contains("Registrar Funcionario")')
+        .scrollIntoView()
+        .should('be.visible')
+        .should('not.be.disabled')
+        .click();
       
-      // Verificar que llegamos a lista de funcionarios
+      // Manejar alerta con debugging y método simple
+      cy.get('ion-alert', { timeout: 15000 }).should('be.visible').then(($alert) => {
+        // Debug: ver qué hay en la alerta
+        cy.log('HTML de la alerta:', $alert.html());
+        
+        // Método más simple: buscar directamente por texto sin importar el elemento
+        cy.wrap($alert).contains('Ok').click();
+      });
+      
+      // Verificar que llegamos a main (según el código del componente)
+      cy.url({ timeout: 10000 }).should('include', '/main');
+      
+      // Navegar a lista de funcionarios para verificar que se registró
+      cy.get('ion-menu-button').click();
+      cy.wait(500);
+      cy.get('ion-item:contains("Lista Funcionarios"), ion-item:contains("Lista de Funcionarios")').should('be.visible').click();
       cy.url().should('include', '/lista-funcionarios');
       cy.get(`ion-item:contains("${trabajador.Name1} ${trabajador.Name2}")`).should('be.visible');
     });

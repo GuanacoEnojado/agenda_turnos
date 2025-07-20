@@ -86,9 +86,9 @@
               </p>
             </ion-label>
 
-            <!-- Actions and Badge -->
+            <!-- acciones -->
             <div slot="end" class="worker-actions">
-              <!-- View Extra Shifts Button (show for workers with extra shifts) -->
+              <!-- Ver Turnos Extra Botón (mostrar para trabajadores con turnos extra) -->
               <ion-button 
                 *ngIf="workerInfo.isExtra" 
                 fill="clear" 
@@ -98,8 +98,8 @@
                 <ion-icon name="eye-outline" slot="start"></ion-icon>
                 Ver Turnos
               </ion-button>
-              
-              <!-- Extra Shift Button (only show for eligible workers) -->
+
+              <!-- Botón de Turno Extra (solo mostrar para trabajadores elegibles) -->
               <ion-button 
                 *ngIf="canAssignExtraShift(workerInfo.trabajador)" 
                 fill="outline" 
@@ -111,6 +111,7 @@
               </ion-button>
               
               <!-- Badge de turno -->
+
               <ion-badge 
                 [color]="getShiftColor(workerInfo.shiftStatus)">
                 <ion-icon 
@@ -139,13 +140,12 @@
       <ion-card-content>
         <ion-list>
           <ion-item *ngFor="let workerInfo of absentWorkers" class="absent-worker">
-            <!-- Worker Avatar -->
+            <!--  Avatar (funcion pendiente) -->
             <ion-avatar slot="start">
               <ion-icon 
                 *ngIf="!workerInfo.trabajador.avatarUrl" 
                 name="person-circle-outline" 
-                size="large"
-                color="medium">
+                size="large">
               </ion-icon>
               <img 
                 *ngIf="workerInfo.trabajador.avatarUrl" 
@@ -154,7 +154,7 @@
                 class="absent-avatar">
             </ion-avatar>
 
-            <!-- Worker Info -->
+            <!-- Info trabajador -->
             <ion-label>
               <h2>{{ workerInfo.trabajador.Name1 }} {{ workerInfo.trabajador.Name2 }}</h2>
               <p>{{ formatTurno(workerInfo.trabajador.turno) }}</p>
@@ -162,9 +162,9 @@
               <p><strong>Debería estar en:</strong> {{ getShiftDisplayName(workerInfo.shiftStatus) }}</p>
             </ion-label>
 
-            <!-- Actions and Badge -->
+            <!-- Acciones y Badge -->
             <div slot="end" class="worker-actions">
-              <!-- Extra Shift Button (only show for non-active workers) -->
+              <!-- Botón de Turno Extra (solo mostrar para trabajadores elegibles) -->
               <ion-button 
                 *ngIf="canAssignExtraShift(workerInfo.trabajador)" 
                 fill="outline" 
@@ -204,13 +204,12 @@
       <ion-card-content>
         <ion-list>
           <ion-item *ngFor="let workerInfo of freeWorkers" class="free-worker">
-            <!-- Worker Avatar -->
+            <!-- Avatar -->
             <ion-avatar slot="start">
               <ion-icon 
                 *ngIf="!workerInfo.trabajador.avatarUrl" 
                 name="person-circle-outline" 
-                size="large"
-                color="medium">
+                size="large">
               </ion-icon>
               <img 
                 *ngIf="workerInfo.trabajador.avatarUrl" 
@@ -219,16 +218,16 @@
                 class="free-avatar">
             </ion-avatar>
 
-            <!-- Worker Info -->
+            <!-- Info trabajador -->
             <ion-label>
               <h2>{{ workerInfo.trabajador.Name1 }} {{ workerInfo.trabajador.Name2 }}</h2>
               <p>{{ formatTurno(workerInfo.trabajador.turno) }}</p>
               <p>{{ workerInfo.trabajador.nivel | titlecase }}</p>
             </ion-label>
 
-            <!-- Actions and Badge -->
+            <!-- Acciones y Badge -->
             <div slot="end" class="worker-actions">
-              <!-- Extra Shift Button (only show for non-active workers) -->
+              <!-- Botón de Turno Extra (solo mostrar para trabajadores elegibles) -->
               <ion-button 
                 *ngIf="canAssignExtraShift(workerInfo.trabajador)" 
                 fill="outline" 
@@ -238,9 +237,9 @@
                 <ion-icon name="add-circle-outline" slot="start"></ion-icon>
                 Turno Extra
               </ion-button>
-              
-              <!-- Free Status Badge -->
-              <ion-badge 
+
+              <!-- Badge de Libre (sin turno) -->
+              <ion-badge
                 color="light">
                 <ion-icon 
                   name="moon-outline" 

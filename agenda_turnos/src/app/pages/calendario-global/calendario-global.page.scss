@@ -114,45 +114,130 @@ ion-header {
   
   ion-button {
     margin: 0;
-    min-height: 32px;
+    min-height: 36px;
+    min-width: 120px;
     
     &[size="small"] {
-      --padding-start: 8px;
-      --padding-end: 8px;
-      font-size: 0.8rem;
+      --padding-start: 12px;
+      --padding-end: 12px;
+      font-size: 0.85rem;
+      min-height: 32px;
+      min-width: 110px;
+    }
+    
+    // Estilo específico para botón "Ver Turnos"
+    &[color="tertiary"][fill="clear"] {
+      --color: var(--ion-color-tertiary);
+      --background: rgba(var(--ion-color-tertiary-rgb), 0.05);
+      border: 1px solid rgba(var(--ion-color-tertiary-rgb), 0.2);
+      border-radius: 18px;
+      
+      &:hover {
+        --background: rgba(var(--ion-color-tertiary-rgb), 0.15);
+        border-color: var(--ion-color-tertiary);
+      }
     }
   }
   
   ion-badge {
     margin-left: 0;
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-weight: 500;
+    
+    &[color="light"] {
+      --background: rgba(108, 117, 125, 0.8);
+      --color: white;
+    }
+    
+    &[color="danger"] {
+      box-shadow: 0 2px 4px rgba(var(--ion-color-danger-rgb), 0.3);
+    }
   }
 }
 
 // Estados de tarjetas de trabajador
 .absent-worker {
-  --background: rgba(var(--ion-color-warning-rgb), 0.1);
+  --background: #fff3cd !important; // Fondo amarillo claro sólido
+  border-left: 4px solid var(--ion-color-warning);
+  margin-bottom: 12px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(255, 193, 7, 0.25);
+  
+  ion-label {
+    color: #856404 !important; // Texto marrón oscuro sobre fondo amarillo
+    
+    h2 {
+      color: #664200 !important; // Nombre en marrón más oscuro
+      font-weight: 600;
+    }
+    
+    p {
+      color: #856404 !important; // Detalles en marrón medio
+    }
+    
+    strong {
+      color: #664200 !important;
+    }
+  }
   
   .absent-avatar img {
-    opacity: 0.6;
-    filter: grayscale(50%);
+    opacity: 0.8;
+    filter: sepia(20%);
   }
 }
 
 .free-worker {
-  --background: rgba(var(--ion-color-light-rgb), 0.3);
+  --background: #495057 !important; // Fondo gris oscuro sólido
+  border-left: 4px solid #6c757d;
+  margin-bottom: 12px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+  
+  ion-label {
+    color: #ffffff !important; // Texto blanco sobre fondo oscuro
+    
+    h2 {
+      color: #ffffff !important; // Nombre en blanco
+      font-weight: 600;
+    }
+    
+    p {
+      color: #e9ecef !important; // Detalles en gris muy claro
+    }
+  }
   
   .free-avatar img {
-    opacity: 0.8;
+    opacity: 0.9;
+    filter: brightness(1.1);
   }
 }
 
 // Estilo específico para turnos extra
 ion-button[color="tertiary"] {
-  --color: var(--ion-color-tertiary);
+  --color: white;
+  --background: linear-gradient(135deg, var(--ion-color-tertiary), var(--ion-color-tertiary-shade));
   --border-color: var(--ion-color-tertiary);
+  border-radius: 20px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(var(--ion-color-tertiary-rgb), 0.3);
+  transition: all 0.3s ease;
   
   &:hover {
+    --background: linear-gradient(135deg, var(--ion-color-tertiary-shade), var(--ion-color-tertiary));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--ion-color-tertiary-rgb), 0.4);
+  }
+  
+  &[fill="outline"] {
+    --color: var(--ion-color-tertiary);
     --background: rgba(var(--ion-color-tertiary-rgb), 0.1);
+    --border-color: var(--ion-color-tertiary);
+    
+    &:hover {
+      --color: white;
+      --background: linear-gradient(135deg, var(--ion-color-tertiary), var(--ion-color-tertiary-shade));
+    }
   }
 }
 
@@ -197,6 +282,150 @@ ion-button[color="tertiary"] {
   &.vacation {
     background-color: var(--ion-color-success-tint);
     color: var(--ion-color-success-shade);
+  }
+}
+
+// Mejoras adicionales para botones y tarjetas
+.worker-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  
+  ion-button {
+    margin: 0;
+    min-height: 36px;
+    min-width: 120px;
+    
+    &[size="small"] {
+      --padding-start: 12px;
+      --padding-end: 12px;
+      font-size: 0.85rem;
+      min-height: 32px;
+      min-width: 110px;
+    }
+    
+    // Estilo específico para botón "Ver Turnos"
+    &[color="tertiary"][fill="clear"] {
+      --color: var(--ion-color-tertiary);
+      --background: rgba(var(--ion-color-tertiary-rgb), 0.05);
+      border: 1px solid rgba(var(--ion-color-tertiary-rgb), 0.2);
+      border-radius: 18px;
+      
+      &:hover {
+        --background: rgba(var(--ion-color-tertiary-rgb), 0.15);
+        border-color: var(--ion-color-tertiary);
+      }
+    }
+  }
+  
+  ion-badge {
+    margin-left: 0;
+    border-radius: 12px;
+    padding: 4px 8px;
+    font-weight: 500;
+    
+    &[color="light"] {
+      --background: rgba(108, 117, 125, 0.8);
+      --color: white;
+    }
+    
+    &[color="danger"] {
+      box-shadow: 0 2px 4px rgba(var(--ion-color-danger-rgb), 0.3);
+    }
+  }
+}
+
+// Tarjetas de trabajadores en turno
+.workers-on-shift ion-item {
+  --background: #d1f2eb !important; // Fondo verde claro sólido
+  border-left: 4px solid var(--ion-color-success);
+  margin-bottom: 12px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(var(--ion-color-success-rgb), 0.2);
+  
+  ion-label {
+    color: #0f5132 !important; // Texto verde oscuro sobre fondo verde claro
+    
+    h2 {
+      color: #0a3d2a !important; // Nombre en verde más oscuro
+      font-weight: 600;
+    }
+    
+    p {
+      color: #0f5132 !important; // Detalles en verde oscuro
+    }
+  }
+  
+  // Estilos específicos para labels de turno extra y cambio
+  .extra-shift-label {
+    color: var(--ion-color-tertiary) !important;
+    font-weight: 600;
+    
+    ion-icon {
+      color: var(--ion-color-tertiary) !important;
+    }
+  }
+  
+  .shifted-label {
+    color: var(--ion-color-success) !important;
+    font-weight: 600;
+    
+    ion-icon {
+      color: var(--ion-color-success) !important;
+    }
+  }
+}
+
+// Estilo general para todos los ion-item en tarjetas
+ion-card ion-item {
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Estilos adicionales para avatares
+ion-avatar {
+  ion-icon {
+    font-size: 2.5rem;
+  }
+  
+  img {
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+  }
+}
+
+// Íconos específicos por tipo de trabajador
+.workers-on-shift ion-avatar ion-icon {
+  color: #0f5132 !important; // Verde oscuro para trabajadores en turno
+}
+
+.absent-worker ion-avatar ion-icon {
+  color: #664200 !important; // Marrón oscuro para trabajadores ausentes
+}
+
+.free-worker ion-avatar ion-icon {
+  color: #ffffff !important; // Blanco para trabajadores libres
+}
+
+// Animaciones y transiciones
+.absent-worker, .free-worker {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

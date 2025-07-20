@@ -86,9 +86,14 @@ exports.createExtraShift = (req, res, next) => {
                 return res.status(404).json({ message: 'Trabajador not found!' });
             }
 
+            // Normalize date to avoid timezone issues
+            const normalizedDate = new Date(fechaTurnoExtra);
+            // Ensure it's set to local timezone at noon to avoid any day shifts
+            normalizedDate.setHours(12, 0, 0, 0);
+
             return ExtraShift.create({
                 trabajadorId,
-                fechaTurnoExtra,
+                fechaTurnoExtra: normalizedDate,
                 horasExtras,
                 tipoTurno,
                 detalles,
