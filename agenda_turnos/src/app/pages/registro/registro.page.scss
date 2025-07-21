@@ -1,18 +1,152 @@
 /* Registro Page - Registration Form Specific Styles */
 
-.register-form {
-  margin-top: var(--app-spacing-lg);
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
   
   .app-card {
-    max-width: 400px;
-    margin: 0 auto;
-    border: none;
-    box-shadow: 0 8px 24px rgba(4, 102, 200, 0.15);
+    margin-top: var(--app-spacing-md);
   }
   
-  .title-icon {
-    margin-right: var(--app-spacing-sm);
-    font-size: 1.2rem;
+  .header-icon {
+    text-align: center;
+    margin-bottom: var(--app-spacing-md);
+    
+    .title-icon {
+      font-size: 3rem;
+      color: var(--app-text-light);
+    }
+  }
+}
+
+.button-container {
+  margin-top: var(--app-spacing-lg);
+  
+  ion-button {
+    margin-bottom: var(--app-spacing-sm);
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+/* Estilos para alertas mejoradas */
+.alert-wrapper {
+  --background: #ffffff;
+  --color: #2d3748;
+  
+  .alert-head {
+    background: var(--ion-color-primary);
+    color: white;
+    padding: 16px;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  
+  .alert-message {
+    color: #2d3748 !important;
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 16px;
+    background: #ffffff;
+  }
+  
+  .alert-button-group {
+    .alert-button {
+      color: var(--ion-color-primary) !important;
+      font-weight: 600;
+      font-size: 1rem;
+      
+      &.alert-button-confirm {
+        background: var(--ion-color-primary);
+        color: white !important;
+      }
+    }
+  }
+
+  // Estilos específicos para radio buttons en alertas
+  .alert-radio-group {
+    .alert-radio-label {
+      color: #2d3748 !important;
+      font-size: 1rem !important;
+      font-weight: 500 !important;
+    }
+    
+    .alert-radio-button {
+      --color: var(--ion-color-primary) !important;
+      --color-checked: var(--ion-color-primary) !important;
+    }
+  }
+
+  // Estilos para inputs y opciones en alertas
+  .alert-input-wrapper {
+    .alert-input {
+      color: #2d3748 !important;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      
+      &:focus {
+        border-color: var(--ion-color-primary) !important;
+      }
+    }
+  }
+
+  // Estilos para checkbox en alertas
+  .alert-checkbox-group {
+    .alert-checkbox-label {
+      color: #2d3748 !important;
+      font-size: 1rem !important;
+      font-weight: 500 !important;
+    }
+    
+    .alert-checkbox-button {
+      --color: var(--ion-color-primary) !important;
+      --color-checked: var(--ion-color-primary) !important;
+      --checkmark-color: white !important;
+    }
+  }
+}
+
+/* Alertas de éxito */
+.alert-success {
+  .alert-head {
+    background: var(--ion-color-success);
+  }
+  
+  .alert-button-confirm {
+    background: var(--ion-color-success) !important;
+  }
+}
+
+/* Alertas de error */
+.alert-error {
+  .alert-head {
+    background: var(--ion-color-danger);
+  }
+  
+  .alert-button-confirm {
+    background: var(--ion-color-danger) !important;
+  }
+}
+
+/* Alertas de advertencia */
+.alert-warning {
+  .alert-head {
+    background: var(--ion-color-warning);
+    color: #2d3748 !important;
+  }
+  
+  .alert-button-confirm {
+    background: var(--ion-color-warning) !important;
+    color: #2d3748 !important;
+  }
+}
+
+/* Estilos específicos para página de registro */
+.register-form {
+  .form-container {
+    margin-top: var(--app-spacing-lg);
   }
 }
 
@@ -23,16 +157,54 @@
   p {
     margin-bottom: var(--app-spacing-xs);
     font-size: 0.9rem;
+    color: var(--app-text-light);
+    opacity: 0.9;
+  }
+  
+  ion-button {
+    --color: var(--app-text-light);
+    --background: transparent;
+    text-decoration: underline;
+    font-size: 0.9rem;
+    font-weight: 500;
+    
+    &:hover {
+      --background: rgba(255, 255, 255, 0.1);
+    }
   }
 }
 
-/* Responsive adjustments for registration */
+/* Responsive adjustments */
 @media (max-width: 576px) {
-  .register-form {
-    margin-top: var(--app-spacing-md);
+  .form-container {
+    margin: 0 var(--app-spacing-sm);
     
     .app-card {
-      margin: 0 var(--app-spacing-sm);
+      margin-top: var(--app-spacing-sm);
+    }
+    
+    .header-icon {
+      .title-icon {
+        font-size: 2.5rem;
+      }
+    }
+  }
+  
+  .register-form {
+    .form-container {
+      margin-top: var(--app-spacing-md);
+    }
+  }
+  
+  .login-link {
+    margin-top: var(--app-spacing-md);
+    
+    p {
+      font-size: 0.85rem;
+    }
+    
+    ion-button {
+      font-size: 0.85rem;
     }
   }
 }

@@ -218,20 +218,23 @@ export class ShiftchangeService {
    * Verificar si un turno es seleccionable para cambio de turno
    */
   private isShiftSelectable(shiftInfo: WorkerShiftInfo, date: Date): boolean {
-    // Solo turnos programados (no OFF) pueden ser seleccionados
-    // No permitir selección si el trabajador ya está ausente o en servicio extra/intercambiado
-    return shiftInfo.isScheduled && 
-           !shiftInfo.isAbsent && 
-           !shiftInfo.isExtra && 
-           !shiftInfo.isShifted &&
-           date >= new Date(); // No se pueden cambiar turnos pasados
+    // No se pueden cambiar turnos pasados
+    if (date < new Date()) {
+      return false;
+    }
+
+    // Los turnos programados pueden ser seleccionados para intercambio
+    // Los días libres también pueden ser seleccionados (para recibir un turno)
+    // No permitir selección si el trabajador ya está ausente, en servicio extra o intercambiado
+    return (!shiftInfo.isAbsent && 
+            !shiftInfo.isExtra && 
+            !shiftInfo.isShifted);
   }
 
   /**
    * Obtener motivo por el cual el turno no es seleccionable
    */
   private getSelectabilityReason(shiftInfo: WorkerShiftInfo): string {
-    if (!shiftInfo.isScheduled) return 'Día libre';
     if (shiftInfo.isAbsent) return 'Ausente: ' + (shiftInfo.absenceReason || 'Motivo no especificado');
     if (shiftInfo.isExtra) return 'Turno extra';
     if (shiftInfo.isShifted) return 'Cambio de turno activo';
@@ -252,15 +255,14 @@ export class ShiftchangeService {
       return { hasConflict: true, reason: 'El trabajador original no tiene turno programado este día' };
     }
 
-    // El trabajador objetivo debe estar libre (no programado)
+    // El trabajador objetivo debe estar libre (no programado) O tener un turno diferente (día vs noche)
     if (targetShift.isScheduled) {
-      return { hasConflict: true, reason: 'El trabajador objetivo ya tiene turno programado este día' };
-    }
-
-    // Verificar si ambos estarían trabajando el mismo tipo de turno (conflicto día/noche)
-    if (originalShift.shiftStatus === targetShift.shiftStatus && 
-        (originalShift.shiftStatus === ShiftType.DAY_IN || originalShift.shiftStatus === ShiftType.NIGHT_IN)) {
-      return { hasConflict: true, reason: 'Ambos trabajadores tienen el mismo tipo de turno' };
+      // Si ambos están programados, solo hay conflicto si es exactamente el mismo tipo de turno
+      // Los turnos de día y noche son complementarios, no conflictivos
+      if (originalShift.shiftStatus === targetShift.shiftStatus) {
+        return { hasConflict: true, reason: 'Ambos trabajadores tienen exactamente el mismo turno programado' };
+      }
+      // Si son turnos diferentes (día/noche), no hay conflicto - pueden intercambiar
     }
 
     // El trabajador objetivo no debería estar ausente, en extra, o ya intercambiado

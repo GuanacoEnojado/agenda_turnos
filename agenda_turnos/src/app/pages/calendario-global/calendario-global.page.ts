@@ -93,25 +93,30 @@ export class CalendarioGlobalPage implements OnInit {
         const allWorkerShifts = this.shiftCalculatorService.calculateWorkersForDate(this.allWorkers, this.selectedDate);
         console.log('Worker shifts calculated:', allWorkerShifts.length);
         
-        // Por ahora, omitir lógica de turnos extra para probar funcionalidad básica
+        // Separar trabajadores según su estado
+        // Trabajadores en turno: incluye activos programados Y trabajadores que están cubriendo turno intercambiado
         this.workersOnShift = allWorkerShifts.filter(worker => 
-          worker.isScheduled && !worker.isAbsent
+          (worker.isScheduled && !worker.isAbsent && worker.trabajador.estado === 'activo') ||
+          (worker.trabajador.estado === 'turnocamdiadoON')
         );
         
+        // Trabajadores ausentes: solo los que deberían estar pero NO están (excluyendo turnocambiadoOFF)
         this.absentWorkers = allWorkerShifts.filter(worker => 
-          worker.isScheduled && worker.isAbsent
+          worker.isScheduled && worker.isAbsent && worker.trabajador.estado !== 'turnocambiadoOFF'
         );
 
+        // Trabajadores libres: los que no tienen turno y están activos
         this.freeWorkers = allWorkerShifts.filter(worker => 
-          !worker.isScheduled && !worker.isAbsent
+          !worker.isScheduled && !worker.isAbsent && worker.trabajador.estado === 'activo'
         );
         
-        // Obtener trabajadores con turnos extra para esta fecha
-        await this.loadExtraWorkersForDate();
-        
+        // Trabajadores con turnos cambiados (separados del resto para mostrar información específica)
         this.shiftedworkers = allWorkerShifts.filter(worker => 
-          !worker.isScheduled && !worker.isAbsent && worker.isShifted
+          worker.trabajador.estado === 'turnocambiadoOFF' || worker.trabajador.estado === 'turnocamdiadoON'
         );
+        
+        // Obtener trabajadores con turnos extra para esta fecha (sin bloquear)
+        this.loadExtraWorkersForDate();
 
         this.showResults = true;
         loading.dismiss();
@@ -162,25 +167,30 @@ export class CalendarioGlobalPage implements OnInit {
         const allWorkerShifts = this.shiftCalculatorService.calculateWorkersForDate(this.allWorkers, this.selectedDate);
         console.log('Worker shifts calculated:', allWorkerShifts.length);
         
-        // For now, skip extra shift logic to test basic functionality
+        // Separar trabajadores según su estado
+        // Trabajadores en turno: incluye activos programados Y trabajadores que están cubriendo turno intercambiado
         this.workersOnShift = allWorkerShifts.filter(worker => 
-          worker.isScheduled && !worker.isAbsent
+          (worker.isScheduled && !worker.isAbsent && worker.trabajador.estado === 'activo') ||
+          (worker.trabajador.estado === 'turnocamdiadoON')
         );
         
+        // Trabajadores ausentes: solo los que deberían estar pero NO están (excluyendo turnocambiadoOFF)
         this.absentWorkers = allWorkerShifts.filter(worker => 
-          worker.isScheduled && worker.isAbsent
+          worker.isScheduled && worker.isAbsent && worker.trabajador.estado !== 'turnocambiadoOFF'
         );
 
+        // Trabajadores libres: los que no tienen turno y están activos
         this.freeWorkers = allWorkerShifts.filter(worker => 
-          !worker.isScheduled && !worker.isAbsent
+          !worker.isScheduled && !worker.isAbsent && worker.trabajador.estado === 'activo'
         );
         
-        // Obtener trabajadores con turnos extra para esta fecha
-        await this.loadExtraWorkersForDate();
-        
+        // Trabajadores con turnos cambiados (separados del resto para mostrar información específica)
         this.shiftedworkers = allWorkerShifts.filter(worker => 
-          !worker.isScheduled && !worker.isAbsent && worker.isShifted
+          worker.trabajador.estado === 'turnocambiadoOFF' || worker.trabajador.estado === 'turnocamdiadoON'
         );
+        
+        // Obtener trabajadores con turnos extra para esta fecha (sin bloquear)
+        this.loadExtraWorkersForDate();
 
         this.showResults = true;
         loading.dismiss();
@@ -217,10 +227,24 @@ export class CalendarioGlobalPage implements OnInit {
   }
 
   async showAlert(header: string, message: string) {
+    // Determinar el tipo de alerta basado en el header
+    let cssClass = 'alert-wrapper';
+    if (header.toLowerCase().includes('éxito') || header.toLowerCase().includes('success')) {
+      cssClass += ' alert-success';
+    } else if (header.toLowerCase().includes('error')) {
+      cssClass += ' alert-error';
+    } else if (header.toLowerCase().includes('advertencia') || header.toLowerCase().includes('warning')) {
+      cssClass += ' alert-warning';
+    }
+
     const alert = await this.alertController.create({
       header,
       message,
-      buttons: ['OK']
+      cssClass: cssClass,
+      buttons: [{
+        text: 'OK',
+        cssClass: 'alert-button-confirm'
+      }]
     });
     await alert.present();
   }
@@ -554,59 +578,63 @@ export class CalendarioGlobalPage implements OnInit {
   /**
    * Cargar trabajadores con turnos extra para la fecha seleccionada
    */
-  private async loadExtraWorkersForDate(): Promise<void> {
+  private loadExtraWorkersForDate(): void {
     if (!this.selectedDate) {
       this.extraworkers = [];
       return;
     }
 
-    try {
-      // Obtener turnos extra para la fecha seleccionada
-      const extraShifts = await this.extraShiftService.getExtraShiftsForDate(this.selectedDate).toPromise();
-      
-      if (!extraShifts) {
-        this.extraworkers = [];
-        return;
-      }
-      
-      // Crear WorkerShiftInfo para cada trabajador con turno extra
-      this.extraworkers = extraShifts.map(extraShift => {
-        // Buscar el trabajador correspondiente
-        const trabajador = this.allWorkers.find(w => w.id === extraShift.trabajadorId);
+    console.log('Loading extra workers for date:', this.selectedDate);
+
+    // Usar subscribe en lugar de toPromise() para evitar bloqueo
+    this.extraShiftService.getExtraShiftsForDate(this.selectedDate).subscribe({
+      next: (extraShifts: any[]) => {
+        console.log('Extra shifts received:', extraShifts?.length || 0);
         
-        if (!trabajador) {
-          console.warn(`Worker not found for extra shift: ${extraShift.trabajadorId}`);
-          return null;
+        if (!extraShifts || extraShifts.length === 0) {
+          this.extraworkers = [];
+          return;
         }
+        
+        // Crear WorkerShiftInfo para cada trabajador con turno extra
+        this.extraworkers = extraShifts.map((extraShift: any) => {
+          // Buscar el trabajador correspondiente
+          const trabajador = this.allWorkers.find(w => w.id === extraShift.trabajadorId);
+          
+          if (!trabajador) {
+            console.warn(`Worker not found for extra shift: ${extraShift.trabajadorId}`);
+            return null;
+          }
 
-        // Determinar el tipo de turno según el ShiftType esperado
-        let shiftStatus: ShiftType;
-        if (extraShift.tipoTurno === 'day') {
-          shiftStatus = 'morning' as ShiftType;
-        } else {
-          shiftStatus = 'night' as ShiftType;
-        }
+          // Determinar el tipo de turno según el ShiftType esperado
+          let shiftStatus: ShiftType;
+          if (extraShift.tipoTurno === 'day') {
+            shiftStatus = 'morning' as ShiftType;
+          } else {
+            shiftStatus = 'night' as ShiftType;
+          }
 
-        // Crear el objeto WorkerShiftInfo
-        const workerShiftInfo: WorkerShiftInfo = {
-          trabajador: trabajador,
-          shiftStatus: shiftStatus,
-          isScheduled: true,
-          isAbsent: false,
-          isExtra: true,
-          isShifted: false,
-          absenceReason: undefined
-        };
+          // Crear el objeto WorkerShiftInfo
+          const workerShiftInfo: WorkerShiftInfo = {
+            trabajador: trabajador,
+            shiftStatus: shiftStatus,
+            isScheduled: true,
+            isAbsent: false,
+            isExtra: true,
+            isShifted: false,
+            absenceReason: undefined
+          };
 
-        return workerShiftInfo;
-      }).filter((worker): worker is WorkerShiftInfo => worker !== null);
+          return workerShiftInfo;
+        }).filter((worker): worker is WorkerShiftInfo => worker !== null);
 
-      console.log('Extra workers loaded for date:', this.extraworkers.length);
-      
-    } catch (error) {
-      console.error('Error loading extra workers for date:', error);
-      this.extraworkers = [];
-    }
+        console.log('Extra workers loaded for date:', this.extraworkers.length);
+      },
+      error: (error: any) => {
+        console.error('Error loading extra workers for date:', error);
+        this.extraworkers = [];
+      }
+    });
   }
 
   // Debug methods

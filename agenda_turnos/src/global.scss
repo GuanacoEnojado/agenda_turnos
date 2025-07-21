@@ -1257,3 +1257,327 @@ ion-menu {
     }
   }
 }
+
+
+
+/* Estilos base para todas las alertas */
+.alert-wrapper {
+  --background: #1a202c !important;
+  --color: #ffffff !important;
+  
+  .alert-wrapper-inner {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  .alert-head {
+    background: var(--ion-color-primary);
+    color: white !important;
+    padding: 16px 20px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    border-bottom: none;
+  }
+  
+  .alert-message {
+    color: #ffffff !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    padding: 20px !important;
+    background: #2d3748 !important;
+    font-weight: 500;
+  }
+  
+  .alert-button-group {
+    padding: 12px 20px 16px;
+    background: #4a5568;
+    border-top: 1px solid #718096;
+    
+    .alert-button {
+      color: #ffffff !important;
+      font-weight: 600 !important;
+      font-size: 1rem !important;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin: 0 4px;
+      transition: all 0.3s ease;
+      background: #2d3748 !important;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
+      
+      &.alert-button-confirm {
+        background: var(--ion-color-primary) !important;
+        color: white !important;
+        
+        &:hover {
+          background: var(--ion-color-primary-shade) !important;
+        }
+      }
+    }
+  }
+}
+
+/* Estilos específicos para ion-alert con radio buttons */
+ion-alert {
+  &.alert-wrapper {
+    .alert-radio-group {
+      ion-radio-group {
+        ion-item {
+          --background: transparent !important;
+          --color: #2d3748 !important;
+          --border-color: transparent !important;
+          
+          ion-label {
+            color: #2d3748 !important;
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+          }
+          
+          ion-radio {
+            --color: #cbd5e0 !important;
+            --color-checked: var(--ion-color-primary) !important;
+            margin-inline-end: 16px !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* ===============================
+   ALERTAS - SOBRESCRITURA ESPECÍFICA PARA IONIC
+   =============================== */
+
+/* Sobrescribir estilos específicos de Ionic para alertas usando CSS variables */
+ion-alert {
+  --background: #1a202c !important;
+  --color: #ffffff !important;
+  --backdrop-opacity: 0.5 !important;
+  
+  .alert-wrapper {
+    background: #1a202c !important;
+    color: #ffffff !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+    max-width: 400px !important;
+  }
+  
+  .alert-head {
+    background: var(--ion-color-primary) !important;
+    color: white !important;
+    padding: 16px 20px !important;
+    font-weight: 600 !important;
+    font-size: 1.1rem !important;
+    border-bottom: none !important;
+    margin: 0 !important;
+  }
+  
+  .alert-message {
+    color: #ffffff !important;
+    font-size: 1rem !important;
+    line-height: 1.5 !important;
+    padding: 20px !important;
+    background: #2d3748 !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+    text-align: left !important;
+  }
+  
+  .alert-button-group {
+    padding: 12px 20px 16px !important;
+    background: #4a5568 !important;
+    border-top: 1px solid #718096 !important;
+    margin: 0 !important;
+    
+    .alert-button {
+      color: #ffffff !important;
+      font-weight: 600 !important;
+      font-size: 1rem !important;
+      padding: 10px 20px !important;
+      border-radius: 8px !important;
+      margin: 0 4px !important;
+      background: #2d3748 !important;
+      
+      &.alert-button-confirm {
+        background: var(--ion-color-primary) !important;
+        color: white !important;
+      }
+    }
+  }
+}
+
+/* Alertas con clases específicas */
+ion-alert.alert-success {
+  .alert-head {
+    background: var(--ion-color-success) !important;
+  }
+  
+  .alert-button-group .alert-button {
+    color: var(--ion-color-success) !important;
+    
+    &.alert-button-confirm {
+      background: var(--ion-color-success) !important;
+      color: white !important;
+    }
+  }
+}
+
+ion-alert.alert-error {
+  .alert-head {
+    background: var(--ion-color-danger) !important;
+  }
+  
+  .alert-button-group .alert-button {
+    color: var(--ion-color-danger) !important;
+    
+    &.alert-button-confirm {
+      background: var(--ion-color-danger) !important;
+      color: white !important;
+    }
+  }
+}
+
+ion-alert.alert-warning {
+  .alert-head {
+    background: var(--ion-color-warning) !important;
+    color: #2d3748 !important;
+  }
+  
+  .alert-button-group .alert-button {
+    color: var(--ion-color-warning) !important;
+    
+    &.alert-button-confirm {
+      background: var(--ion-color-warning) !important;
+      color: #2d3748 !important;
+    }
+  }
+}
+
+/* ===============================
+   RADIO BUTTONS EN ALERTAS - SELECTORES ULTRA ESPECÍFICOS
+   =============================== */
+
+/* Selectores directos para radio buttons en alertas */
+ion-alert .alert-radio-group ion-radio-group ion-item,
+ion-alert .alert-checkbox-group ion-checkbox-group ion-item,
+ion-alert ion-radio-group ion-item,
+ion-alert ion-checkbox-group ion-item {
+  --background: transparent !important;
+  --color: #ffffff !important;
+  --border-color: transparent !important;
+  --min-height: 48px !important;
+  --padding-start: 16px !important;
+  --padding-end: 16px !important;
+  --inner-padding-end: 0px !important;
+  
+  ion-label {
+    color: #ffffff !important;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+    line-height: 1.4 !important;
+    margin: 0 !important;
+    white-space: normal !important;
+  }
+  
+  ion-radio,
+  ion-checkbox {
+    --color: #a0aec0 !important;
+    --color-checked: var(--ion-color-primary) !important;
+    --border-color: #a0aec0 !important;
+    --border-color-checked: var(--ion-color-primary) !important;
+    margin-inline-end: 16px !important;
+    margin-inline-start: 0 !important;
+  }
+  
+  &:hover {
+    --background: rgba(255, 255, 255, 0.1) !important;
+  }
+  
+  &.item-radio-checked,
+  &.item-checkbox-checked {
+    --background: rgba(66, 140, 255, 0.2) !important;
+    --color: #ffffff !important;
+    
+    ion-label {
+      color: #ffffff !important;
+      font-weight: 600 !important;
+    }
+  }
+}
+
+/* Selectores para el contenido específico de las alertas */
+ion-alert .alert-input-wrapper,
+ion-alert .alert-radio-wrapper,
+ion-alert .alert-checkbox-wrapper {
+  background: #2d3748 !important;
+  
+  ion-list,
+  ion-radio-group,
+  ion-checkbox-group {
+    background: transparent !important;
+    
+    ion-item {
+      --background: transparent !important;
+      --color: #ffffff !important;
+      border: none !important;
+      
+      &:last-child {
+        --border-width: 0 !important;
+      }
+    }
+  }
+}
+
+/* Selectores ultra específicos para texto en radio/checkbox */
+ion-alert ion-item ion-label,
+ion-alert .alert-wrapper ion-item ion-label,
+ion-alert .alert-radio-group ion-item ion-label,
+ion-alert .alert-checkbox-group ion-item ion-label {
+  color: #ffffff !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  opacity: 1 !important;
+  line-height: 1.4 !important;
+}
+
+/* Selectores para radio buttons específicamente */
+ion-alert ion-radio,
+ion-alert .alert-wrapper ion-radio,
+ion-alert .alert-radio-group ion-radio {
+  --color: #a0aec0 !important;
+  --color-checked: var(--ion-color-primary) !important;
+  --border-color: #a0aec0 !important;
+  --border-color-checked: var(--ion-color-primary) !important;
+  opacity: 1 !important;
+}
+
+/* Selectores para checkbox específicamente */
+ion-alert ion-checkbox,
+ion-alert .alert-wrapper ion-checkbox,
+ion-alert .alert-checkbox-group ion-checkbox {
+  --color: #a0aec0 !important;
+  --color-checked: var(--ion-color-primary) !important;
+  --border-color: #a0aec0 !important;
+  --border-color-checked: var(--ion-color-primary) !important;
+  --checkmark-color: white !important;
+  opacity: 1 !important;
+}
+
+/* Forzar estilos en el DOM shadow si es necesario */
+ion-alert::part(container) {
+  background: #2d3748 !important;
+}
+
+ion-alert::part(header) {
+  background: var(--ion-color-primary) !important;
+  color: white !important;
+}
+
+ion-alert::part(message) {
+  color: #ffffff !important;
+  background: #2d3748 !important;
+}

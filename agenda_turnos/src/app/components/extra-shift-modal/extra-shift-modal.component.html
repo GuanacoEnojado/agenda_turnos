@@ -12,7 +12,7 @@
 <ion-content class="ion-padding">
   <form #extraShiftForm="ngForm" (ngSubmit)="onSubmit(extraShiftForm)">
     
-    <!-- Worker Info -->
+    <!-- Información del Trabajador -->
     <ion-card>
       <ion-card-header>
         <ion-card-title>Trabajador Seleccionado</ion-card-title>
@@ -40,7 +40,7 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Date Selection (only show if not from calendario-global) -->
+    <!-- Selección de Fecha (solo mostrar si no viene del calendario-global) -->
     <ion-card *ngIf="!preselectedDate">
       <ion-card-header>
         <ion-card-title>Fecha del Turno Extra</ion-card-title>
@@ -60,7 +60,7 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Selected Date Display (when preselected) -->
+    <!-- Mostrar Fecha Seleccionada (cuando está preseleccionada) -->
     <ion-card *ngIf="preselectedDate">
       <ion-card-header>
         <ion-card-title>Fecha del Turno Extra</ion-card-title>
@@ -76,14 +76,14 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Extra Shift Details -->
+    <!-- Detalles del Turno Extra -->
     <ion-card>
       <ion-card-header>
         <ion-card-title>Detalles del Turno Extra</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         
-        <!-- Type of Extra Shift -->
+        <!-- Tipo de Turno Extra -->
         <ion-item>
           <ion-label position="stacked">Tipo de Turno</ion-label>
           <ion-select 
@@ -96,7 +96,7 @@
           </ion-select>
         </ion-item>
 
-        <!-- Hours -->
+        <!-- Horas -->
         <ion-item>
           <ion-label position="stacked">Horas del Turno</ion-label>
           <ion-input
@@ -110,7 +110,7 @@
           </ion-input>
         </ion-item>
 
-        <!-- Details/Notes -->
+        <!-- Detalles/Notas -->
         <ion-item>
           <ion-label position="stacked">Detalles/Notas (Opcional)</ion-label>
           <ion-textarea
@@ -124,7 +124,7 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Action Buttons -->
+    <!-- Botones de Acción -->
     <ion-grid>
       <ion-row>
         <ion-col size="6">

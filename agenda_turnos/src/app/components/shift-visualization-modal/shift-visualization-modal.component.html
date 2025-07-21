@@ -11,7 +11,7 @@
 
 <ion-content class="ion-padding">
   
-  <!-- Worker Info Header -->
+  <!-- Encabezado de Información del Trabajador -->
   <ion-card class="worker-header">
     <ion-card-content>
       <div class="worker-info">
@@ -38,7 +38,7 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Calendar Legend -->
+  <!-- Leyenda del Calendario -->
   <ion-card class="legend">
     <ion-card-header>
       <ion-card-subtitle>Leyenda</ion-card-subtitle>
@@ -73,14 +73,14 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Current Month Calendar -->
+  <!-- Calendario del Mes Actual -->
   <ion-card>
     <ion-card-header>
       <ion-card-title>{{ getCurrentMonthName() }} 2025</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <div class="calendar-grid">
-        <!-- Days of week header -->
+        <!-- Encabezado de días de la semana -->
         <div class="calendar-header">
           <div class="day-header">Dom</div>
           <div class="day-header">Lun</div>
@@ -90,7 +90,7 @@
           <div class="day-header">Vie</div>
           <div class="day-header">Sáb</div>
         </div>
-        <!-- Calendar days -->
+        <!-- Días del calendario -->
         <div class="calendar-body">
           <div 
             *ngFor="let day of currentMonth" 
@@ -109,14 +109,14 @@
     </ion-card-content>
   </ion-card>
 
-  <!-- Next Month Calendar -->
+  <!-- Calendario del Mes Siguiente -->
   <ion-card>
     <ion-card-header>
       <ion-card-title>{{ getNextMonthName() }} 2025</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <div class="calendar-grid">
-        <!-- Days of week header -->
+        <!-- Encabezado de días de la semana -->
         <div class="calendar-header">
           <div class="day-header">Dom</div>
           <div class="day-header">Lun</div>
@@ -126,7 +126,7 @@
           <div class="day-header">Vie</div>
           <div class="day-header">Sáb</div>
         </div>
-        <!-- Calendar days -->
+        <!-- Días del calendario -->
         <div class="calendar-body">
           <div 
             *ngFor="let day of nextMonth" 
@@ -147,7 +147,7 @@
 
 </ion-content>
 
-<!-- Day Details Modal -->
+<!-- Modal de Detalles del Día -->
 <ion-modal [isOpen]="showDayDetails" (willDismiss)="closeDayDetails()">
   <ng-template>
     <ion-header>
@@ -163,7 +163,7 @@
     </ion-header>
 
     <ion-content class="ion-padding" *ngIf="selectedDay">
-      <!-- Day Status -->
+      <!-- Estado del Día -->
       <ion-card>
         <ion-card-header>
           <ion-card-title>Estado del Día</ion-card-title>
@@ -176,14 +176,14 @@
         </ion-card-content>
       </ion-card>
 
-      <!-- Regular Shifts -->
+      <!-- Turnos Regulares -->
       <ion-card *ngIf="selectedDay.shifts.morning || selectedDay.shifts.evening || selectedDay.shifts.night">
         <ion-card-header>
           <ion-card-title>Turnos Regulares</ion-card-title>
         </ion-card-header>
         <ion-card-content>
           
-          <!-- Morning Shift -->
+          <!-- Turno Matutino -->
           <ion-item *ngIf="selectedDay.shifts.morning" lines="none">
             <ion-icon name="sunny-outline" slot="start" color="warning"></ion-icon>
             <ion-label>
@@ -196,7 +196,7 @@
             </ion-label>
           </ion-item>
 
-          <!-- Evening Shift -->
+          <!-- Turno Vespertino -->
           <ion-item *ngIf="selectedDay.shifts.evening" lines="none">
             <ion-icon name="partly-sunny-outline" slot="start" color="secondary"></ion-icon>
             <ion-label>
@@ -209,7 +209,7 @@
             </ion-label>
           </ion-item>
 
-          <!-- Night Shift -->
+          <!-- Turno Nocturno -->
           <ion-item *ngIf="selectedDay.shifts.night" lines="none">
             <ion-icon name="moon-outline" slot="start" color="dark"></ion-icon>
             <ion-label>
@@ -225,7 +225,7 @@
         </ion-card-content>
       </ion-card>
 
-      <!-- Extra Shifts -->
+      <!-- Turnos Extra -->
       <ion-card *ngIf="selectedDay.shifts.extra && selectedDay.shifts.extra.length > 0">
         <ion-card-header>
           <ion-card-title>Turnos Extra</ion-card-title>
@@ -255,7 +255,7 @@
         </ion-card-content>
       </ion-card>
 
-      <!-- No shifts -->
+      <!-- Sin turnos -->
       <ion-card *ngIf="hasNoShifts(selectedDay)">
         <ion-card-content class="ion-text-center">
           <ion-icon name="calendar-clear-outline" size="large" color="medium"></ion-icon>

@@ -248,10 +248,24 @@ export class ListaFuncionariosPage implements OnInit {
   }
 
   async showAlert(header: string, message: string) {
+    // Determinar el tipo de alerta basado en el header
+    let cssClass = 'alert-wrapper';
+    if (header.toLowerCase().includes('éxito') || header.toLowerCase().includes('success')) {
+      cssClass += ' alert-success';
+    } else if (header.toLowerCase().includes('error')) {
+      cssClass += ' alert-error';
+    } else if (header.toLowerCase().includes('advertencia') || header.toLowerCase().includes('warning')) {
+      cssClass += ' alert-warning';
+    }
+
     const alert = await this.alertController.create({
       header,
       message,
-      buttons: ['OK']
+      cssClass: cssClass,
+      buttons: [{
+        text: 'OK',
+        cssClass: 'alert-button-confirm'
+      }]
     });
     await alert.present();
   }

@@ -74,45 +74,22 @@ export class RegistroFuncionarioPage implements OnInit {
         console.log('Trabajador creation result:', result); // Log de depuración
 
         if (result) {
-          const alert = await this.alertController.create({ 
-            header: 'Éxito', 
-            message: 'Funcionario registrado exitosamente', 
-            buttons: [{
-              text: 'Ok',
-              handler: () => {
-                this.router.navigate(['/main']);
-              }
-            }]
+          await this.showAlert('Éxito', 'Funcionario registrado exitosamente', () => {
+            this.router.navigate(['/main']);
           });
-          await alert.present();
         } else {
-          const alert = await this.alertController.create({ 
-            header: 'Error en el registro', 
-            message: 'No se pudo registrar el funcionario', 
-            buttons: ['Ok']
-          });
-          await alert.present();
+          await this.showAlert('Error en el registro', 'No se pudo registrar el funcionario');
         }
       } catch (error) {
         console.error('Error registering trabajador:', error);
-        const alert = await this.alertController.create({ 
-          header: 'Error en el registro', 
-          message: 'Error al registrar funcionario, intenta de nuevo', 
-          buttons: ['Ok']
-        });
-        await alert.present();
+        await this.showAlert('Error en el registro', 'Error al registrar funcionario, intenta de nuevo');
       }
     } else {
       console.log('Form is invalid:', this.registroForm.errors); // Log de depuración
       console.log('Form values:', this.registroForm.value); // Log de depuración
       console.log('Form status:', this.registroForm.status); // Log de depuración
       
-      const alert = await this.alertController.create({ 
-        header: 'Formulario inválido', 
-        message: 'Por favor complete todos los campos correctamente', 
-        buttons: ['Ok']
-      });
-      await alert.present();
+      await this.showAlert('Formulario inválido', 'Por favor complete todos los campos correctamente');
     }
   }
 
@@ -149,5 +126,59 @@ export class RegistroFuncionarioPage implements OnInit {
   async listafuncionario(){
     await this.menuCtrl.close();
     this.router.navigate(['/lista-funcionarios']);
+  }
+
+  async showAlert(header: string, message: string, handler?: () => void) {
+    // Determinar el tipo de alerta basado en el header
+    let cssClass = 'alert-wrapper';
+    let headerColor = 'var(--ion-color-primary)';
+    
+    if (header.toLowerCase().includes('éxito') || header.toLowerCase().includes('success')) {
+      cssClass += ' alert-success';
+      headerColor = 'var(--ion-color-success)';
+    } else if (header.toLowerCase().includes('error')) {
+      cssClass += ' alert-error';
+      headerColor = 'var(--ion-color-danger)';
+    } else if (header.toLowerCase().includes('advertencia') || header.toLowerCase().includes('warning') || header.toLowerCase().includes('inválido')) {
+      cssClass += ' alert-warning';
+      headerColor = 'var(--ion-color-warning)';
+    }
+
+    const alert = await this.alertController.create({
+      header,
+      message,
+      cssClass: cssClass,
+      mode: 'md', // Forzar modo Material Design para mejor consistencia
+      buttons: [{
+        text: 'OK',
+        cssClass: 'alert-button-confirm',
+        handler: handler
+      }]
+    });
+
+    // Aplicar estilos directamente después de crear la alerta
+    await alert.present();
+    
+    // Aplicar estilos adicionales después de que se renderice
+    setTimeout(() => {
+      const alertElement = document.querySelector('ion-alert');
+      if (alertElement) {
+        alertElement.style.setProperty('--background', '#ffffff');
+        alertElement.style.setProperty('--color', '#2d3748');
+        
+        const messageElement = alertElement.querySelector('.alert-message');
+        if (messageElement) {
+          (messageElement as HTMLElement).style.color = '#2d3748';
+          (messageElement as HTMLElement).style.backgroundColor = '#ffffff';
+          (messageElement as HTMLElement).style.fontSize = '1rem';
+        }
+        
+        const headerElement = alertElement.querySelector('.alert-head');
+        if (headerElement) {
+          (headerElement as HTMLElement).style.backgroundColor = headerColor;
+          (headerElement as HTMLElement).style.color = 'white';
+        }
+      }
+    }, 50);
   }
 }

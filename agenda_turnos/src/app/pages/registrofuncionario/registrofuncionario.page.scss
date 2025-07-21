@@ -31,6 +31,118 @@
   }
 }
 
+/* Estilos para alertas mejoradas */
+.alert-wrapper {
+  --background: #ffffff;
+  --color: #2d3748;
+  
+  .alert-head {
+    background: var(--ion-color-primary);
+    color: white;
+    padding: 16px;
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+  
+  .alert-message {
+    color: #2d3748 !important;
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 16px;
+    background: #ffffff;
+  }
+  
+  .alert-button-group {
+    .alert-button {
+      color: var(--ion-color-primary) !important;
+      font-weight: 600;
+      font-size: 1rem;
+      
+      &.alert-button-confirm {
+        background: var(--ion-color-primary);
+        color: white !important;
+      }
+    }
+  }
+
+  // Estilos específicos para radio buttons en alertas
+  .alert-radio-group {
+    .alert-radio-label {
+      color: #2d3748 !important;
+      font-size: 1rem !important;
+      font-weight: 500 !important;
+    }
+    
+    .alert-radio-button {
+      --color: var(--ion-color-primary) !important;
+      --color-checked: var(--ion-color-primary) !important;
+    }
+  }
+
+  // Estilos para inputs y opciones en alertas
+  .alert-input-wrapper {
+    .alert-input {
+      color: #2d3748 !important;
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      
+      &:focus {
+        border-color: var(--ion-color-primary) !important;
+      }
+    }
+  }
+
+  // Estilos para checkbox en alertas
+  .alert-checkbox-group {
+    .alert-checkbox-label {
+      color: #2d3748 !important;
+      font-size: 1rem !important;
+      font-weight: 500 !important;
+    }
+    
+    .alert-checkbox-button {
+      --color: var(--ion-color-primary) !important;
+      --color-checked: var(--ion-color-primary) !important;
+      --checkmark-color: white !important;
+    }
+  }
+}
+
+/* Alertas de éxito */
+.alert-success {
+  .alert-head {
+    background: var(--ion-color-success);
+  }
+  
+  .alert-button-confirm {
+    background: var(--ion-color-success) !important;
+  }
+}
+
+/* Alertas de error */
+.alert-error {
+  .alert-head {
+    background: var(--ion-color-danger);
+  }
+  
+  .alert-button-confirm {
+    background: var(--ion-color-danger) !important;
+  }
+}
+
+/* Alertas de advertencia */
+.alert-warning {
+  .alert-head {
+    background: var(--ion-color-warning);
+    color: #2d3748 !important;
+  }
+  
+  .alert-button-confirm {
+    background: var(--ion-color-warning) !important;
+    color: #2d3748 !important;
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 576px) {
   .form-container {

@@ -52,7 +52,7 @@
       <ion-card-header>
         <ion-card-title color="success">
           <ion-icon name="people-outline"></ion-icon>
-          Funcionarios en Turno ({{ workersOnShift.length + extraworkers.length + shiftedworkers.length }})
+          Funcionarios en Turno ({{ workersOnShift.length + extraworkers.length }})
         </ion-card-title>
       </ion-card-header>
       <ion-card-content>
@@ -253,8 +253,82 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- Trabajadores con Turnos Cambiados -->
+    <ion-card *ngIf="shiftedworkers.length > 0" class="shifted-workers">
+      <ion-card-header>
+        <ion-card-title color="secondary">
+          <ion-icon name="swap-horizontal-outline"></ion-icon>
+          Funcionarios con Turnos Cambiados ({{ shiftedworkers.length }})
+        </ion-card-title>
+        <ion-card-subtitle>
+          Funcionarios que han intercambiado turnos para esta fecha
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let workerInfo of shiftedworkers" class="shifted-worker">
+            <!-- Avatar -->
+            <ion-avatar slot="start">
+              <ion-icon 
+                *ngIf="!workerInfo.trabajador.avatarUrl" 
+                name="person-circle-outline" 
+                size="large">
+              </ion-icon>
+              <img 
+                *ngIf="workerInfo.trabajador.avatarUrl" 
+                [src]="workerInfo.trabajador.avatarUrl" 
+                [alt]="workerInfo.trabajador.Name1 + ' ' + workerInfo.trabajador.Name2"
+                class="shifted-avatar">
+            </ion-avatar>
+
+            <!-- Info trabajador -->
+            <ion-label>
+              <h2>{{ workerInfo.trabajador.Name1 }} {{ workerInfo.trabajador.Name2 }}</h2>
+              <p>{{ formatTurno(workerInfo.trabajador.turno) }}</p>
+              <p>{{ workerInfo.trabajador.nivel | titlecase }}</p>
+              
+              <!-- Mostrar estado del intercambio -->
+              <p *ngIf="workerInfo.trabajador.estado === 'turnocambiadoOFF'" class="shift-change-info">
+                <ion-icon name="arrow-down-circle-outline" color="warning"></ion-icon>
+                <strong>Debería estar en {{ getShiftDisplayName(workerInfo.shiftStatus) }}</strong><br>
+                <strong>pero NO estará</strong> - Ha intercambiado su turno
+              </p>
+              
+              <p *ngIf="workerInfo.trabajador.estado === 'turnocamdiadoON'" class="shift-change-info">
+                <ion-icon name="arrow-up-circle-outline" color="success"></ion-icon>
+                <strong>Estará trabajando hoy</strong><br>
+                Su turno original era: <strong>{{ formatTurno(workerInfo.trabajador.turno) }}</strong><br>
+                <em>Está cubriendo turno de otro funcionario</em>
+              </p>
+            </ion-label>
+
+            <!-- Acciones y Badge -->
+            <div slot="end" class="worker-actions">
+              <!-- Badge indicando el tipo de cambio -->
+              <ion-badge 
+                [color]="workerInfo.trabajador.estado === 'turnocambiadoOFF' ? 'warning' : 'success'">
+                <ion-icon 
+                  [name]="workerInfo.trabajador.estado === 'turnocambiadoOFF' ? 'close-circle-outline' : 'checkmark-circle-outline'" 
+                  size="small">
+                </ion-icon>
+                {{ workerInfo.trabajador.estado === 'turnocambiadoOFF' ? 'Ausente' : 'Presente' }}
+              </ion-badge>
+              
+              <!-- Badge adicional para mostrar el turno actual -->
+              <ion-badge 
+                color="secondary"
+                *ngIf="workerInfo.trabajador.estado === 'turnocamdiadoON'">
+                <ion-icon name="time-outline" size="small"></ion-icon>
+                {{ getShiftDisplayName(workerInfo.shiftStatus) }}
+              </ion-badge>
+            </div>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
     <!-- Mensaje Sin Trabajadores -->
-    <ion-card *ngIf="workersOnShift.length === 0 && absentWorkers.length === 0 && freeWorkers.length === 0">
+    <ion-card *ngIf="workersOnShift.length === 0 && absentWorkers.length === 0 && freeWorkers.length === 0 && shiftedworkers.length === 0">
       <ion-card-content class="ion-text-center">
         <ion-icon name="calendar-clear-outline" size="large" color="medium"></ion-icon>
         <h3>No hay funcionarios registrados</h3>
@@ -273,25 +347,32 @@
       <ion-card-content>
         <ion-grid>
           <ion-row>
-            <ion-col size="4">
+            <ion-col size="3">
               <div class="summary-stat">
                 <ion-icon name="checkmark-circle" color="success" size="large"></ion-icon>
-                <h2>{{ workersOnShift.length + extraworkers.length + shiftedworkers.length }}</h2>
+                <h2>{{ workersOnShift.length + extraworkers.length }}</h2>
                 <p>En turno</p>
               </div>
             </ion-col>
-            <ion-col size="4">
+            <ion-col size="3">
               <div class="summary-stat">
                 <ion-icon name="warning" color="warning" size="large"></ion-icon>
                 <h2>{{ absentWorkers.length }}</h2>
                 <p>Ausentes</p>
               </div>
             </ion-col>
-            <ion-col size="4">
+            <ion-col size="3">
               <div class="summary-stat">
                 <ion-icon name="moon" color="medium" size="large"></ion-icon>
                 <h2>{{ freeWorkers.length }}</h2>
                 <p>Libres</p>
+              </div>
+            </ion-col>
+            <ion-col size="3">
+              <div class="summary-stat">
+                <ion-icon name="swap-horizontal" color="secondary" size="large"></ion-icon>
+                <h2>{{ shiftedworkers.length }}</h2>
+                <p>Cambiados</p>
               </div>
             </ion-col>
           </ion-row>

@@ -57,36 +57,18 @@ async onRegister() {
     // await loading.dismiss();
 
     if (result.success) {
-      const alert = await this.alertController.create({ 
-        header: 'Éxito', 
-        message: 'Cuenta de administrador creada exitosamente', 
-        buttons: [{
-          text: 'Ok',
-          handler: () => {
-            this.router.navigate(['/home']);
-          }
-        }]
+      await this.showAlert('Éxito', 'Cuenta de administrador creada exitosamente', () => {
+        this.router.navigate(['/home']);
       });
-      await alert.present();
     } else {
-      const alert = await this.alertController.create({ 
-        header: 'Error en el registro', 
-        message: result.message, 
-        buttons: ['Ok']
-      });
-      await alert.present();
+      await this.showAlert('Error en el registro', result.message);
     }
   } else {
     console.log('Form is invalid:', this.registroForm.errors); // Log de depuración
     console.log('Form values:', this.registroForm.value); // Log de depuración
     console.log('Form status:', this.registroForm.status); // Log de depuración
     
-    const alert = await this.alertController.create({ 
-      header: 'Formulario inválido', 
-      message: 'Por favor complete todos los campos correctamente', 
-      buttons: ['Ok']
-    });
-    await alert.present();
+    await this.showAlert('Formulario inválido', 'Por favor complete todos los campos correctamente');
   }
 }
     
@@ -133,6 +115,30 @@ async onRegister() {
   async listafuncionario(){
     await this.menuCtrl.close();
     this.router.navigate(['/lista-funcionarios']);
+  }
+
+  async showAlert(header: string, message: string, handler?: () => void) {
+    // Determinar el tipo de alerta basado en el header
+    let cssClass = 'alert-wrapper';
+    if (header.toLowerCase().includes('éxito') || header.toLowerCase().includes('success')) {
+      cssClass += ' alert-success';
+    } else if (header.toLowerCase().includes('error')) {
+      cssClass += ' alert-error';
+    } else if (header.toLowerCase().includes('advertencia') || header.toLowerCase().includes('warning') || header.toLowerCase().includes('inválido')) {
+      cssClass += ' alert-warning';
+    }
+
+    const alert = await this.alertController.create({
+      header,
+      message,
+      cssClass: cssClass,
+      buttons: [{
+        text: 'OK',
+        cssClass: 'alert-button-confirm',
+        handler: handler
+      }]
+    });
+    await alert.present();
   }
 
 }
