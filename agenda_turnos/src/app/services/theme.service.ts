@@ -15,21 +15,21 @@ export class ThemeService {
   }
 
   /**
-   * Observable for theme changes
+   * Observable para cambios de tema
    */
   get theme$() {
     return this.themeSubject.asObservable();
   }
 
   /**
-   * Get current theme setting
+   * capturael tema actual
    */
   get currentTheme(): ThemeMode {
     return this.themeSubject.value;
   }
 
   /**
-   * Initialize theme from localStorage or default to 'auto'
+   * Inicia tema
    */
   private initializeTheme(): void {
     const savedTheme = localStorage.getItem(this.THEME_KEY) as ThemeMode;
@@ -38,8 +38,7 @@ export class ThemeService {
   }
 
   /**
-   * Set theme and apply it to the document
-   * @param theme - Theme mode to apply
+   * @param theme - 
    */
   setTheme(theme: ThemeMode): void {
     this.themeSubject.next(theme);
@@ -48,13 +47,13 @@ export class ThemeService {
   }
 
   /**
-   * Apply theme to document body
-   * @param theme - Theme mode to apply
+   * Aplica tema al body del documento
+   * @param theme -
    */
   private applyTheme(theme: ThemeMode): void {
     const body = document.body;
     
-    // Remove existing theme classes
+    
     body.classList.remove('dark-theme', 'light-theme');
     
     if (theme === 'dark') {
@@ -62,7 +61,7 @@ export class ThemeService {
     } else if (theme === 'light') {
       body.classList.add('light-theme');
     } else {
-      // Auto mode: respect system preference
+      // Auto 
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (prefersDark) {
         body.classList.add('dark-theme');
@@ -73,7 +72,7 @@ export class ThemeService {
   }
 
   /**
-   * Toggle between light and dark themes (ignores auto)
+   * Toggle entre light y dark
    */
   toggleTheme(): void {
     const currentTheme = this.currentTheme;
@@ -83,15 +82,13 @@ export class ThemeService {
     } else if (currentTheme === 'dark') {
       this.setTheme('light');
     } else {
-      // If auto, switch to light or dark based on current system preference
+
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       this.setTheme(prefersDark ? 'light' : 'dark');
     }
   }
 
-  /**
-   * Check if current effective theme is dark
-   */
+
   isDarkMode(): boolean {
     const currentTheme = this.currentTheme;
     
@@ -100,14 +97,12 @@ export class ThemeService {
     } else if (currentTheme === 'light') {
       return false;
     } else {
-      // Auto mode: check system preference
+
       return window.matchMedia('(prefers-color-scheme: dark)').matches;
     }
   }
 
-  /**
-   * Get display name for theme
-   */
+
   getThemeDisplayName(theme: ThemeMode): string {
     switch (theme) {
       case 'auto':
